@@ -1,0 +1,3 @@
+[submodule "glri-geoserver"]
+	path = glri-geoserver
+	url = git://github.com/tkunicki-usgs/glri-geoserver.git
