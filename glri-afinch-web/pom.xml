@@ -53,6 +53,10 @@
             <groupId>gov.usgs.cida</groupId>
             <artifactId>tomcat-filters</artifactId>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.glri.afinch</groupId>
+            <artifactId>glri-afinch-parse</artifactId>
+        </dependency>
 		<!-- JS Templates -->
         <dependency>
             <groupId>gov.usgs.cida.jslibs</groupId>

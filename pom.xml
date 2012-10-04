@@ -143,6 +143,11 @@
                 <artifactId>tomcat-filters</artifactId>
                 <version>1.0</version>
             </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.glri.afinch</groupId>
+                <artifactId>glri-afinch-parse</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 		<!-- JS Templates -->
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
