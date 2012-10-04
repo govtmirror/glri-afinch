@@ -3,4 +3,4 @@
 	url = git://github.com/tkunicki-usgs/glri-geoserver.git
 [submodule "glri-afinch-parse"]
 	path = glri-afinch-parse
-	url = git@github.com:jiwalker-usgs/glri-afinch-parse.git
+	url = git://github.com/jiwalker-usgs/glri-afinch-parse.git
