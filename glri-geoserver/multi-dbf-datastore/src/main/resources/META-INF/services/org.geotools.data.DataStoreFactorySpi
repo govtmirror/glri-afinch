@@ -1,0 +1,2 @@
+gov.usgs.cida.geotools.datastore.DbaseShapefileDataStoreFactory
+gov.usgs.cida.geotools.datastore.DbaseDirectoryShapefileDataStoreFactory
