@@ -11,7 +11,6 @@
 
     <modules>
         <module>glri-geoserver</module>
-        <module>glri-afinch-parse</module>
         <module>glri-afinch-web</module>
     </modules>
 
@@ -143,11 +142,6 @@
                 <artifactId>tomcat-filters</artifactId>
                 <version>1.0</version>
             </dependency>
-            <dependency>
-                <groupId>gov.usgs.cida.glri.afinch</groupId>
-                <artifactId>glri-afinch-parse</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 		<!-- JS Templates -->
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
@@ -195,7 +189,7 @@
             <dependency>
                 <groupId>gov.usgs.cida.watersmart</groupId>
                 <artifactId>watersmart-parse</artifactId>
-                <version>006-SNAPSHOT</version>
+                <version>006</version>
                 <type>jar</type>
             </dependency>
         </dependencies>

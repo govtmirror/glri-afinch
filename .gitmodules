@@ -1,6 +1,3 @@
 [submodule "glri-geoserver"]
 	path = glri-geoserver
 	url = git://github.com/USGS-CIDA/glri-geoserver.git
-[submodule "glri-afinch-parse"]
-	path = glri-afinch-parse
-	url = git://github.com/USGS-CIDA/glri-afinch-parse.git
