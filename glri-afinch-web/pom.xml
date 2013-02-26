@@ -54,8 +54,9 @@
             <artifactId>tomcat-filters</artifactId>
         </dependency>
         <dependency>
-            <groupId>gov.usgs.cida.glri.afinch</groupId>
-            <artifactId>glri-afinch-parse</artifactId>
+            <groupId>gov.usgs.cida.watersmart</groupId>
+            <artifactId>watersmart-parse</artifactId>
+            <type>jar</type>
         </dependency>
 		<!-- JS Templates -->
         <dependency>
