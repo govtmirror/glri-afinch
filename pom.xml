@@ -10,7 +10,6 @@
     <name>GLRI AFINCH Portal</name>
 
     <modules>
-        <module>glri-geoserver</module>
         <module>glri-afinch-web</module>
     </modules>
 
