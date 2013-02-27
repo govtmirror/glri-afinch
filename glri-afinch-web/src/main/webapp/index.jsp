@@ -25,8 +25,8 @@
         <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
-            <jsp:param name="shortName" value="${project.name}" />
-            <jsp:param name="title" value="${project.name}" />
+            <jsp:param name="shortName" value="GLRI AFINCH WEB" />
+            <jsp:param name="title" value="GLRI AFINCH WEB" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl" />
             <jsp:param name="keywords" value="" />
@@ -41,7 +41,7 @@
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
-        <jsp:include page="js/ext/ext.jsp">
+        <jsp:include page="js/ext/ext.jsp">:q
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="js/jquery/jquery.jsp">
