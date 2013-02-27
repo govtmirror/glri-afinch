@@ -18,8 +18,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <war.dir>src/main/webapp</war.dir>
-        <cida.maven.url>http://internal.cida.usgs.gov/maven</cida.maven.url>
-        <cida.svn.url>https://cida-svn.er.usgs.gov/repos/dev</cida.svn.url>
     </properties>
 	
     <dependencies>
@@ -58,7 +56,8 @@
             <artifactId>watersmart-parse</artifactId>
             <type>jar</type>
         </dependency>
-		<!-- JS Templates -->
+        
+        <!-- JS Templates -->
         <dependency>
             <groupId>gov.usgs.cida.jslibs</groupId>
             <artifactId>usgs-template</artifactId>
@@ -84,6 +83,37 @@
             <artifactId>dygraphs-core</artifactId>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>sugarjs</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>extjs</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>notify-ux</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>geoext</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>geoext-sos-ux</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>geoext-wps-ux</artifactId>
+            <type>war</type>
+        </dependency>
+        
 		<!-- TESTING -->
         <dependency>
             <groupId>junit</groupId>
