@@ -1,0 +1,5 @@
+<!-- AFINCH Mapper -->
+<!-- Log4J -->
+<Environment name="all.development" type="java.lang.String" value="true" />
+<Environment name="afinch.frontend.log4js.pattern.layout" type="java.lang.String" value="%rms - %-5p - %m%n" />
+<Environment name="afinch.frontend.log4js.threshold" type="java.lang.String" value="info" />
