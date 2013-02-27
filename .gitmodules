@@ -1,3 +1,0 @@
-[submodule "glri-geoserver"]
-	path = glri-geoserver
-	url = git://github.com/USGS-CIDA/glri-geoserver.git
