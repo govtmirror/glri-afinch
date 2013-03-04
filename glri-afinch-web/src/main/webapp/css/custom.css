@@ -1,2 +1,8 @@
 /* put all your application wide styles here */
 
+#attribution {
+            width: 100px;
+            height: 44px;
+            position: relative;
+            top: 30px;
+            }
