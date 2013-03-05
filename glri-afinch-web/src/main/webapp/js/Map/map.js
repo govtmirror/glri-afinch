@@ -34,8 +34,8 @@ AFINCH.Map = Ext.extend(GeoExt.MapPanel, {
             new OpenLayers.Control.MousePosition({
                 prefix : 'POS: '
             }),
-            new OpenLayers.Control.Attribution({separator: 'boo', template:
-            '<img id="attribution" src="images/NHDPlus_logo.png"/>'}),
+            new OpenLayers.Control.Attribution({template:
+            '<img id="attribution" src="'+CONFIG.mapLogoUrl + '"/>'}),
             new OpenLayers.Control.OverviewMap(),
             new OpenLayers.Control.ScaleLine({
                 geodesic : true
