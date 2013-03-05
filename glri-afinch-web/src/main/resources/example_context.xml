@@ -1,5 +1,13 @@
 <!-- AFINCH Mapper -->
-<!-- Log4J -->
+
+<!-- Sets the environment for many features -->
 <Environment name="all.development" type="java.lang.String" value="true" />
+
+<!-- Log4J -->
 <Environment name="afinch.frontend.log4js.pattern.layout" type="java.lang.String" value="%rms - %-5p - %m%n" />
 <Environment name="afinch.frontend.log4js.threshold" type="java.lang.String" value="info" />
+
+<!-- Endpoints -->
+<Environment name="afinch.endpoint.geoserver" type="java.lang.String" value="http://localhost:8081/glri-geoserver/" />
+
+<!-- /AFINCH Mapper -->

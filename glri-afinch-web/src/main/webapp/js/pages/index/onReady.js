@@ -4,7 +4,7 @@ if (Ext.isIE) { // http://www.mail-archive.com/users@openlayers.org/msg01838.htm
 
 Ext.onReady(function() {
     initializeLogging({
-        LOG4JS_LOG_THRESHOLD: 'info'
+        LOG4JS_LOG_THRESHOLD: CONFIG.LOG4JS_LOG_THRESHOLD
     });
     LOG.info('onReady.js::Logging Initialized');
 
@@ -17,10 +17,14 @@ Ext.onReady(function() {
     initializeNotification();
     LOG.info('onReady.js::Notifications Initialized');
 
-    CONFIG.mapPanel = new AFINCH.Map({
+    CONFIG.mapPanel = new AFINCH.MapPanel({
         region: 'center'
     });
-
+    
+    CONFIG.wmsCapabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
+        url: "http://localhost:8081/glri-geoserver/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1"
+    });
+    
     var headerPanel = new Ext.Panel({
         id: 'header-panel',
         region: 'north',
@@ -57,6 +61,8 @@ Ext.onReady(function() {
             footerPanel
         ]
     });
+    
+    CONFIG.wmsCapabilitiesStore.load();
 
 });
 
@@ -102,9 +108,7 @@ function initializeAjax() {
     }, this);
 }
 
-
 function initializeQuickTips() {
-    LOG.debug('onReady.js::initializeQuickTips(): Initializing Quicktips');
     Ext.QuickTips.init();
 
     Ext.apply(Ext.QuickTips.getQuickTip(), {
@@ -114,5 +118,4 @@ function initializeQuickTips() {
         dismissDelay: 0,
         trackMouse: true
     });
-    LOG.info('onReady.js::initializeQuickTips(): Initialized Quicktips');
 }

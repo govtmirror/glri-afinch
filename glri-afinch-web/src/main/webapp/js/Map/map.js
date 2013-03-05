@@ -1,6 +1,6 @@
 Ext.ns("AFINCH");
 
-AFINCH.Map = Ext.extend(GeoExt.MapPanel, {
+AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
     mapPanel : undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
@@ -76,6 +76,7 @@ AFINCH.Map = Ext.extend(GeoExt.MapPanel, {
             region: 'center',
             map: this.mapPanel,
             extent: this.defaultMapConfig.initialExtent,
+            prettyStateKeys: true,
             layers: new GeoExt.data.LayerStore({
                 initDir: GeoExt.data.LayerStore.STORE_TO_MAP,
                 map: this.map,
@@ -89,7 +90,7 @@ AFINCH.Map = Ext.extend(GeoExt.MapPanel, {
             border: false
         }, config);
 
-        AFINCH.Map.superclass.constructor.call(this, config);
+        AFINCH.MapPanel.superclass.constructor.call(this, config);
         LOG.info('map.js::constructor(): Construction complete.');
     }
 });
