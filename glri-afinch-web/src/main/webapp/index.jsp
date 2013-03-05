@@ -65,12 +65,12 @@
         <script type="text/javascript">
             var CONFIG = Object.extended();
             var AFINCH = Object.extended();
+            CONFIG.endpoint = Object.extended();
+            
             CONFIG.development = <%= development%>;
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout","%rms - %-5p - %m%n") %>';
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info") %>';
-            
-            CONFIG.mapPanel = Object.extended();
-            
+            CONFIG.endpoint = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/") %>';
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
