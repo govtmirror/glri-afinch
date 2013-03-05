@@ -29,6 +29,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         this.mapPanel = new OpenLayers.Map({ 
             //order of controls defines z-index
+            projection: this.WGS84_GOOGLE_MERCATOR,
             controls: [
             new OpenLayers.Control.Navigation(),
             new OpenLayers.Control.MousePosition({

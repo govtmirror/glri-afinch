@@ -20,11 +20,20 @@ Ext.onReady(function() {
     CONFIG.mapPanel = new AFINCH.MapPanel({
         region: 'center'
     });
-    
+
     CONFIG.wmsCapabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
         url: CONFIG.endpoint.geoserver + "glri/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1"
     });
-    
+    CONFIG.wmsCapabilitiesStore.addListener('load', function(evt, el, o) {
+        this.data.items.each(function(item) {
+            item.data.layer.mergeNewParams({
+                format: "image/png",
+                transparent: true
+            });
+        });
+        CONFIG.mapPanel.layers.add(this.getRange());
+    });
+
     var headerPanel = new Ext.Panel({
         id: 'header-panel',
         region: 'north',
@@ -61,7 +70,7 @@ Ext.onReady(function() {
             footerPanel
         ]
     });
-    
+
     CONFIG.wmsCapabilitiesStore.load();
 
 });
