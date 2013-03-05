@@ -22,7 +22,7 @@ Ext.onReady(function() {
     });
     
     CONFIG.wmsCapabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({
-        url: CONFIG.endpoint.geoserver + "wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1"
+        url: CONFIG.endpoint.geoserver + "glri/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1"
     });
     
     var headerPanel = new Ext.Panel({
