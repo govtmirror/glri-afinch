@@ -28,12 +28,15 @@ AFINCH.Map = Ext.extend(GeoExt.MapPanel, {
         };
 
         this.mapPanel = new OpenLayers.Map({ 
+            //order of controls defines z-index
             controls: [
             new OpenLayers.Control.Navigation(),
-            new OpenLayers.Control.OverviewMap(),
             new OpenLayers.Control.MousePosition({
                 prefix : 'POS: '
             }),
+            new OpenLayers.Control.Attribution({template:
+            '<img id="attribution" src="'+CONFIG.mapLogoUrl + '"/>'}),
+            new OpenLayers.Control.OverviewMap(),
             new OpenLayers.Control.ScaleLine({
                 geodesic : true
             }),

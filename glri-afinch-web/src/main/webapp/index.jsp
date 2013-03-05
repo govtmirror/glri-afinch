@@ -70,7 +70,7 @@
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info") %>';
             
             CONFIG.mapPanel = Object.extended();
-            
+            CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png'; 
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
