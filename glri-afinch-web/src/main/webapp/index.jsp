@@ -77,6 +77,8 @@
 
         <script type="text/javascript" src="js/Map/map.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>
+        <script type="text/javascript" src="js/RWps/RWpsReader.js"></script>
+        <script type="text/javascript" src="js/RWps/RParser.js"></script>
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
