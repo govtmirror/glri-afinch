@@ -4,7 +4,7 @@ if (Ext.isIE) { // http://www.mail-archive.com/users@openlayers.org/msg01838.htm
 
 Ext.onReady(function() {
     initializeLogging({
-        LOG4JS_LOG_THRESHOLD: 'info'
+        LOG4JS_LOG_THRESHOLD: CONFIG.LOG4JS_LOG_THRESHOLD
     });
     LOG.info('onReady.js::Logging Initialized');
 
@@ -17,7 +17,7 @@ Ext.onReady(function() {
     initializeNotification();
     LOG.info('onReady.js::Notifications Initialized');
 
-    CONFIG.mapPanel = new AFINCH.Map({
+    CONFIG.mapPanel = new AFINCH.MapPanel({
         region: 'center'
     });
 
@@ -57,6 +57,7 @@ Ext.onReady(function() {
             footerPanel
         ]
     });
+
 
 });
 
@@ -102,9 +103,7 @@ function initializeAjax() {
     }, this);
 }
 
-
 function initializeQuickTips() {
-    LOG.debug('onReady.js::initializeQuickTips(): Initializing Quicktips');
     Ext.QuickTips.init();
 
     Ext.apply(Ext.QuickTips.getQuickTip(), {
@@ -114,5 +113,4 @@ function initializeQuickTips() {
         dismissDelay: 0,
         trackMouse: true
     });
-    LOG.info('onReady.js::initializeQuickTips(): Initialized Quicktips');
 }
