@@ -25,8 +25,8 @@
         <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
-            <jsp:param name="shortName" value="${project.name}" />
-            <jsp:param name="title" value="${project.name}" />
+            <jsp:param name="shortName" value="GLRI AFINCH WEB" />
+            <jsp:param name="title" value="GLRI AFINCH WEB" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl" />
             <jsp:param name="keywords" value="" />
@@ -63,6 +63,7 @@
         <jsp:include page="js/ext/ux/notify/notify.jsp"/>
 
         <script type="text/javascript">
+            OpenLayers.ProxyHost = null;
             var CONFIG = Object.extended();
             var AFINCH = Object.extended();
             CONFIG.endpoint = Object.extended();

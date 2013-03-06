@@ -21,12 +21,20 @@
     </properties>
 	
     <dependencies>
-		<!-- Logging -->
+        <!-- Required for some containers --> 
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+      
+        <!-- Logging -->
         <dependency>
             <artifactId>slf4j-api</artifactId>
             <groupId>org.slf4j</groupId>
         </dependency>
-		<!-- Normal Servlet dependencies -->
+        
+        <!-- Normal Servlet dependencies -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -42,7 +50,8 @@
             <artifactId>jstl</artifactId>
             <scope>provided</scope>
         </dependency>
-		<!-- CIDA Java Libraries -->
+        
+        <!-- CIDA Java Libraries -->
         <dependency>
             <groupId>gov.usgs.cida</groupId>
             <artifactId>dynamicProperties</artifactId>
@@ -114,7 +123,7 @@
             <type>war</type>
         </dependency>
         
-		<!-- TESTING -->
+        <!-- TESTING -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
