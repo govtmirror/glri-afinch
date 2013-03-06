@@ -41,7 +41,7 @@
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
-        <jsp:include page="js/ext/ext.jsp">:q
+        <jsp:include page="js/ext/ext.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="js/jquery/jquery.jsp">
@@ -63,6 +63,7 @@
         <jsp:include page="js/ext/ux/notify/notify.jsp"/>
 
         <script type="text/javascript">
+            OpenLayers.ProxyHost = null;
             var CONFIG = Object.extended();
             var AFINCH = Object.extended();
             CONFIG.endpoint = Object.extended();
