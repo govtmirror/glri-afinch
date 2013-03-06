@@ -5,40 +5,40 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     mapPanel: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
     gagePointSymbolizer: new OpenLayers.Format.SLD().write({
-    namedLayers: [{
-        name: "glri:GageLoc",
-        userStyles: [
-            new OpenLayers.Style("Gage Style",
-                {
-                    rules: [
-                        new OpenLayers.Rule({
-                            symbolizer : {
-                                Point : new OpenLayers.Symbolizer.Point({
-                                    graphicName : 'Circle',
-                                    strokeColor : '#99FF99',
-                                    fillColor : '#00FF00',
-                                    pointRadius : 5,
-                                    fillOpacity: 0.5,
-                                    strokeOpacity: 0.5
-                                }),
-                                Text : new OpenLayers.Symbolizer.Text({
-                                    label : '${ComID}',
-                                    fontFamily : 'arial',
-                                    fontColor : '#000000',
-                                    fontSize : 12,
-                                    fontOpacity : 1,
-                                    labelXOffset : -5,
-                                    labelRotation : -45,
-                                    haloColor : '#FFFFFF',
-                                    haloRadius : 3,
-                                    haloOpacity : 1
-                                })
-                            }
-                        })
-                    ]
-                })
-        ]
-    }]
+        namedLayers: [{
+                name: "glri:GageLoc",
+                userStyles: [
+                    new OpenLayers.Style("Gage Style",
+                            {
+                                rules: [
+                                    new OpenLayers.Rule({
+                                        symbolizer: {
+                                            Point: new OpenLayers.Symbolizer.Point({
+                                                graphicName: 'Circle',
+                                                strokeColor: '#99FF99',
+                                                fillColor: '#00FF00',
+                                                pointRadius: 5,
+                                                fillOpacity: 0.5,
+                                                strokeOpacity: 0.5
+                                            }),
+                                            Text: new OpenLayers.Symbolizer.Text({
+                                                label: '${ComID}',
+                                                fontFamily: 'arial',
+                                                fontColor: '#000000',
+                                                fontSize: 12,
+                                                fontOpacity: 1,
+                                                labelXOffset: -5,
+                                                labelRotation: -45,
+                                                haloColor: '#FFFFFF',
+                                                haloRadius: 3,
+                                                haloOpacity: 1
+                                            })
+                                        }
+                                    })
+                                ]
+                            })
+                ]
+            }]
     }),
     defaultMapConfig: {
         layers: {
@@ -111,12 +111,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.defaultMapConfig.layers.overlays = [
             new OpenLayers.Layer.WMS(
                     'NHD Flowlines',
-                    CONFIG.endpoint.geoserver +  'glri/wms',
+                    CONFIG.endpoint.geoserver + 'glri/wms',
                     {
                         layers: 'NHDFlowline',
                         transparent: true
-//                        ,
-//                        sld_body: sldBody
                     },
             {
                 isBaseLayer: false,
@@ -127,20 +125,23 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             }),
             new OpenLayers.Layer.WMS(
                     'Gage Locations',
-                    CONFIG.endpoint.geoserver +  'glri/wms',
+                    CONFIG.endpoint.geoserver + 'glri/wms',
                     {
                         layers: 'GageLoc',
                         transparent: true,
-                        sld_body: this.gagePointSymbolizer
+                        sld_body: this.gagePointSymbolizer,
+                        tiled : true,
+                        format: "image/png"
                     },
             {
                 isBaseLayer: false,
                 unsupportedBrowsers: [],
                 tileOptions: {
-                    maxGetUrlLength: 2048
+                    maxGetUrlLength: 2048,
+                    crossOriginKeyword: 'anonymous'
                 }
             })
-        ]
+        ];
 
         config = Ext.apply({
             id: 'map-panel',
