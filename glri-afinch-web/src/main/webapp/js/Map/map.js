@@ -17,22 +17,23 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                                 graphicName: 'Circle',
                                                 strokeColor: '#99FF99',
                                                 fillColor: '#00FF00',
-                                                pointRadius: 5,
+                                                pointRadius: 4,
                                                 fillOpacity: 0.5,
                                                 strokeOpacity: 0.5
-                                            }),
-                                            Text: new OpenLayers.Symbolizer.Text({
-                                                label: '${ComID}',
-                                                fontFamily: 'arial',
-                                                fontColor: '#000000',
-                                                fontSize: 12,
-                                                fontOpacity: 1,
-                                                labelXOffset: -5,
-                                                labelRotation: -45,
-                                                haloColor: '#FFFFFF',
-                                                haloRadius: 3,
-                                                haloOpacity: 1
                                             })
+//                                            ,
+//                                            Text: new OpenLayers.Symbolizer.Text({
+//                                                label: '${ComID}',
+//                                                fontFamily: 'arial',
+//                                                fontColor: '#000000',
+//                                                fontSize: 12,
+//                                                fontOpacity: 1,
+//                                                labelXOffset: -5,
+//                                                labelRotation: -45,
+//                                                haloColor: '#FFFFFF',
+//                                                haloRadius: 3,
+//                                                haloOpacity: 1
+//                                            })
                                         }
                                     })
                                 ]
