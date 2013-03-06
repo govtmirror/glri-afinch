@@ -73,6 +73,7 @@
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout","%rms - %-5p - %m%n") %>';
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info") %>';
             CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/") %>';
+            CONFIG.endpoint.geoserverProxy = 'geoserver/';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png'; 
         </script>
 
