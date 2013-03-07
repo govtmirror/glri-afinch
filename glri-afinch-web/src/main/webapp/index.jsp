@@ -61,6 +61,7 @@
         <jsp:include page="js/geoext/ux/WPS/WPS.jsp"/>
         <jsp:include page="js/geoext/ux/SOS/SOS.jsp"/>
         <jsp:include page="js/ext/ux/notify/notify.jsp"/>
+        <jsp:include page="js/gxp/gxp.jsp"/>
 
         <script type="text/javascript">
             OpenLayers.ProxyHost = null;

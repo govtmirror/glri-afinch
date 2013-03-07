@@ -22,19 +22,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                                 fillOpacity: 0.5,
                                                 strokeOpacity: 0.5
                                             })
-//                                            ,
-//                                            Text: new OpenLayers.Symbolizer.Text({
-//                                                label: '${ComID}',
-//                                                fontFamily: 'arial',
-//                                                fontColor: '#000000',
-//                                                fontSize: 12,
-//                                                fontOpacity: 1,
-//                                                labelXOffset: -5,
-//                                                labelRotation: -45,
-//                                                haloColor: '#FFFFFF',
-//                                                haloRadius: 3,
-//                                                haloOpacity: 1
-//                                            })
                                         }
                                     })
                                 ]
@@ -202,7 +189,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         gageLocFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.GageLoc,
-            initDir: 0
+            fields : [
+                {name : 'ComID', type:'int'},
+                {name : 'TotDASqKM', type:'double'},
+                {name : 'REACHCODE', type:'long'},
+                {name : 'SOURCE_FEA', type:'long'}
+            ]
+//            initDir: 0
         });
 
         nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
@@ -215,7 +208,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
             var tabPanel = new Ext.TabPanel({
                 region: 'center',
-                height : 400,
+                height: 400,
                 width: 800,
                 activeTab: 0,
                 autoScroll: true,
@@ -224,40 +217,41 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
 
             if (gageLocFeatureStore.totalLength) {
-                gageGridPanel = new Ext.grid.GridPanel({
+                gageGridPanel = new gxp.grid.FeatureGrid({
                     title: 'Gage',
-                    store: gageLocFeatureStore,
-                    colModel: new Ext.grid.ColumnModel({
-                        defaults: {
-                            sortable: true
-                        },
-                        columns: [
-                            {
-                                header: 'ID',
-                                renderer: function(v, m, r) {
-                                    return r.data.feature.attributes.ComID;
-                                }
-                            },
-                            {
-                                header: 'Source Feature',
-                                renderer: function(v, m, r) {
-                                    return r.data.feature.attributes.SOURCE_FEA;
-                                }
-                            },
-                            {
-                                header: 'NWIS Resource',
-                                renderer: function(v, m, r) {
-                                    return '<a href="' + r.data.feature.attributes.FEATUREDET + '" target=_new>' + r.data.feature.attributes.SOURCE_FEA + '</a>';
-                                }
-                            },
-                            {
-                                header: 'Drainage Area',
-                                renderer: function(v, m, r) {
-                                    return '?';
-                                }
-                            }
-                        ]
-                    })
+                    store: gageLocFeatureStore
+//                    ,
+//                    colModel: new Ext.grid.ColumnModel({
+//                        columns: [
+//                            {
+//                                header: 'COM ID',
+//                                dataIndex : 'feature.attributes.ComID',
+//                                sortable : true,
+//                                renderer: function(v, m, r) {
+//                                    return r.data.feature.attributes.ComID;
+//                                }
+//
+//                            },
+//                            {
+//                                header: 'Source Feature',
+//                                renderer: function(v, m, r) {
+//                                    return r.data.feature.attributes.SOURCE_FEA;
+//                                }
+//                            },
+//                            {
+//                                header: 'NWIS Resource',
+//                                renderer: function(v, m, r) {
+//                                    return '<a href="' + r.data.feature.attributes.FEATUREDET + '" target=_new>' + r.data.feature.attributes.SOURCE_FEA + '</a>';
+//                                }
+//                            },
+//                            {
+//                                header: 'Drainage Area',
+//                                renderer: function(v, m, r) {
+//                                    return '?';
+//                                }
+//                            }
+//                        ]
+//                    })
                 });
                 tabPanel.add(gageGridPanel);
             }
@@ -299,22 +293,22 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 popup.destroy();
             }
             popup = new GeoExt.Popup({
-                id : 'identify-popup',
-                layout : 'fit',
+                id: 'identify-popup',
+                layout: 'fit',
                 anchored: false,
                 map: CONFIG.mapPanel.map,
                 unpinnable: true,
                 width: 'auto',
                 height: 'auto',
                 items: [tabPanel],
-                listeners : {
-                    show : function() {
+                listeners: {
+                    show: function() {
                         // Remove the anchor element (setting anchored to 
                         // false does not do this for us. *Shaking fist @ GeoExt)
                         Ext.select('.gx-popup-anc').remove();
                     }
                 }
-                
+
             });
             popup.show();
         }

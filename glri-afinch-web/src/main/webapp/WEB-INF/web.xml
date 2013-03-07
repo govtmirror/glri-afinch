@@ -28,6 +28,7 @@
         <url-pattern>/geoserver/*</url-pattern>
     </servlet-mapping>
     
+    <!-- R-WPS Proxy -->
     <servlet>
         <servlet-name>wpsServerServlet</servlet-name>
         <servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
