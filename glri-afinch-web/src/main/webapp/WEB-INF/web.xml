@@ -28,6 +28,23 @@
         <url-pattern>/geoserver/*</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>wpsServerServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
+        <init-param>
+            <param-name>forward-url-param</param-name>
+            <param-value>afinch.endpoint.rwps</param-value>
+        </init-param>
+        <init-param>
+            <param-name>readTimeout</param-name>
+            <param-value>300000</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>wpsServerServlet</servlet-name>
+        <url-pattern>/rwps/*</url-pattern>
+    </servlet-mapping>
+    
     
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
