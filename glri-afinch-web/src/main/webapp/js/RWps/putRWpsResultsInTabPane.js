@@ -5,22 +5,10 @@ Ext.ns('AFINCH.data');
  */ 
 AFINCH.data.putRWpsResultsInTabPane = function(sosEndpointUrl, tabPane){
 
-    //given an array, return an array of the original elements
-    //wrapped in an object and nested under a key of your choosing
-    //
-    //format:
-    //[{<your key>:<original data>}, {<your key>:<original data>}, ... ]
-    var wrapEachWithKey = function(array, key){
-        return array.map(function(theVal){
-            var obj = {};
-            obj[key]=theVal;
-            return obj;
-       });
-    };
     var callback = function(namedStores){
         namedStores.each(function(namedStore){
             var store = namedStore.store;
-            var columnObjs = wrapEachWithKey(store.fields.keys, 'header');
+            var columnObjs = AFINCH.Util.wrapEachWithKey(store.fields.keys, 'header');
             //todo: enable sorting... need to add dataIndex prop to each
             //column object?
             var colModel = new Ext.grid.ColumnModel({

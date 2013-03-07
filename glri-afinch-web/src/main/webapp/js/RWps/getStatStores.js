@@ -67,20 +67,8 @@ AFINCH.data.getStatStores = function(sosEndpointUrl, callback, errorCallback){
                 return;
             }
 
-            //given an array, return an array of the original elements
-            //wrapped in an object and nested under a key of your choosing
-            //
-            //format:
-            //[{<your key>:<original data>}, {<your key>:<original data>}, ... ]
-            var wrapEachWithKey = function(array, key){
-                return array.map(function(theVal){
-                    var obj = {};
-                    obj[key]=theVal;
-                    return obj;
-               });
-            };
             var namedStores = tablesData.map(function(tableData){
-                var fieldObjs = wrapEachWithKey(tableData.headers, 'name');
+                var fieldObjs = AFINCH.Util.wrapEachWithKey(tableData.headers, 'name');
                 fieldObjs = fieldObjs.map(function(n){
                     n.type = 'float';
                     return n;
