@@ -9,5 +9,6 @@
 
 <!-- Endpoints -->
 <Environment name="afinch.endpoint.geoserver" type="java.lang.String" value="http://localhost:8081/glri-geoserver/" />
+<Environment name="afinch.endpoint.rwps" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/" />
 
 <!-- /AFINCH Mapper -->
