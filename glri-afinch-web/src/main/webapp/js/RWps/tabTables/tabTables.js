@@ -14,8 +14,15 @@ Ext.onReady(function(){
     
     var useExampleXML = function(xmlData){
         var rWpsConfig = {
+            /* @prod
             url: 'http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/WebProcessingService?Service=WPS&Request=execute&identifier=org.n52.wps.server.r.monthlyq_swe_csv_stats',
+            //*/
+            
+            //* @debug 
+            url: 'http://localhost:8080/glri-afinch/js/RWps/results.xml',
+            //*/
             xmlData: xmlData
+
         };
         AFINCH.data.putRWpsResultsInTabPane(rWpsConfig, tabs);
     };
