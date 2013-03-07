@@ -14,13 +14,14 @@ Ext.ns('AFINCH.data');
  *                      .
  *                      .
  *                   ]
+ * @param context - Object used as **this** in the callback
  * @param errorCallback - optional error handler for if the ajax request fails.
- *                        accepts same args as jQuery's ajax error callback
+ *                        accepts same args as the Ext Ajax failure callback
  * 
  * 
  */
 
-AFINCH.data.getStatStores = function(sosEndpointUrl, callback, errorCallback){
+AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, errorCallback){
     if(!sosEndpointUrl.length){
         LOG.error('url not specified');
         return;
@@ -52,35 +53,28 @@ AFINCH.data.getStatStores = function(sosEndpointUrl, callback, errorCallback){
         'WebProcessingService?Service=WPS&Request=execute&Identifier=org.n52.wps.server.r.monthlyq_swe_csv_stats';
     
     
-    $.ajax(wpsUrl,{
-        type: 'POST',
-        data: wpsRequestData,
-        timeout: 100000000,
-        success: function(data){
-            var tableData;
+    Ext.Ajax.request({
+        url: wpsUrl,
+        method: 'POST',
+        params: wpsRequestData,
+        success: function(response, options){
+            var data = response.responseText;
+            var tablesData;
             try{
                 tablesData = AFINCH.data.RParse(data);
             }
             catch(e){
-                alert("Error Parsing data. See browser logs for details.");
+                new Ext.ux.Notify({
+                    msgWidth: 200,
+                    title: 'Error',
+                    msg: "Error Parsing data. See browser logs for details."
+                }).show(document);
                 LOG.error(e);
                 return;
             }
 
-            //given an array, return an array of the original elements
-            //wrapped in an object and nested under a key of your choosing
-            //
-            //format:
-            //[{<your key>:<original data>}, {<your key>:<original data>}, ... ]
-            var wrapEachWithKey = function(array, key){
-                return array.map(function(theVal){
-                    var obj = {};
-                    obj[key]=theVal;
-                    return obj;
-               });
-            };
             var namedStores = tablesData.map(function(tableData){
-                var fieldObjs = wrapEachWithKey(tableData.headers, 'name');
+                var fieldObjs = AFINCH.Util.wrapEachWithKey(tableData.headers, 'name');
                 fieldObjs = fieldObjs.map(function(n){
                     n.type = 'float';
                     return n;
@@ -97,12 +91,12 @@ AFINCH.data.getStatStores = function(sosEndpointUrl, callback, errorCallback){
                 
             });
             
-            callback(namedStores);
+            callback.call(context, namedStores);
         },
-        error: function(jqXHR, textStatus, errorThrown){
-            LOG.error(textStatus);
+        failure: function(response, options){
+            LOG.error(response);
             if(errorCallback){
-               errorCallback(jqXHR, textStatus, errorThrown);
+               errorCallback(response, options);
             }
         }
 

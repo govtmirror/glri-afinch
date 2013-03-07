@@ -1,43 +1,60 @@
 Ext.ns('AFINCH.data');
 /**
- * @param rWpsConfig - object literal of options
- * @param tabPane - an ExtJS TabPane component in which to render tables
- */ 
-AFINCH.data.putRWpsResultsInTabPane = function(sosEndpointUrl, tabPane){
+ * Given a data store, construct an Ext.grid.GridPanel and add it to the tabPanel
+ *
+ *@param store - Ext.data.Store
+ *@param title - string title for the GridPanel
+ *
+ *@returns void
+ */
 
-    //given an array, return an array of the original elements
-    //wrapped in an object and nested under a key of your choosing
-    //
-    //format:
-    //[{<your key>:<original data>}, {<your key>:<original data>}, ... ]
-    var wrapEachWithKey = function(array, key){
-        return array.map(function(theVal){
-            var obj = {};
-            obj[key]=theVal;
-            return obj;
-       });
-    };
-    var callback = function(namedStores){
-        namedStores.each(function(namedStore){
-            var store = namedStore.store;
-            var columnObjs = wrapEachWithKey(store.fields.keys, 'header');
-            //todo: enable sorting... need to add dataIndex prop to each
-            //column object?
-            var colModel = new Ext.grid.ColumnModel({
-                defaults: {
-                    width: 120,
-                    sortable: true
-                },
-                columns: columnObjs
-            });
-            var grid = new Ext.grid.GridPanel({
-                store: store,
-                colModel:colModel,
-                title: namedStore.name
-            });
-            tabPane.add(grid);
+AFINCH.data.makeGridPanelFromStore = function(store, title){
+    var columnObjs = AFINCH.Util.wrapEachWithKey(store.fields.keys, 'header');
+    //todo: enable sorting... need to add dataIndex prop to each
+    //column object?
+    var colModel = new Ext.grid.ColumnModel({
+        defaults: {
+            width: 120,
+            sortable: true
+        },
+        columns: columnObjs
+    });
+    var grid = new Ext.grid.GridPanel({
+        store: store,
+        colModel:colModel,
+        title: title
+    });
+    return grid;
+};
+
+/**
+ * @param namedStores - array
+ * @returns array<Ext.grid.GridPanel>
+ */ 
+AFINCH.data.makeGridPanelsFromNamedStores = function(namedStores){
+        return namedStores.map(function(namedStore){
+            return AFINCH.data.makeGridPanelFromStore(namedStore.store, namedStore.name);
         });
-    };
+};
+
+/**
+ * Given named stores, creates grids. Puts the grids into an array
+ * @param namedStores - array
+ */
+AFINCH.data.putGridsIntoTabPanel = function(namedStores){
+    //needs a tabPane property set as 'this' via call()
+    if(!this.tabPanel){
+        throw Error("You must specify a TabPane.");
+    }
+
+    var grids = AFINCH.data.makeGridPanelsFromNamedStores(namedStores);
     
-    AFINCH.data.getStatStores(sosEndpointUrl, callback);
+    //bring into local scope so that tabPane can be accessed via closure in 
+    //the following function
+    var tabPanel = this.tabPanel;
+    
+    grids.map(function(grid){
+        tabPanel.add(grid);
+    });
+    tabPanel.setActiveTab(0);
 };

@@ -1,11 +1,5 @@
 Ext.ns('AFINCH.data');
 
-var makeLegalJavaScriptIdentifier = function(str){
-    var illegal = /[^0-9a-zA-Z_$]/;
-    var safe = str.replace(illegal, '_');
-    return safe;
-};
-
 AFINCH.data.RParse = function(data){
     if(data.length === 0){
         throw new Error("Cannot parse zero-length string.");
@@ -27,7 +21,7 @@ AFINCH.data.RParse = function(data){
                 n = n.slice(0, -1);
                 //since header strings are used as js properties later on, 
                 //make them legal 
-                return makeLegalJavaScriptIdentifier(n);
+                return AFINCH.Util.makeLegalJavaScriptIdentifier(n);
             });
             currentTable.headers = headerStrings;
             currentTable.values = [];
