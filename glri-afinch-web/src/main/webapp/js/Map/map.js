@@ -194,12 +194,16 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 {name : 'TotDASqKM', type:'double'},
                 {name : 'REACHCODE', type:'long'},
                 {name : 'SOURCE_FEA', type:'long'}
-            ]
-//            initDir: 0
+            ],
+            initDir : 0
         });
 
         nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.NHDFlowline,
+            fields : [
+                {name : 'COMID', type:'long'},
+                {name : 'GNIS_NAME', type:'string'}
+            ],
             initDir: 0
         });
 
@@ -220,71 +224,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 gageGridPanel = new gxp.grid.FeatureGrid({
                     title: 'Gage',
                     store: gageLocFeatureStore
-//                    ,
-//                    colModel: new Ext.grid.ColumnModel({
-//                        columns: [
-//                            {
-//                                header: 'COM ID',
-//                                dataIndex : 'feature.attributes.ComID',
-//                                sortable : true,
-//                                renderer: function(v, m, r) {
-//                                    return r.data.feature.attributes.ComID;
-//                                }
-//
-//                            },
-//                            {
-//                                header: 'Source Feature',
-//                                renderer: function(v, m, r) {
-//                                    return r.data.feature.attributes.SOURCE_FEA;
-//                                }
-//                            },
-//                            {
-//                                header: 'NWIS Resource',
-//                                renderer: function(v, m, r) {
-//                                    return '<a href="' + r.data.feature.attributes.FEATUREDET + '" target=_new>' + r.data.feature.attributes.SOURCE_FEA + '</a>';
-//                                }
-//                            },
-//                            {
-//                                header: 'Drainage Area',
-//                                renderer: function(v, m, r) {
-//                                    return '?';
-//                                }
-//                            }
-//                        ]
-//                    })
                 });
                 tabPanel.add(gageGridPanel);
             }
 
             if (nhdFlowLineFeatureStore.totalLength) {
-                nhdFlowLineGridPanel = new Ext.grid.GridPanel({
+                nhdFlowLineGridPanel = new gxp.grid.FeatureGrid({
                     title: 'NHD Flowlines',
-                    store: nhdFlowLineFeatureStore,
-                    colModel: new Ext.grid.ColumnModel({
-                        defaults: {
-                            sortable: true
-                        },
-                        columns: [
-                            {
-                                header: 'Com ID',
-                                renderer: function(v, m, r) {
-                                    return r.data.feature.attributes.COMID;
-                                }
-                            },
-                            {
-                                header: 'Reach Code',
-                                renderer: function(v, m, r) {
-                                    return r.data.feature.attributes.REACHCODE;
-                                }
-                            },
-                            {
-                                header: 'GNIS Name',
-                                renderer: function(v, m, r) {
-                                    return r.data.feature.attributes.GNIS_NAME;
-                                }
-                            }
-                        ]
-                    })
+                    store: nhdFlowLineFeatureStore
                 });
                 tabPanel.add(nhdFlowLineGridPanel);
             }
