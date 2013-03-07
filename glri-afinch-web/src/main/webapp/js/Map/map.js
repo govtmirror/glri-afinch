@@ -210,46 +210,113 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             initDir: 0
         });
 
-        if (gageLocFeatureStore.totalLength + nhdFlowLineFeatureStore.totalLength > 0) {
-            var gageGridPanel = new Ext.grid.GridPanel({
-                title: 'Gage',
+        if (gageLocFeatureStore.totalLength || nhdFlowLineFeatureStore.totalLength) {
+            var gageGridPanel, nhdFlowLineGridPanel;
+
+            var tabPanel = new Ext.TabPanel({
                 region: 'center',
-                store: gageLocFeatureStore,
-                height : '200',
-                width: '300',
-                autoScroll : true,
-                colModel: new Ext.grid.ColumnModel({
-                    defaults: {
-                        sortable: true
-                    },
-                    columns: [
-                        {
-                            header: 'Source Feature',
-                            renderer: function(v, m, r) {
-                                return r.data.feature.attributes.SOURCE_FEA;
-                            }
-                        },
-                        {
-                            header: 'NWIS Resource',
-                            renderer: function(v, m, r) {
-                                return '<a href="' + r.data.feature.attributes.FEATUREDET + '" target=_new>'+r.data.feature.attributes.SOURCE_FEA+'</a>';
-                            }
-                        }
-                    ]
-                })
+                height : 400,
+                width: 800,
+                activeTab: 0,
+                autoScroll: true,
+                layoutOnTabChange: true,
+                activeScroll: false
             });
 
-            var popup = new GeoExt.Popup({
+            if (gageLocFeatureStore.totalLength) {
+                gageGridPanel = new Ext.grid.GridPanel({
+                    title: 'Gage',
+                    store: gageLocFeatureStore,
+                    colModel: new Ext.grid.ColumnModel({
+                        defaults: {
+                            sortable: true
+                        },
+                        columns: [
+                            {
+                                header: 'ID',
+                                renderer: function(v, m, r) {
+                                    return r.data.feature.attributes.ComID;
+                                }
+                            },
+                            {
+                                header: 'Source Feature',
+                                renderer: function(v, m, r) {
+                                    return r.data.feature.attributes.SOURCE_FEA;
+                                }
+                            },
+                            {
+                                header: 'NWIS Resource',
+                                renderer: function(v, m, r) {
+                                    return '<a href="' + r.data.feature.attributes.FEATUREDET + '" target=_new>' + r.data.feature.attributes.SOURCE_FEA + '</a>';
+                                }
+                            },
+                            {
+                                header: 'Drainage Area',
+                                renderer: function(v, m, r) {
+                                    return '?';
+                                }
+                            }
+                        ]
+                    })
+                });
+                tabPanel.add(gageGridPanel);
+            }
+
+            if (nhdFlowLineFeatureStore.totalLength) {
+                nhdFlowLineGridPanel = new Ext.grid.GridPanel({
+                    title: 'NHD Flowlines',
+                    store: nhdFlowLineFeatureStore,
+                    colModel: new Ext.grid.ColumnModel({
+                        defaults: {
+                            sortable: true
+                        },
+                        columns: [
+                            {
+                                header: 'Com ID',
+                                renderer: function(v, m, r) {
+                                    return r.data.feature.attributes.COMID;
+                                }
+                            },
+                            {
+                                header: 'Reach Code',
+                                renderer: function(v, m, r) {
+                                    return r.data.feature.attributes.REACHCODE;
+                                }
+                            },
+                            {
+                                header: 'GNIS Name',
+                                renderer: function(v, m, r) {
+                                    return r.data.feature.attributes.GNIS_NAME;
+                                }
+                            }
+                        ]
+                    })
+                });
+                tabPanel.add(nhdFlowLineGridPanel);
+            }
+            var popup = Ext.ComponentMgr.get('identify-popup');
+            if (popup) {
+                popup.destroy();
+            }
+            popup = new GeoExt.Popup({
+                id : 'identify-popup',
+                layout : 'fit',
                 anchored: false,
                 map: CONFIG.mapPanel.map,
                 unpinnable: true,
-                height: '90%',
-                width: '90%',
-                items: [gageGridPanel],
-                shadow: true
+                width: 'auto',
+                height: 'auto',
+                items: [tabPanel],
+                listeners : {
+                    show : function() {
+                        // Remove the anchor element (setting anchored to 
+                        // false does not do this for us. *Shaking fist @ GeoExt)
+                        Ext.select('.gx-popup-anc').remove();
+                    }
+                }
+                
             });
             popup.show();
-            
         }
 
     }
