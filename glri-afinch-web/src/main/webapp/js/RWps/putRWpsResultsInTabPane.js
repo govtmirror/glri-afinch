@@ -1,6 +1,6 @@
 Ext.ns('AFINCH.data');
 /**
- * @param rWpsConfig - object literal of options
+ * @param sosEndpointUrl - string url
  * @param tabPane - an ExtJS TabPane component in which to render tables
  */ 
 AFINCH.data.putRWpsResultsInTabPane = function(sosEndpointUrl, tabPane){
@@ -27,5 +27,5 @@ AFINCH.data.putRWpsResultsInTabPane = function(sosEndpointUrl, tabPane){
         });
     };
     
-    AFINCH.data.getStatStores(sosEndpointUrl, callback);
+    AFINCH.data.retrieveStatStores(sosEndpointUrl, callback);
 };

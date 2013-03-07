@@ -15,12 +15,12 @@ Ext.ns('AFINCH.data');
  *                      .
  *                   ]
  * @param errorCallback - optional error handler for if the ajax request fails.
- *                        accepts same args as jQuery's ajax error callback
+ *                        accepts same args as the Ext Ajax failure callback
  * 
  * 
  */
 
-AFINCH.data.getStatStores = function(sosEndpointUrl, callback, errorCallback){
+AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, errorCallback){
     if(!sosEndpointUrl.length){
         LOG.error('url not specified');
         return;
@@ -52,17 +52,22 @@ AFINCH.data.getStatStores = function(sosEndpointUrl, callback, errorCallback){
         'WebProcessingService?Service=WPS&Request=execute&Identifier=org.n52.wps.server.r.monthlyq_swe_csv_stats';
     
     
-    $.ajax(wpsUrl,{
-        type: 'POST',
-        data: wpsRequestData,
-        timeout: 100000000,
-        success: function(data){
-            var tableData;
+    Ext.Ajax.request({
+        url: wpsUrl,
+        method: 'POST',
+        params: wpsRequestData,
+        success: function(response, options){
+            var data = response.responseText;
+            var tablesData;
             try{
                 tablesData = AFINCH.data.RParse(data);
             }
             catch(e){
-                alert("Error Parsing data. See browser logs for details.");
+                new Ext.ux.Notify({
+                    msgWidth: 200,
+                    title: 'Error',
+                    msg: "Error Parsing data. See browser logs for details."
+                }).show(document);
                 LOG.error(e);
                 return;
             }
@@ -87,10 +92,10 @@ AFINCH.data.getStatStores = function(sosEndpointUrl, callback, errorCallback){
             
             callback(namedStores);
         },
-        error: function(jqXHR, textStatus, errorThrown){
-            LOG.error(textStatus);
+        failure: function(response, options){
+            LOG.error(response);
             if(errorCallback){
-               errorCallback(jqXHR, textStatus, errorThrown);
+               errorCallback(response, options);
             }
         }
 
