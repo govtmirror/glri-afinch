@@ -14,13 +14,14 @@ Ext.ns('AFINCH.data');
  *                      .
  *                      .
  *                   ]
+ * @param context - Object used as **this** in the callback
  * @param errorCallback - optional error handler for if the ajax request fails.
  *                        accepts same args as the Ext Ajax failure callback
  * 
  * 
  */
 
-AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, errorCallback){
+AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, errorCallback){
     if(!sosEndpointUrl.length){
         LOG.error('url not specified');
         return;
@@ -90,7 +91,7 @@ AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, errorCallbac
                 
             });
             
-            callback(namedStores);
+            callback.call(context, namedStores);
         },
         failure: function(response, options){
             LOG.error(response);
