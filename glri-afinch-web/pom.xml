@@ -88,11 +88,6 @@
         </dependency>
         <dependency>
             <groupId>gov.usgs.cida.jslibs</groupId>
-            <artifactId>jquery</artifactId>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>gov.usgs.cida.jslibs</groupId>
             <artifactId>log4js</artifactId>
             <type>war</type>
         </dependency>
