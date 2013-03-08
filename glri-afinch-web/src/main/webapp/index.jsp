@@ -30,7 +30,7 @@
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl" />
             <jsp:param name="keywords" value="" />
-            <jsp:param name="publisher" value="" />
+            <jsp:param name="publisher" value="Center for Integrated Data Analyltics" />
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
@@ -75,9 +75,8 @@
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
-        <script type="text/javascript" src="js/Map/map.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
-        <script type="text/javascript" src="js/RWps/retrieveStatStores"></script>
+        <script type="text/javascript" src="js/RWps/retrieveStatStores.js"></script>
         <script type="text/javascript" src="js/RWps/RParser.js"></script>
         <script type="text/javascript" src="js/RWps/putRWpsResultsInTabPane.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>

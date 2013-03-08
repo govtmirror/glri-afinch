@@ -174,6 +174,11 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.map.addControl(this.wmsGetFeatureInfoControl);
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
+        var popup = Ext.ComponentMgr.get('identify-popup');
+        if (popup) {
+            popup.destroy();
+        }
+        
         var features = responseObject.features[0].features;
         var layerFeatures = {
             'GageLoc': [],
@@ -189,70 +194,93 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         gageLocFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.GageLoc,
-            fields : [
-                {name : 'ComID', type:'int'},
-                {name : 'TotDASqKM', type:'double'},
-                {name : 'REACHCODE', type:'long'},
-                {name : 'SOURCE_FEA', type:'long'}
+            fields: [
+                {name: 'ComID', type: 'int'},
+                {name: 'TotDASqKM', type: 'double'},
+                {name: 'REACHCODE', type: 'long'},
+                {name: 'SOURCE_FEA', type: 'long'}
             ],
-            initDir : 0
+            initDir: 0
         });
 
         nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.NHDFlowline,
-            fields : [
-                {name : 'COMID', type:'long'},
-                {name : 'GNIS_NAME', type:'string'}
+            fields: [
+                {name: 'COMID', type: 'long'},
+                {name: 'GNIS_NAME', type: 'string'}
             ],
             initDir: 0
         });
 
         if (gageLocFeatureStore.totalLength || nhdFlowLineFeatureStore.totalLength) {
             var gageGridPanel, nhdFlowLineGridPanel;
-
-            var tabPanel = new Ext.TabPanel({
-                region: 'center',
-                height: 400,
-                width: 800,
-                activeTab: 0,
-                autoScroll: true,
-                layoutOnTabChange: true,
-                activeScroll: false
-            });
+            var featureGrids = [];
 
             if (gageLocFeatureStore.totalLength) {
                 gageGridPanel = new gxp.grid.FeatureGrid({
+                    id: 'identify-popup-grid-gage',
                     title: 'Gage',
-                    store: gageLocFeatureStore
+                    store: gageLocFeatureStore,
+                    region: 'center',
+                    autoHeight: true,
+                    deferRowRender: false,
+                    forceLayout: true,
+                    viewConfig: {
+                        autoFill : true,
+                        forceFit: true
+                    }
+
                 });
-                tabPanel.add(gageGridPanel);
+                featureGrids.push(gageGridPanel);
             }
 
             if (nhdFlowLineFeatureStore.totalLength) {
                 nhdFlowLineGridPanel = new gxp.grid.FeatureGrid({
+                    id: 'identify-popup-grid-flowline',
                     title: 'NHD Flowlines',
-                    store: nhdFlowLineFeatureStore
+                    store: nhdFlowLineFeatureStore,
+                    region: 'center',
+                    autoHeight: true,
+                    deferRowRender: false,
+                    forceLayout : true,
+                    viewConfig: {
+                        autoFill : true,
+                        forceFit: true
+                    }
                 });
-                tabPanel.add(nhdFlowLineGridPanel);
+                featureGrids.push(nhdFlowLineGridPanel);
             }
-            var popup = Ext.ComponentMgr.get('identify-popup');
-            if (popup) {
-                popup.destroy();
-            }
+
             popup = new GeoExt.Popup({
                 id: 'identify-popup',
-                layout: 'fit',
                 anchored: false,
+                layout : 'fit',
                 map: CONFIG.mapPanel.map,
                 unpinnable: true,
-                width: 'auto',
-                height: 'auto',
-                items: [tabPanel],
+                minWidth: 200,
+                minHeight: 100,
+                items: [
+                    new Ext.TabPanel({
+                        id: 'identify-popup-tabpanel',
+                        region: 'center',
+                        activeTab: 0,
+                        autoScroll: true,
+                        layoutOnTabChange: true,
+                        monitorResize: true,
+                        resizeTabs: true,
+                        items: featureGrids,
+                        width: 400,
+                        height: 200
+                    })
+                ],
                 listeners: {
                     show: function() {
                         // Remove the anchor element (setting anchored to 
                         // false does not do this for us. *Shaking fist @ GeoExt)
                         Ext.select('.gx-popup-anc').remove();
+                        this.syncSize();
+                        this.setHeight(this.items.first().getActiveTab().getHeight());
+                        this.setHeight(this.items.first().getActiveTab().getWidth());
                     }
                 }
 
