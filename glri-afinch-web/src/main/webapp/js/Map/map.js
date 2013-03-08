@@ -32,7 +32,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     defaultMapConfig: {
         layers: {
             baseLayers: [],
-            layers: []
+            overlays: []
         },
         initialZoom: undefined,
         initialExtent: new OpenLayers.Bounds(-15702073.155034, 2738495.0572218, -6309491.121034, 6612935.1462468)
@@ -77,40 +77,43 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     )
         ];
 
-        this.defaultMapConfig.layers.overlays = [
-            new OpenLayers.Layer.WMS(
-                    'NHD Flowlines',
-                    CONFIG.endpoint.geoserver + 'glri/wms',
-                    {
-                        layers: 'NHDFlowline',
-                        transparent: true
-                    },
-            {
-                isBaseLayer: false,
-                unsupportedBrowsers: [],
-                tileOptions: {
-                    maxGetUrlLength: 2048
-                }
-            }),
-            new OpenLayers.Layer.WMS(
-                    'Gage Locations',
-                    CONFIG.endpoint.geoserver + 'glri/wms',
-                    {
-                        layers: 'GageLoc',
-                        transparent: true,
-                        sld_body: this.gagePointSymbolizer,
-                        tiled: true,
-                        format: "image/png"
-                    },
-            {
-                isBaseLayer: false,
-                unsupportedBrowsers: [],
-                tileOptions: {
-                    maxGetUrlLength: 2048,
-                    crossOriginKeyword: 'anonymous'
-                }
-            })
-        ];
+        var flowlinesLayer = new OpenLayers.Layer.WMS(
+                'NHD Flowlines',
+                CONFIG.endpoint.geoserver + 'glri/wms',
+                {
+                    layers: 'NHDFlowline',
+                    transparent: true
+                },
+        {
+            isBaseLayer: false,
+            unsupportedBrowsers: [],
+            tileOptions: {
+                maxGetUrlLength: 2048
+            }
+        });
+        flowlinesLayer.id = 'nhd-flowlines-layer';
+        this.defaultMapConfig.layers.overlays.push(flowlinesLayer);
+
+        var gageLocationsLayer = new OpenLayers.Layer.WMS(
+                'Gage Locations',
+                CONFIG.endpoint.geoserver + 'glri/wms',
+                {
+                    layers: 'GageLoc',
+                    transparent: true,
+                    sld_body: this.gagePointSymbolizer,
+                    tiled: true,
+                    format: "image/png"
+                },
+        {
+            isBaseLayer: false,
+            unsupportedBrowsers: [],
+            tileOptions: {
+                maxGetUrlLength: 2048,
+                crossOriginKeyword: 'anonymous'
+            }
+        });
+        gageLocationsLayer.id = 'gage-location-layer';
+        this.defaultMapConfig.layers.overlays.push(gageLocationsLayer);
 
         this.map = new OpenLayers.Map({
             //order of controls defines z-index
@@ -178,7 +181,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         if (popup) {
             popup.destroy();
         }
-        
+
         var features = responseObject.features[0].features;
         var layerFeatures = {
             'GageLoc': [],
@@ -225,8 +228,17 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     autoHeight: true,
                     deferRowRender: false,
                     forceLayout: true,
+                    sm: new GeoExt.grid.FeatureSelectionModel({
+                        layer: CONFIG.mapPanel.layers.getById('gage-location-layer'),
+                        layerFromStore: false,
+                        listeners: {
+                            selectionchange: function(obj) {
+                                var a = 1;
+                            }
+                        }
+                    }),
                     viewConfig: {
-                        autoFill : true,
+                        autoFill: true,
                         forceFit: true
                     }
 
@@ -242,9 +254,18 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     region: 'center',
                     autoHeight: true,
                     deferRowRender: false,
-                    forceLayout : true,
+                    forceLayout: true,
+                    sm: new GeoExt.grid.FeatureSelectionModel({
+                        layer: CONFIG.mapPanel.layers.getById('nhd-flowlines-layer'),
+                        layerFromStore: false,
+                        listeners: {
+                            selectionchange: function(obj) {
+                                var a = 1;
+                            }
+                        }
+                    }),
                     viewConfig: {
-                        autoFill : true,
+                        autoFill: true,
                         forceFit: true
                     }
                 });
@@ -254,7 +275,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             popup = new GeoExt.Popup({
                 id: 'identify-popup',
                 anchored: false,
-                layout : 'fit',
+                layout: 'fit',
                 map: CONFIG.mapPanel.map,
                 unpinnable: true,
                 minWidth: 200,
