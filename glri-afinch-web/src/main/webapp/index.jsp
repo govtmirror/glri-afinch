@@ -5,16 +5,16 @@
 <!DOCTYPE html>
 
 <%!    private static final Logger log = LoggerFactory.getLogger("index.jsp");
-    protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+        protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-    {
-        try {
-            props = props.addJNDIContexts(new String[0]);
-        } catch (Exception e) {
-            log.error("Could not find JNDI");
+        {
+                try {
+                        props = props.addJNDIContexts(new String[0]);
+                } catch (Exception e) {
+                        log.error("Could not find JNDI");
+                }
         }
-    }
-    boolean development = Boolean.parseBoolean(props.getProperty("all.development"));
+        boolean development = Boolean.parseBoolean(props.getProperty("all.development"));
 %>
 
 <html lang="en">
@@ -67,11 +67,13 @@
             CONFIG.mapPanel = Object.extended();
             
             CONFIG.development = <%= development%>;
-            CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout","%rms - %-5p - %m%n") %>';
-            CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info") %>';
-            CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/") %>';
+            CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
+            CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
+            CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
+            CONFIG.endpoint.rwps = 'rwps/';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png'; 
+
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>

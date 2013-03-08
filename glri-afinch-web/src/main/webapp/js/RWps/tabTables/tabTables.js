@@ -15,12 +15,41 @@ Ext.onReady(function(){
     CONFIG = {};
     CONFIG.endpoint = {};
     //CONFIG.endpoint.rwps = 'http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/';
-    CONFIG.endpoint.rwps = 'http://localhost:8080/glri-afinch/rwps/';
-    var callback = AFINCH.data.putGridsIntoTabPanel;
+    CONFIG.endpoint.rwps = 'http://130.11.177.42:8080/glri-afinch/rwps/';
+       
+    var callback = function(namedStores){
+        var i = 0;
+        namedStores.each(function(namedStore){
+           var keys = namedStore.store.fields.keys;
+           var csvIsh = keys.join(',') +'\n';
+           namedStore.store.each(function(record){
+               var values = [];
+               keys.each(function(key){
+                   values.push(record.data[key]);
+               });
+               csvIsh += values.join(',')+'\n';
+           });
+           var graphCont = document.createElement('div');
+           graphCont.id = 'graph'+i;
+           i++;
+           
+           document.getElementById('graphs').appendChild(graphCont);
+           
+           var dg = new Dygraph(graphCont, csvIsh, {xlabel: keys[0], ylabel: keys[1], title: namedStore.name});
+          
+        });
+        
+        AFINCH.data.putGridsIntoTabPanel.call(this, namedStores);
+        
+        tabs.add(new Ext.Component('graphs'));
+    };
     var context = {tabPanel: tabs};//context
     AFINCH.data.retrieveStatStores(
         'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
         callback,
         context
     );
+    
+    
+    
 });

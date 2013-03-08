@@ -20,6 +20,7 @@ AFINCH.data.makeGridPanelFromStore = function(store, title){
         columns: columnObjs
     });
     var grid = new Ext.grid.GridPanel({
+        region: 'center',
         store: store,
         colModel:colModel,
         title: title
@@ -44,7 +45,7 @@ AFINCH.data.makeGridPanelsFromNamedStores = function(namedStores){
 AFINCH.data.putGridsIntoTabPanel = function(namedStores){
     //needs a tabPane property set as 'this' via call()
     if(!this.tabPanel){
-        throw Error("You must specify a TabPane.");
+        throw Error("You must specify a TabPanel.");
     }
 
     var grids = AFINCH.data.makeGridPanelsFromNamedStores(namedStores);
@@ -57,4 +58,25 @@ AFINCH.data.putGridsIntoTabPanel = function(namedStores){
         tabPanel.add(grid);
     });
     tabPanel.setActiveTab(0);
+};
+
+/**
+ * Given a data store, construct a Dygraph and add it to the tabPanel
+ *
+ *@param store - Ext.data.Store
+  *@param container - Ext.Container
+ *@returns void
+ */
+AFINCH.data.makeDygraphInDiv = function(namedStore, container){
+    var keys = namedStore.store.fields.keys;
+    var csvIsh = keys.join(',') +'\n';
+    //iterate through each record and add csv rows accordingly
+    namedStore.store.each(function(record){
+        var values = [];
+        keys.each(function(key){
+            values.push(record.data[key]);
+        });
+        csvIsh += values.join(',')+'\n';
+    });
+    var dg = new Dygraph(container.getEl().dom, csvIsh, {xlabel: keys[0], ylabel: keys[1]});
 };

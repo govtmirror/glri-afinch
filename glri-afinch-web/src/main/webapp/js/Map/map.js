@@ -232,7 +232,60 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         layer: CONFIG.mapPanel.layers.getById('gage-location-layer'),
                         layerFromStore: false,
                         listeners: {
+                            //obj is a selection object, will have gauge info
                             selectionchange: function(obj) {
+                                var tPane = new Ext.TabPanel({
+                                    region: 'center',
+                                    activeTab: 0,
+                                    autoScroll: true,
+                                    layoutOnTabChange: true,
+                                    monitorResize: true,
+                                    resizeTabs: true,
+                                    width: '100%',
+                                    height: '100%'
+                                })
+                                
+                                var win = new Ext.Window({
+                                    width: '90%',
+                                    height: 200,
+                                    items: [tPane]
+                                    }).show();
+                                
+                                
+                              
+                                
+                                var context = {
+                                    tabPanel: tPane
+                                };
+                                var callback = function(namedStores){
+                                        if(!this.tabPanel){
+                                        throw Error("You must specify a TabPanel.");
+                                    }
+    
+                                    //bring into local scope so that tabPane can be accessed via closure in 
+                                    //the following function
+                                    var tabPanel = this.tabPanel;
+                                    
+                                    var eachin = function(namedStore){
+                                        var gridPanel = AFINCH.data.makeGridPanelFromStore(namedStore.store, namedStore.name);
+                                        //needs a tabPane property set as 'this' via call()
+                                        tabPanel.add(gridPanel);
+                                        var graphCont = new Ext.Panel({region: 'east'});
+                                        tabPanel.add(graphCont);
+                                        
+                                        AFINCH.data.makeDygraphInDiv(namedStore, graphCont);
+                                    };
+                                    
+                                    namedStores.each(eachin);
+                                    
+                                    
+                                    win.doLayout();
+                                }
+                                AFINCH.data.retrieveStatStores(
+                                    'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
+                                    callback,
+                                    context
+                                    );
                                 var a = 1;
                             }
                         }
@@ -259,6 +312,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         layer: CONFIG.mapPanel.layers.getById('nhd-flowlines-layer'),
                         layerFromStore: false,
                         listeners: {
+                            //obj is selection obj, will have flowlines info
                             selectionchange: function(obj) {
                                 var a = 1;
                             }
