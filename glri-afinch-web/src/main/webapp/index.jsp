@@ -75,6 +75,11 @@
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
+        <script type="text/javascript" src="js/Map/map.js"></script>
+        <script type="text/javascript" src="js/Util/Util.js"></script>
+        <script type="text/javascript" src="js/RWps/retrieveStatStores"></script>
+        <script type="text/javascript" src="js/RWps/RParser.js"></script>
+        <script type="text/javascript" src="js/RWps/putRWpsResultsInTabPane.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>
     </head>
     <body>
