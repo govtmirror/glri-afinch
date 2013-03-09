@@ -219,6 +219,53 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             var featureGrids = [];
 
             if (gageLocFeatureStore.totalLength) {
+
+                var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
+                    layerFromStore: true,
+                    listeners: {
+                        rowselect: function(obj, rowIndex, record) {
+                            var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
+                            if (dataDisplayWindow) {
+                                LOG.debug('Removing previous data display window');
+                                dataDisplayWindow.destroy();
+                            }
+
+                            var dataTabPanel = new Ext.TabPanel({
+                                id: 'data-tab-pabel',
+                                region: 'center',
+                                activeTab: 0,
+                                autoScroll: true,
+                                layoutOnTabChange: true,
+                                monitorResize: true,
+                                resizeTabs: true,
+                                height: 400,
+                                width: 800
+                            });
+
+                            var win = new Ext.Window({
+                                id: 'data-display-window',
+                                items: [dataTabPanel]
+                            });
+
+                            AFINCH.data.retrieveStatStores(
+                                    'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
+                                    function(statsStores) {
+                                        var tabPanel = this.items.first();
+                                        statsStores.each(function(statsStore) {
+                                            tabPanel.add(new AFINCH.ui.DataDisplayPanel({
+                                                statsStore: statsStore,
+                                                region: 'center',
+                                                width: 1050
+                                            }));
+                                        });
+                                        this.show();
+                                    },
+                                    win
+                                    );
+                        }
+                    }
+                });
+
                 gageGridPanel = new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-gage',
                     title: 'Gage',
@@ -227,52 +274,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     autoHeight: true,
                     deferRowRender: false,
                     forceLayout: true,
-                    sm: new GeoExt.grid.FeatureSelectionModel({
-                        layer: CONFIG.mapPanel.layers.getById('gage-location-layer'),
-                        layerFromStore: false,
-                        listeners: {
-                            rowselect: function(obj, rowIndex, record) {
-                                var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
-                                if (dataDisplayWindow) {
-                                    LOG.debug('Removing previous data display window');
-                                    dataDisplayWindow.destroy();
-                                }
-
-                                var dataTabPanel = new Ext.TabPanel({
-                                    id: 'data-tab-pabel',
-                                    region: 'center',
-                                    activeTab: 0,
-                                    autoScroll: true,
-                                    layoutOnTabChange: true,
-                                    monitorResize: true,
-                                    resizeTabs: true,
-                                    height: 400,
-                                    width: 800
-                                });
-
-                                var win = new Ext.Window({
-                                    id: 'data-display-window',
-                                    items: [dataTabPanel]
-                                });
-
-                                AFINCH.data.retrieveStatStores(
-                                        'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
-                                        function(statsStores) {
-                                            var tabPanel = this.items.first();
-                                            statsStores.each(function(statsStore) {
-                                                tabPanel.add(new AFINCH.ui.DataDisplayPanel({
-                                                    statsStore: statsStore,
-                                                    region : 'center',
-                                                    width: 1050
-                                                }))
-                                            });
-                                            this.show();
-                                        },
-                                        win
-                                        );
-                            }
-                        }
-                    }),
+                    sm: featureSelectionModel,
                     viewConfig: {
                         autoFill: true,
                         forceFit: true
@@ -291,16 +293,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     autoHeight: true,
                     deferRowRender: false,
                     forceLayout: true,
-                    sm: new GeoExt.grid.FeatureSelectionModel({
-                        layer: CONFIG.mapPanel.layers.getById('nhd-flowlines-layer'),
-                        layerFromStore: false,
-                        listeners: {
-                            //obj is selection obj, will have flowlines info
-                            selectionchange: function(obj) {
-                                var a = 1;
-                            }
-                        }
-                    }),
+                    sm: featureSelectionModel,
                     viewConfig: {
                         autoFill: true,
                         forceFit: true
