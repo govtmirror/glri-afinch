@@ -146,12 +146,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             layers: new GeoExt.data.LayerStore({
                 initDir: GeoExt.data.LayerStore.STORE_TO_MAP,
                 map: this.map,
-                layers: this.defaultMapConfig.layers.baseLayers.union(this.defaultMapConfig.layers.overlays),
-                listeners: {
-                    load: function(store) {
-                        LOG.debug('map.js::constructor(): Base layer store loaded ' + store.getCount() + ' base layers.');
-                    }
-                }
+                layers: this.defaultMapConfig.layers.baseLayers.union(this.defaultMapConfig.layers.overlays)
             }),
             border: false
         }, config);
@@ -177,9 +172,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.map.addControl(this.wmsGetFeatureInfoControl);
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
-        var popup = Ext.ComponentMgr.get('identify-popup');
+        var popup = Ext.ComponentMgr.get('identify-popup-window');
+        var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
         if (popup) {
             popup.destroy();
+        }
+        if (dataDisplayWindow) {
+            dataDisplayWindow.destroy();
         }
 
         var features = responseObject.features[0].features;
@@ -232,61 +231,45 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         layer: CONFIG.mapPanel.layers.getById('gage-location-layer'),
                         layerFromStore: false,
                         listeners: {
-                            //obj is a selection object, will have gauge info
-                            selectionchange: function(obj) {
-                                var tPane = new Ext.TabPanel({
+                            rowselect: function(obj, rowIndex, record) {
+                                var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
+                                if (dataDisplayWindow) {
+                                    LOG.debug('Removing previous data display window');
+                                    dataDisplayWindow.destroy();
+                                }
+
+                                var dataTabPanel = new Ext.TabPanel({
+                                    id: 'data-tab-pabel',
                                     region: 'center',
                                     activeTab: 0,
                                     autoScroll: true,
                                     layoutOnTabChange: true,
                                     monitorResize: true,
                                     resizeTabs: true,
-                                    width: '100%',
-                                    height: '100%'
-                                })
-                                
+                                    height: 400,
+                                    width: 800
+                                });
+
                                 var win = new Ext.Window({
-                                    width: '90%',
-                                    height: 200,
-                                    items: [tPane]
-                                    }).show();
-                                
-                                
-                              
-                                
-                                var context = {
-                                    tabPanel: tPane
-                                };
-                                var callback = function(namedStores){
-                                        if(!this.tabPanel){
-                                        throw Error("You must specify a TabPanel.");
-                                    }
-    
-                                    //bring into local scope so that tabPane can be accessed via closure in 
-                                    //the following function
-                                    var tabPanel = this.tabPanel;
-                                    
-                                    var eachin = function(namedStore){
-                                        var gridPanel = AFINCH.data.makeGridPanelFromStore(namedStore.store, namedStore.name);
-                                        //needs a tabPane property set as 'this' via call()
-                                        tabPanel.add(gridPanel);
-                                        var graphCont = new Ext.Panel({region: 'east'});
-                                        tabPanel.add(graphCont);
-                                        
-                                        AFINCH.data.makeDygraphInDiv(namedStore, graphCont);
-                                    };
-                                    
-                                    namedStores.each(eachin);
-                                    
-                                    
-                                    win.doLayout();
-                                }
+                                    id: 'data-display-window',
+                                    items: [dataTabPanel]
+                                });
+
                                 AFINCH.data.retrieveStatStores(
-                                    'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
-                                    callback,
-                                    context
-                                    );
-                                var a = 1;
+                                        'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
+                                        function(statsStores) {
+                                            var tabPanel = this.items.first();
+                                            statsStores.each(function(statsStore) {
+                                                tabPanel.add(new AFINCH.ui.DataDisplayPanel({
+                                                    statsStore: statsStore,
+                                                    region : 'center',
+                                                    width: 1050
+                                                }))
+                                            });
+                                            this.show();
+                                        },
+                                        win
+                                        );
                             }
                         }
                     }),
@@ -327,7 +310,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             }
 
             popup = new GeoExt.Popup({
-                id: 'identify-popup',
+                id: 'identify-popup-window',
                 anchored: false,
                 layout: 'fit',
                 map: CONFIG.mapPanel.map,

@@ -5,16 +5,16 @@
 <!DOCTYPE html>
 
 <%!    private static final Logger log = LoggerFactory.getLogger("index.jsp");
-        protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
+    protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
 
-        {
-                try {
-                        props = props.addJNDIContexts(new String[0]);
-                } catch (Exception e) {
-                        log.error("Could not find JNDI");
-                }
+    {
+        try {
+            props = props.addJNDIContexts(new String[0]);
+        } catch (Exception e) {
+            log.error("Could not find JNDI");
         }
-        boolean development = Boolean.parseBoolean(props.getProperty("all.development"));
+    }
+    boolean development = Boolean.parseBoolean(props.getProperty("all.development"));
 %>
 
 <html lang="en">
@@ -38,6 +38,9 @@
         </jsp:include>
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
 
+        <jsp:include page="js/dygraphs/dygraphs.jsp">
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
@@ -65,22 +68,25 @@
             var AFINCH = Object.extended();
             CONFIG.endpoint = Object.extended();
             CONFIG.mapPanel = Object.extended();
-            
+
             CONFIG.development = <%= development%>;
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
             CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
             CONFIG.endpoint.rwps = 'rwps/';
-            CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png'; 
+            CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
 
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
+        <script type="text/javascript" src="js/Data/StatsStore.js"></script>
+        <script type="text/javascript" src="js/Data/RParser.js"></script>
+        <script type="text/javascript" src="js/Data/retrieveStatStores.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
-        <script type="text/javascript" src="js/RWps/retrieveStatStores.js"></script>
-        <script type="text/javascript" src="js/RWps/RParser.js"></script>
-        <script type="text/javascript" src="js/RWps/putRWpsResultsInTabPane.js"></script>
+        <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
+        <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
+        <script type="text/javascript" src="js/Ui/DataDisplayPanel.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>
     </head>
     <body>
