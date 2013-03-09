@@ -48,10 +48,8 @@ AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, err
     '</wps:ResponseForm>'+
 '</wps:Execute>';
 
-
     var wpsUrl = CONFIG.endpoint.rwps + 
         'WebProcessingService?Service=WPS&Request=execute&Identifier=org.n52.wps.server.r.monthlyq_swe_csv_stats';
-    
     
     Ext.Ajax.request({
         url: wpsUrl,
@@ -73,8 +71,8 @@ AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, err
                 return;
             }
 
-            var namedStores = tablesData.map(function(tableData){
-                var fieldObjs = AFINCH.Util.wrapEachWithKey(tableData.headers, 'name');
+            var statsStores = tablesData.map(function(tableData){
+                var fieldObjs = AFINCH.util.wrapEachWithKey(tableData.headers, 'name');
                 fieldObjs = fieldObjs.map(function(n){
                     n.type = 'float';
                     return n;
@@ -83,15 +81,15 @@ AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, err
                 var ar = new Ext.data.ArrayReader({}, 
                     Ext.data.Record.create(fieldObjs)
                 ); 
-                var store = new Ext.data.Store({
+                    
+                return new AFINCH.data.StatsStore({
+                    title : tableData.title,
                     reader: ar,
                     data: tableData.values
                 });
-                return {name: tableData.title, store:store};
-                
             });
             
-            callback.call(context, namedStores);
+            callback.call(context, statsStores);
         },
         failure: function(response, options){
             LOG.error(response);
@@ -99,7 +97,5 @@ AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, err
                errorCallback(response, options);
             }
         }
-
     });
-
 };

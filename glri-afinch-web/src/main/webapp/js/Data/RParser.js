@@ -21,7 +21,7 @@ AFINCH.data.RParse = function(data){
                 n = n.slice(0, -1);
                 //since header strings are used as js properties later on, 
                 //make them legal 
-                return AFINCH.Util.makeLegalJavaScriptIdentifier(n);
+                return AFINCH.util.makeLegalJavaScriptIdentifier(n);
             });
             currentTable.headers = headerStrings;
             currentTable.values = [];
