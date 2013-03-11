@@ -227,6 +227,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
+                singleSelect : true,
                 listeners: {
                     rowselect: function(obj, rowIndex, record) {
                         var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');

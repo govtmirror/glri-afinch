@@ -57,8 +57,7 @@ Ext.onReady(function() {
             footerPanel
         ]
     });
-
-
+    
 });
 
 function initializeAjax() {
@@ -70,6 +69,8 @@ function initializeAjax() {
             );
 
     Ext.Ajax.on('beforerequest', function(connection, options) {
+        document.body.style.cursor = 'wait';
+        CONFIG.mapPanel.map.div.style.cursor = 'wait'
         if (!Ext.Ajax.isLoading()) {
             Ext.Ajax.fireEvent('ajax-request-firing',
                     {
@@ -80,6 +81,8 @@ function initializeAjax() {
     }, this);
 
     Ext.Ajax.on('requestcomplete', function(connection, response, options) {
+        document.body.style.cursor = 'default';
+        CONFIG.mapPanel.map.div.style.cursor = 'default'
         if (!Ext.Ajax.isLoading()) {
             Ext.Ajax.fireEvent('ajax-requests-complete',
                     {
@@ -92,6 +95,8 @@ function initializeAjax() {
 
     Ext.Ajax.on('requestexception', function(connection, response, options) {
         LOG.error(response);
+        document.body.style.cursor = 'default';
+        CONFIG.mapPanel.map.div.style.cursor = 'default'
         if (!Ext.Ajax.isLoading()) {
             Ext.Ajax.fireEvent('ajax-request-exception',
                     {
