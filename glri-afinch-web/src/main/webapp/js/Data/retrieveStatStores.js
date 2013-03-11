@@ -56,6 +56,16 @@ AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, err
         method: 'POST',
         params: wpsRequestData,
         success: function(response, options){
+            if (response.responseText.toLowerCase().contains('exception')) {
+                new Ext.ux.Notify({
+                    msgWidth: 200,
+                    title: 'Error',
+                    msg: response.responseXML.getElementsByTagName('ns\:ExceptionText')[0].textContent
+                }).show(document);
+                LOG.error(e);
+                return;
+            }
+            
             var data = response.responseText;
             var tablesData;
             try{
