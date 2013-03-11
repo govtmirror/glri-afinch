@@ -55,6 +55,7 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="js/openlayers/raster.jsp" />
+        <jsp:include page="js/openlayers/flowlines.jsp" />
         <jsp:include page="js/geoext/geoext.jsp" >
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>

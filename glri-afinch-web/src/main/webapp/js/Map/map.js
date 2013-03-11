@@ -3,33 +3,11 @@ Ext.ns("AFINCH");
 AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
     map: undefined,
+    nhdFlowlineLayername: 'glri:NHDFlowline',
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
     mapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
-    gagePointSymbolizer: new OpenLayers.Format.SLD().write({
-        namedLayers: [{
-                name: "glri:GageLoc",
-                userStyles: [
-                    new OpenLayers.Style("Gage Style",
-                            {
-                                rules: [
-                                    new OpenLayers.Rule({
-                                        symbolizer: {
-                                            Point: new OpenLayers.Symbolizer.Point({
-                                                graphicName: 'Circle',
-                                                strokeColor: '#99FF99',
-                                                fillColor: '#00FF00',
-                                                pointRadius: 4,
-                                                fillOpacity: 0.5,
-                                                strokeOpacity: 0.5
-                                            })
-                                        }
-                                    })
-                                ]
-                            })
-                ]
-            }]
-    }),
+    streamOrderClipValue: 0,
     defaultMapConfig: {
         layers: {
             baseLayers: [],
@@ -81,7 +59,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 'NHD Flowlines',
                 CONFIG.endpoint.geoserver + 'glri/wms',
                 {
-                    layers: 'NHDFlowline',
+                    layers: [this.nhdFlowlineLayername],
                     transparent: true
                 },
         {
@@ -91,8 +69,27 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 maxGetUrlLength: 2048
             }
         });
+
         flowlinesLayer.id = 'nhd-flowlines-layer';
         this.defaultMapConfig.layers.overlays.push(flowlinesLayer);
+
+        var flowlinesWMSData = new OpenLayers.Layer.FlowlinesData(
+                "Flowline WMS (Data)",
+                CONFIG.endpoint.geoserver + 'glri/wms',
+                {
+                    layers: [this.nhdFlowlineLayername]
+                });
+//        this.defaultMapConfig.layers.overlays.push(flowlinesWMSData);
+
+        var flowlineClipOpData = flowlinesWMSData.createFlowlineClipData({
+            streamOrderClipValue: this.streamOrderClipValue,
+            flowlineAboveClipPixel: this.flowlineAboveClipPixel
+        });
+        var flowlineRaster = new OpenLayers.Layer.FlowlinesRaster({
+            name: "NHD Flowlines Raster",
+            data: flowlineClipOpData
+        });
+//        this.defaultMapConfig.layers.overlays.push(flowlineRaster);
 
         var gageLocationsLayer = new OpenLayers.Layer.WMS(
                 'Gage Locations',
@@ -114,6 +111,11 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         gageLocationsLayer.id = 'gage-location-layer';
         this.defaultMapConfig.layers.overlays.push(gageLocationsLayer);
+
+        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
+            url: CONFIG.endpoint.geoserver + 'glri/wfs'
+        });
+//        this.defaultMapConfig.layers.overlays.push(gageFeatureLayer);
 
         this.map = new OpenLayers.Map({
             restrictedExtent: this.mapExtent,
@@ -149,11 +151,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             listeners: {
                 afterlayout: function(panel, layout) {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
+
                     panel.map.isValidZoomLevel = function(zoomLevel) {
                         return zoomLevel && zoomLevel >= mapZoomForExtent && zoomLevel < this.getNumZoomLevels();
                     };
 
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
+
+                    panel.streamOrderClipValue = panel.streamOrderClipValues[panel.map.zoom];
                 }
             }
         }, config);
@@ -226,7 +231,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
-                singleSelect : true,
+                singleSelect: true,
                 listeners: {
                     rowselect: function(obj, rowIndex, record) {
                         var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
@@ -342,5 +347,52 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             popup.show();
         }
 
-    }
+    },
+    streamOrderClipValues: [
+        7, // 0
+        7,
+        7,
+        6,
+        6,
+        6, // 5
+        5,
+        5,
+        5,
+        4,
+        4, // 10
+        4,
+        3,
+        3,
+        3,
+        2, // 15
+        2,
+        2,
+        1,
+        1,
+        1  // 20
+    ],
+    gagePointSymbolizer: new OpenLayers.Format.SLD().write({
+        namedLayers: [{
+                name: "glri:GageLoc",
+                userStyles: [
+                    new OpenLayers.Style("Gage Style",
+                            {
+                                rules: [
+                                    new OpenLayers.Rule({
+                                        symbolizer: {
+                                            Point: new OpenLayers.Symbolizer.Point({
+                                                graphicName: 'Circle',
+                                                strokeColor: '#99FF99',
+                                                fillColor: '#00FF00',
+                                                pointRadius: 4,
+                                                fillOpacity: 0.5,
+                                                strokeOpacity: 0.5
+                                            })
+                                        }
+                                    })
+                                ]
+                            })
+                ]
+            }]
+    })
 });
