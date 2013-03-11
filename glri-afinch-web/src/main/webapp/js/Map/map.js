@@ -172,7 +172,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             drillDown: true,
             infoFormat: 'application/vnd.ogc.gml',
             vendorParams: {
-                radius: 3
+                radius: 5
             }
         });
 
