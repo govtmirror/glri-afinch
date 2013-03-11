@@ -5,7 +5,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     map: undefined,
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
-    mapExtent : new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
+    mapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
     gagePointSymbolizer: new OpenLayers.Format.SLD().write({
         namedLayers: [{
                 name: "glri:GageLoc",
@@ -223,58 +223,56 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
 
         if (gageLocFeatureStore.totalLength || nhdFlowLineFeatureStore.totalLength) {
-            var gageGridPanel, nhdFlowLineGridPanel;
             var featureGrids = [];
 
-            if (gageLocFeatureStore.totalLength) {
-
-                var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
-                    layerFromStore: true,
-                    listeners: {
-                        rowselect: function(obj, rowIndex, record) {
-                            var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
-                            if (dataDisplayWindow) {
-                                LOG.debug('Removing previous data display window');
-                                dataDisplayWindow.destroy();
-                            }
-
-                            var dataTabPanel = new Ext.TabPanel({
-                                id: 'data-tab-pabel',
-                                region: 'center',
-                                activeTab: 0,
-                                autoScroll: true,
-                                layoutOnTabChange: true,
-                                monitorResize: true,
-                                resizeTabs: true,
-                                height: 400,
-                                width: 800
-                            });
-
-                            var win = new Ext.Window({
-                                id: 'data-display-window',
-                                items: [dataTabPanel]
-                            });
-
-                            AFINCH.data.retrieveStatStores(
-                                    'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
-                                    function(statsStores) {
-                                        var tabPanel = this.items.first();
-                                        statsStores.each(function(statsStore) {
-                                            tabPanel.add(new AFINCH.ui.DataDisplayPanel({
-                                                statsStore: statsStore,
-                                                region: 'center',
-                                                width: 1050
-                                            }));
-                                        });
-                                        this.show();
-                                    },
-                                    win
-                                    );
+            var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
+                layerFromStore: true,
+                listeners: {
+                    rowselect: function(obj, rowIndex, record) {
+                        var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
+                        if (dataDisplayWindow) {
+                            LOG.debug('Removing previous data display window');
+                            dataDisplayWindow.destroy();
                         }
-                    }
-                });
 
-                gageGridPanel = new gxp.grid.FeatureGrid({
+                        var dataTabPanel = new Ext.TabPanel({
+                            id: 'data-tab-pabel',
+                            region: 'center',
+                            activeTab: 0,
+                            autoScroll: true,
+                            layoutOnTabChange: true,
+                            monitorResize: true,
+                            resizeTabs: true,
+                            height: 400,
+                            width: 800
+                        });
+
+                        var win = new Ext.Window({
+                            id: 'data-display-window',
+                            items: [dataTabPanel]
+                        });
+
+                        AFINCH.data.retrieveStatStores(
+                                'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
+                                function(statsStores) {
+                                    var tabPanel = this.items.first();
+                                    statsStores.each(function(statsStore) {
+                                        tabPanel.add(new AFINCH.ui.DataDisplayPanel({
+                                            statsStore: statsStore,
+                                            region: 'center',
+                                            width: 1050
+                                        }));
+                                    });
+                                    this.show();
+                                },
+                                win
+                                );
+                    }
+                }
+            });
+
+            if (gageLocFeatureStore.totalLength) {
+                featureGrids.push(new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-gage',
                     title: 'Gage',
                     store: gageLocFeatureStore,
@@ -287,13 +285,11 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         autoFill: true,
                         forceFit: true
                     }
-
-                });
-                featureGrids.push(gageGridPanel);
+                }));
             }
 
             if (nhdFlowLineFeatureStore.totalLength) {
-                nhdFlowLineGridPanel = new gxp.grid.FeatureGrid({
+                featureGrids.push(new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-flowline',
                     title: 'NHD Flowlines',
                     store: nhdFlowLineFeatureStore,
@@ -306,8 +302,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         autoFill: true,
                         forceFit: true
                     }
-                });
-                featureGrids.push(nhdFlowLineGridPanel);
+                }));
             }
 
             popup = new GeoExt.Popup({
