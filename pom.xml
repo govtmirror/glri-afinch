@@ -103,13 +103,13 @@
 	
     <dependencyManagement>
         <dependencies>
-		<!-- Logging -->
+            <!-- Logging -->
             <dependency>
                 <artifactId>slf4j-api</artifactId>
                 <groupId>org.slf4j</groupId>
                 <version>1.7.2</version>
             </dependency>
-		<!-- Normal Servlet dependencies -->
+            <!-- Normal Servlet dependencies -->
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
@@ -128,7 +128,7 @@
                 <version>1.2</version>
                 <scope>provided</scope>
             </dependency>
-		<!-- CIDA Java Libraries -->
+            <!-- CIDA Java Libraries -->
             <dependency>
                 <groupId>gov.usgs.cida</groupId>
                 <artifactId>dynamicProperties</artifactId>
@@ -139,7 +139,7 @@
                 <artifactId>tomcat-filters</artifactId>
                 <version>1.2</version>
             </dependency>
-		<!-- JS Templates -->
+            <!-- JS Templates -->
             <dependency>
                 <groupId>gov.usgs.cida.jslibs</groupId>
                 <artifactId>usgs-template</artifactId>
@@ -206,8 +206,14 @@
                 <version>1.1-7</version>
                 <type>war</type>
             </dependency>
+            <dependency>
+                <groupId>gov.usgs.cida.jslibs</groupId>
+                <artifactId>gxp</artifactId>
+                <version>20131103-1</version>
+                <type>war</type>
+            </dependency>
         
-		<!-- TESTING -->
+            <!-- TESTING -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

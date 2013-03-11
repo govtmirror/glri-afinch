@@ -35,8 +35,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             baseLayers: [],
             overlays: []
         },
-        initialZoom: undefined,
-        initialExtent: new OpenLayers.Bounds(-15702073.155034, 2738495.0572218, -6309491.121034, 6612935.1462468)
+        initialZoom: undefined
     },
     constructor: function(config) {
         LOG.debug('map.js::constructor()');
