@@ -3,22 +3,20 @@
  */
 
 /**
- * Class: OpenLayers.Layer.FlowlinesData
+ * Class: OpenLayers.Layer.GageData
  *
  * Inherits from:
  *  - <OpenLayers.Layer.WMS>
  */
-OpenLayers.Layer.FlowlinesData = OpenLayers.Class(OpenLayers.Layer.WMS, {
-    styles: 'FlowlineStreamOrder',
+OpenLayers.Layer.GageData = OpenLayers.Class(OpenLayers.Layer.WMS, {
     format: "image/png",
     tiled: "true",
-    isBaseLayer: false,
-    opacity: 0,
-    displayInLayerSwitcher: false,
+    styles: "GageLocStreamOrder",
+    isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false,
     tileOptions: {
         crossOriginKeyword: 'anonymous'
     },
-    CLASS_NAME: "OpenLayers.Layer.FlowlinesData",
+    CLASS_NAME: "OpenLayers.Layer.GageData",
     createFlowlineClipData: function(args) {
         var compositeLayer = OpenLayers.Raster.Composite.fromLayer(this, {int32: true});
         var streamOrderClipValue = args.streamOrderClipValue;
