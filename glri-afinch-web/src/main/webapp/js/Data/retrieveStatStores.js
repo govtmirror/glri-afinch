@@ -56,7 +56,7 @@ AFINCH.data.retrieveStatStores = function(sosEndpointUrl, callback, context, err
         method: 'POST',
         params: wpsRequestData,
         success: function(response, options){
-            if (response.responseText.toLowerCase().contains('exception')) {
+            if (response.responseText.toLowerCase().has('exception')) {
                 new Ext.ux.Notify({
                     msgWidth: 200,
                     title: 'Error',
