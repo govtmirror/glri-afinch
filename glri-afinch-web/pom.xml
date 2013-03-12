@@ -136,6 +136,11 @@
             <artifactId>gxp</artifactId>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>gov.usgs.cida.jslibs</groupId>
+            <artifactId>openlayers-raster</artifactId>
+            <type>war</type>
+        </dependency>
         
         <!-- TESTING -->
         <dependency>

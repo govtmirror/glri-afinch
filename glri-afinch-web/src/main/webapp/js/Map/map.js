@@ -3,33 +3,24 @@ Ext.ns("AFINCH");
 AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
     map: undefined,
+    nhdFlowlineLayername: 'glri:NHDFlowline',
+    gageLayername: 'glri:GageLoc',
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
-    mapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
-    gagePointSymbolizer: new OpenLayers.Format.SLD().write({
-        namedLayers: [{
-                name: "glri:GageLoc",
-                userStyles: [
-                    new OpenLayers.Style("Gage Style",
-                            {
-                                rules: [
-                                    new OpenLayers.Rule({
-                                        symbolizer: {
-                                            Point: new OpenLayers.Symbolizer.Point({
-                                                graphicName: 'Circle',
-                                                strokeColor: '#99FF99',
-                                                fillColor: '#00FF00',
-                                                pointRadius: 4,
-                                                fillOpacity: 0.5,
-                                                strokeOpacity: 0.5
-                                            })
-                                        }
-                                    })
-                                ]
-                            })
-                ]
-            }]
-    }),
+    restrictedMapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
+    streamOrderClipValue: 0,
+    flowlineAboveClipPixelR: 255,
+    flowlineAboveClipPixelG: 255,
+    flowlineAboveClipPixelB: 255,
+    flowlineAboveClipPixelA: 128,
+    flowlineAboveClipPixel: undefined,
+    gageStyleR: 0,
+    gageStyleG: 255,
+    gageStyleB: 0,
+    gageStyleA: 255,
+    gageRadius: 4,
+    gageFill: false,
+    gageStyle: undefined,
     defaultMapConfig: {
         layers: {
             baseLayers: [],
@@ -52,36 +43,32 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             transitionEffect: 'resize'
         };
 
-
+        var zyx = '/MapServer/tile/${z}/${y}/${x}';
         this.defaultMapConfig.layers.baseLayers = [
             new OpenLayers.Layer.XYZ(
                     "World Light Gray Base",
-                    "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
-                    Ext.apply(EPSG900913Options, {
-                numZoomLevels: 14
-            })
+                    "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
+                    Ext.apply(EPSG900913Options, {numZoomLevels: 14})
                     ),
             new OpenLayers.Layer.XYZ(
                     "World Terrain Base",
-                    "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}",
-                    Ext.apply(EPSG900913Options, {
-                numZoomLevels: 14
-            })
+                    "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief" + zyx,
+                    Ext.apply(EPSG900913Options, {numZoomLevels: 14})
                     ),
             new OpenLayers.Layer.XYZ(
                     "USA Topo Map",
-                    "http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/${z}/${y}/${x}",
-                    Ext.apply(EPSG900913Options, {
-                numZoomLevels: 16
-            })
+                    "http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps" + zyx,
+                    Ext.apply(EPSG900913Options, {numZoomLevels: 16})
                     )
         ];
 
+        // ////////////////////////////////////////////// FLOWLINES
+        LOG.debug('AFINCH.MapPanel::constructor: Setting up flow lines layer');
         var flowlinesLayer = new OpenLayers.Layer.WMS(
                 'NHD Flowlines',
                 CONFIG.endpoint.geoserver + 'glri/wms',
                 {
-                    layers: 'NHDFlowline',
+                    layers: [this.nhdFlowlineLayername],
                     transparent: true
                 },
         {
@@ -94,6 +81,35 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         flowlinesLayer.id = 'nhd-flowlines-layer';
         this.defaultMapConfig.layers.overlays.push(flowlinesLayer);
 
+        LOG.debug('AFINCH.MapPanel::constructor: Setting up flow lines WMS Data Layer');
+        var flowlinesWMSData = new OpenLayers.Layer.FlowlinesData(
+                "Flowline WMS (Data)",
+                CONFIG.endpoint.geoserver + 'glri/wms',
+                {
+                    layers: [this.nhdFlowlineLayername]
+                });
+        flowlinesWMSData.id = 'nhd-flowlines-data-layer';
+        this.defaultMapConfig.layers.overlays.push(flowlinesWMSData);
+
+        LOG.debug('AFINCH.MapPanel::constructor: Setting up flowlines raster Layer');
+        this.flowlineAboveClipPixel = this.createFlowlineAboveClipPixel({
+            a: this.flowlineAboveClipPixelA,
+            b: this.flowlineAboveClipPixelB,
+            g: this.flowlineAboveClipPixelG,
+            r: this.flowlineAboveClipPixelR
+        });
+        var flowlineRaster = new OpenLayers.Layer.FlowlinesRaster({
+            name: "NHD Flowlines Raster",
+            data: flowlinesWMSData.createFlowlineClipData({
+                streamOrderClipValue: this.streamOrderClipValue,
+                flowlineAboveClipPixel: this.flowlineAboveClipPixel
+            })
+        });
+        flowlineRaster.id = 'nhd-flowlines-raster-layer';
+        this.defaultMapConfig.layers.overlays.push(flowlineRaster);
+
+
+        // ////////////////////////////////////////////// GAGES
         var gageLocationsLayer = new OpenLayers.Layer.WMS(
                 'Gage Locations',
                 CONFIG.endpoint.geoserver + 'glri/wms',
@@ -115,6 +131,21 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         gageLocationsLayer.id = 'gage-location-layer';
         this.defaultMapConfig.layers.overlays.push(gageLocationsLayer);
 
+        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
+            url: CONFIG.endpoint.geoserver + 'glri/wfs'
+        });
+        gageFeatureLayer.id = 'gage-feature-layer';
+        this.defaultMapConfig.layers.overlays.push(gageFeatureLayer);
+        var gageWMSData = new OpenLayers.Layer.GageData(
+                "Gage WMS (Data)",
+                CONFIG.endpoint.geoserver + 'glri/wms',
+                {
+                    layers: [this.gageLayername]
+                }
+        );
+        var gageComposite = OpenLayers.Raster.Composite.fromLayer(gageWMSData, {int32: true});
+
+        // MAP
         this.map = new OpenLayers.Map({
             restrictedExtent: this.mapExtent,
             projection: this.WGS84_GOOGLE_MERCATOR,
@@ -149,11 +180,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             listeners: {
                 afterlayout: function(panel, layout) {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
+
                     panel.map.isValidZoomLevel = function(zoomLevel) {
                         return zoomLevel && zoomLevel >= mapZoomForExtent && zoomLevel < this.getNumZoomLevels();
                     };
 
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
+
+                    panel.streamOrderClipValue = panel.streamOrderClipValues[panel.map.zoom];
                 }
             }
         }, config);
@@ -226,7 +260,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
-                singleSelect : true,
+                singleSelect: true,
                 listeners: {
                     rowselect: function(obj, rowIndex, record) {
                         var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
@@ -341,6 +375,76 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             popup.show();
         }
+
+    },
+    createFlowlineAboveClipPixel: function(args) {
+        var flowlineAboveClipPixelA = args.a;
+        var flowlineAboveClipPixelB = args.b;
+        var flowlineAboveClipPixelG = args.g;
+        var flowlineAboveClipPixelR = args.r;
+
+        return ((flowlineAboveClipPixelA & 0xff) << 24 |
+                (flowlineAboveClipPixelB & 0xff) << 16 |
+                (flowlineAboveClipPixelG & 0xff) << 8 |
+                (flowlineAboveClipPixelR & 0xff));
+    },
+    streamOrderClipValues: [
+        7, // 0
+        7,
+        7,
+        6,
+        6,
+        6, // 5
+        5,
+        5,
+        5,
+        4,
+        4, // 10
+        4,
+        3,
+        3,
+        3,
+        2, // 15
+        2,
+        2,
+        1,
+        1,
+        1  // 20
+    ],
+    gagePointSymbolizer: new OpenLayers.Format.SLD().write({
+        namedLayers: [{
+                name: "glri:GageLoc",
+                userStyles: [
+                    new OpenLayers.Style("Gage Style",
+                            {
+                                rules: [
+                                    new OpenLayers.Rule({
+                                        symbolizer: {
+                                            Point: new OpenLayers.Symbolizer.Point({
+                                                graphicName: 'Circle',
+                                                strokeColor: '#99FF99',
+                                                fillColor: '#00FF00',
+                                                pointRadius: 4,
+                                                fillOpacity: 0.5,
+                                                strokeOpacity: 0.5
+                                            })
+                                        }
+                                    })
+                                ]
+                            })
+                ]
+            }]
+    }),
+    createGageStyle: function(args) {
+        var gageStyleA = args.a;
+        var gageStyleR = args.R;
+        var gageStyleG = args.G;
+        var gageStyleB = args.B;
+        return ("rgba(" +
+                gageStyleR + "," +
+                gageStyleG + "," +
+                gageStyleB + "," +
+                gageStyleA / 255 + ")");
 
     }
 });
