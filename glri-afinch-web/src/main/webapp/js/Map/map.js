@@ -38,7 +38,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             isBaseLayer: true,
             projection: this.WGS84_GOOGLE_MERCATOR,
             units: "m",
-            maxResolution: 156543.0339,
             buffer: 3,
             transitionEffect: 'resize'
         };
@@ -69,7 +68,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 CONFIG.endpoint.geoserver + 'glri/wms',
                 {
                     layers: [this.nhdFlowlineLayername],
-                    transparent: true
+                    styles: "line",
+                    format: "image/png",
+                    tiled: true
                 },
         {
             isBaseLayer: false,
@@ -86,8 +87,19 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 "Flowline WMS (Data)",
                 CONFIG.endpoint.geoserver + 'glri/wms',
                 {
-                    layers: [this.nhdFlowlineLayername]
-                });
+                    layers: [this.nhdFlowlineLayername],
+                    styles: 'FlowlineStreamOrder',
+                    format: "image/png",
+                    tiled: "true",
+                },
+                {
+    isBaseLayer: false,
+    opacity: 0,
+    displayInLayerSwitcher: true,
+    tileOptions: {
+        crossOriginKeyword: 'anonymous'
+    }
+});
         flowlinesWMSData.id = 'nhd-flowlines-data-layer';
         this.defaultMapConfig.layers.overlays.push(flowlinesWMSData);
 
@@ -114,10 +126,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 'Gage Locations',
                 CONFIG.endpoint.geoserver + 'glri/wms',
                 {
-                    layers: 'GageLoc',
-                    transparent: true,
-                    sld_body: this.gagePointSymbolizer,
+                    layers: 'GageLoc',    
                     tiled: true,
+                    sld_body: this.gagePointSymbolizer,
                     format: "image/png"
                 },
         {
@@ -147,7 +158,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         // MAP
         this.map = new OpenLayers.Map({
-            restrictedExtent: this.mapExtent,
+            restrictedExtent: this.restrictedMapExtent,
             projection: this.WGS84_GOOGLE_MERCATOR,
             controls: [
                 new OpenLayers.Control.Navigation(),
