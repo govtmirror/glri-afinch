@@ -247,26 +247,35 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                             width: 800
                         });
 
+                        var statsCallback = function(statsStores, success) {
+                            if(!success || !statsStores){
+                                return;
+                            }
+                            var tabPanel = this.items.first();
+                            statsStores.each(function(statsStore) {
+                                tabPanel.add(new AFINCH.ui.DataDisplayPanel({
+                                    statsStore: statsStore,
+                                    region: 'center',
+                                    width: 1050
+                                }));
+                            });
+                            this.show();
+                        };
+
+                        //init a window that will be used as context for the callback
                         var win = new Ext.Window({
                             id: 'data-display-window',
                             items: [dataTabPanel]
                         });
 
-                        AFINCH.data.retrieveStatStores(
-                                'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
-                                function(statsStores) {
-                                    var tabPanel = this.items.first();
-                                    statsStores.each(function(statsStore) {
-                                        tabPanel.add(new AFINCH.ui.DataDisplayPanel({
-                                            statsStore: statsStore,
-                                            region: 'center',
-                                            width: 1050
-                                        }));
-                                    });
-                                    this.show();
-                                },
-                                win
-                                );
+                        var statsStore = new AFINCH.data.StatsStore();
+                        statsStore.load({
+                            params: {
+                                sosEndpointUrl: 'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml'
+                            },
+                            scope: win,
+                            callback: statsCallback
+                        });
                     }
                 }
             });
