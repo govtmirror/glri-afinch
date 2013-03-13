@@ -12,7 +12,7 @@ OpenLayers.Layer.GageData = OpenLayers.Class(OpenLayers.Layer.WMS, {
     format: "image/png",
     tiled: "true",
     styles: "GageLocStreamOrder",
-    isBaseLayer: false, opacity: 0, displayInLayerSwitcher: false,
+    isBaseLayer: false, opacity: 0, displayInLayerSwitcher: true,
     tileOptions: {
         crossOriginKeyword: 'anonymous'
     },

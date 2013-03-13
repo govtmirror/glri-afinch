@@ -14,7 +14,7 @@ OpenLayers.Layer.FlowlinesData = OpenLayers.Class(OpenLayers.Layer.WMS, {
     tiled: "true",
     isBaseLayer: false,
     opacity: 0,
-    displayInLayerSwitcher: false,
+    displayInLayerSwitcher: true,
     tileOptions: {
         crossOriginKeyword: 'anonymous'
     },
