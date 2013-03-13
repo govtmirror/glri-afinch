@@ -78,10 +78,9 @@
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
 
         </script>
-
+l
         <script type="text/javascript" src="js/Map/map.js"></script>
         <script type="text/javascript" src="js/Data/StatsStore.js"></script>
-        <script type="text/javascript" src="js/Data/RParser.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
