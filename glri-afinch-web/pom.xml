@@ -185,6 +185,49 @@
                 </configuration>
                 <version>2.2</version>
             </plugin>
+            			
+			<plugin>
+                <groupId>com.github.searls</groupId>
+                <artifactId>jasmine-maven-plugin</artifactId>
+                <version>1.2.0.1-1</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                    	<phase>package</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <browserVersion>INTERNET_EXPLORER_8</browserVersion>
+                    <jsSrcDir>${project.basedir}</jsSrcDir>
+                    <!--<jsSrcDir>/</jsSrcDir>-->
+                    <sourceIncludes>
+                        <!-- <testing> libs -->
+                            <include>src/test/javascript/sinon-1.6.0.js</include> <!-- Sinon testing lib -->
+                            <include>src/test/javascript/sinon-ie-1.6.0.js</include> <!-- additional IE only XHR code from Sinon testing lib -->
+                            <include>src/test/javascript/GWDPTestSupport.js</include> <!-- Base testing helper functions -->
+                        <!-- </testing> libs -->
+                        
+                        <!-- <dependencies of code being tested> -->
+                            <include>target/glri-afinch-web/js/openlayers/OpenLayers.js</include>
+                            <!-- skipped some openlayers extensions: raster and flowlines -->
+                            <include>target/glri-afinch-web/js/ext/ext-all.js</include>
+                            <include>target/glri-afinch-web/js/log4jsavascript/log4javascript-uncompressed.js</include>
+                            <include>target/glri-afinch-web/js/dygraphs/graph-combined.js</include>
+                            <include>target/glri-afinch-web/js/sugar/sugar.js</include>
+                            <include>target/glri-afinch-web/js/geoext/GeoExt.js</include>
+                            <include>target/glri-afinch-web/js/geoext/lib/overrides/override-ext-ajax.js</include>
+                        <!-- </dependencies of code being tested> -->
+
+                        <!-- <actual code being tested -->
+                            <include>target/glri-afinch-web/js/Data/StatsStore.js</include>
+                        <!-- </actual code being tested -->
+
+                    </sourceIncludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
