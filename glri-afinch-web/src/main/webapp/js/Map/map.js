@@ -7,6 +7,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     gageLayername: 'glri:GageLoc',
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
+    sosEndpointUrl:'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
     restrictedMapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
     streamOrderClipValue: 0,
     flowlineAboveClipPixelR: 255,
@@ -90,7 +91,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     layers: [this.nhdFlowlineLayername],
                     styles: 'FlowlineStreamOrder',
                     format: "image/png",
-                    tiled: "true",
+                    tiled: "true"
                 },
                 {
     isBaseLayer: false,
@@ -224,6 +225,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.map.addControl(this.wmsGetFeatureInfoControl);
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
+        var self = this;
         var popup = Ext.ComponentMgr.get('identify-popup-window');
         var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
         if (popup) {
@@ -312,12 +314,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                             id: 'data-display-window',
                             items: [dataTabPanel]
                         });
-
+                        
+                        var params = {
+                                sosEndpointUrl: self.sosEndpointUrl
+                            };
                         var statsStore = new AFINCH.data.StatsStore();
+                        
                         statsStore.load({
-                            params: {
-                                sosEndpointUrl: 'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml'
-                            },
+                            params: params,
                             scope: win,
                             callback: statsCallback
                         });
