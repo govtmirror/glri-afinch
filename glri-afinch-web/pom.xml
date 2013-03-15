@@ -211,7 +211,6 @@
                         <!-- </testing> libs -->
                         
                         <!-- <dependencies of code being tested> -->
-                            <include>target/glri-afinch-web/js/dygraphs/dygraph-combined.js</include>
                             <include>target/glri-afinch-web/js/log4javascript/log4javascript_uncompressed.js</include>
                             <include>src/test/javascript/setupLOG.js</include>
                             <include>target/glri-afinch-web/js/ext/adapter/ext/ext-base.js</include>
