@@ -207,7 +207,7 @@
                         <!-- <testing> libs -->
                             <include>src/test/javascript/sinon-1.6.0.js</include> <!-- Sinon testing lib -->
                             <include>src/test/javascript/sinon-ie-1.6.0.js</include> <!-- additional IE only XHR code from Sinon testing lib -->
-                            <include>src/test/javascript/GWDPTestSupport.js</include> <!-- Base testing helper functions -->
+                            <include>src/test/javascript/TestSupport.js</include> <!-- Base testing helper functions -->
                         <!-- </testing> libs -->
                         
                         <!-- <dependencies of code being tested> -->
