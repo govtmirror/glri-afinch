@@ -9,6 +9,49 @@
  *  - <OpenLayers.Layer.Raster>
  */
 OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
-    isBaseLayer: false,
-    CLASS_NAME: "OpenLayers.Layer.FlowlinesRaster"
+    flowlineAboveClipPixel: undefined,
+    flowlineAboveClipPixelR: 255,
+    flowlineAboveClipPixelG: 255,
+    flowlineAboveClipPixelB: 255,
+    flowlineAboveClipPixelA: 128,
+    CLASS_NAME: "OpenLayers.Layer.FlowlinesRaster",
+    initialize: function(config) {
+        config.isBaseLayer = false;
+        if (!config.data && config.dataLayer) {
+            var flowlineComposite = OpenLayers.Raster.Composite.fromLayer(config.dataLayer, {int32: true});
+            config.data = this.clipOperation(flowlineComposite);
+        }
+        OpenLayers.Layer.Raster.prototype.initialize.apply(this, [config]);
+        this.events.on('visibilitychanged',this.updateVisibility);
+    },
+    clipOperation: OpenLayers.Raster.Operation.create(function(pixel) {
+        if (pixel >> 24 === 0) {
+            return 0;
+        }
+        var value = pixel & 0x00ffffff;
+        if (value >= this.streamOrderClipValue && value < 0x00ffffff) {
+            return this.flowlineAboveClipPixel;
+        } else {
+            return 0;
+        }
+    }),
+    createFlowlineAboveClipPixel: function(args) {
+        var flowlineAboveClipPixelA = args.a;
+        var flowlineAboveClipPixelR = args.r;
+        var flowlineAboveClipPixelG = args.g;
+        var flowlineAboveClipPixelB = args.b;
+
+        return ((flowlineAboveClipPixelA & 0xff) << 24 |
+                (flowlineAboveClipPixelB & 0xff) << 16 |
+                (flowlineAboveClipPixelG & 0xff) << 8 |
+                (flowlineAboveClipPixelR & 0xff));
+    },
+    updateFromClipValue: function() {
+        if (this.getVisibility()) {
+            this.onDataUpdate();
+        }
+    },
+    updateVisibility: function() {
+        //            flowlineRasterWindow.setVisible(flowlineRaster.getVisibility());
+    }
 });

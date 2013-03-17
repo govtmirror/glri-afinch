@@ -9,16 +9,24 @@
  *  - <OpenLayers.Layer.WMS>
  */
 OpenLayers.Layer.FlowlinesData = OpenLayers.Class(OpenLayers.Layer.WMS, {
-    styles: 'FlowlineStreamOrder',
-    format: "image/png",
-    tiled: "true",
-    isBaseLayer: false,
-    opacity: 0,
-    displayInLayerSwitcher: true,
-    tileOptions: {
-        crossOriginKeyword: 'anonymous'
-    },
     CLASS_NAME: "OpenLayers.Layer.FlowlinesData",
+    initialize: function(name, url, params, options) {
+        params = params || {};
+        options = options || {};
+        params.layers = 'glri:NHDFlowline';
+        params.styles = 'FlowlineStreamOrder';
+        params.format = "image/png";
+        params.tiled = true;
+        options.isBaseLayer = false;
+        options.opacity = 0;
+        options.displayInLayerSwitcher = false;
+        options.tileOptions = {
+            crossOriginKeyword: 'anonymous'
+        };
+        var newArguments = [];
+        newArguments.push(name, url, params, options);
+        OpenLayers.Layer.WMS.prototype.initialize.apply(this, newArguments);
+    },
     createFlowlineClipData: function(args) {
         var compositeLayer = OpenLayers.Raster.Composite.fromLayer(this, {int32: true});
         var streamOrderClipValue = args.streamOrderClipValue;

@@ -1,38 +1,21 @@
 Ext.ns("AFINCH");
-
 AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
     map: undefined,
     nhdFlowlineLayername: 'glri:NHDFlowline',
-    gageLayername: 'glri:GageLoc',
+    gageStyleName: "GageLocStreamOrder",
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
-    sosEndpointUrl:'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
+    sosEndpointUrl: 'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
     restrictedMapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
     streamOrderClipValue: 0,
-    flowlineAboveClipPixelR: 255,
-    flowlineAboveClipPixelG: 255,
-    flowlineAboveClipPixelB: 255,
-    flowlineAboveClipPixelA: 128,
-    flowlineAboveClipPixel: undefined,
-    gageStyleR: 0,
-    gageStyleG: 255,
-    gageStyleB: 0,
-    gageStyleA: 255,
-    gageRadius: 4,
-    gageFill: false,
-    gageStyle: undefined,
-    defaultMapConfig: {
-        layers: {
-            baseLayers: [],
-            overlays: []
-        },
-        initialZoom: undefined
-    },
+    streamOrderTable: new Array(21),
+    streamOrderSlider: undefined,
+    streamOrderLock: true,
     constructor: function(config) {
         LOG.debug('map.js::constructor()');
         var config = config || {};
-
+        var mapLayers = [];
         var EPSG900913Options = {
             sphericalMercator: true,
             layers: "0",
@@ -42,120 +25,63 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             buffer: 3,
             transitionEffect: 'resize'
         };
-
+        // ////////////////////////////////////////////// BASE LAYERS
         var zyx = '/MapServer/tile/${z}/${y}/${x}';
-        this.defaultMapConfig.layers.baseLayers = [
-            new OpenLayers.Layer.XYZ(
-                    "World Light Gray Base",
-                    "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
-                    Ext.apply(EPSG900913Options, {numZoomLevels: 14})
-                    ),
-            new OpenLayers.Layer.XYZ(
-                    "World Terrain Base",
-                    "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief" + zyx,
-                    Ext.apply(EPSG900913Options, {numZoomLevels: 14})
-                    ),
-            new OpenLayers.Layer.XYZ(
-                    "USA Topo Map",
-                    "http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps" + zyx,
-                    Ext.apply(EPSG900913Options, {numZoomLevels: 16})
-                    )
-        ];
+        mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Light Gray Base",
+                "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
+                Ext.apply(EPSG900913Options, {numZoomLevels: 14})
+                ));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Terrain Base",
+                "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief" + zyx,
+                Ext.apply(EPSG900913Options, {numZoomLevels: 14})
+                ));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Terrain Base",
+                "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief" + zyx,
+                Ext.apply(EPSG900913Options, {numZoomLevels: 14})
+                ));
 
         // ////////////////////////////////////////////// FLOWLINES
-        LOG.debug('AFINCH.MapPanel::constructor: Setting up flow lines layer');
-        var flowlinesLayer = new OpenLayers.Layer.WMS(
-                'NHD Flowlines',
-                CONFIG.endpoint.geoserver + 'glri/wms',
-                {
-                    layers: [this.nhdFlowlineLayername],
-                    styles: "line",
-                    format: "image/png",
-                    tiled: true
-                },
-        {
-            isBaseLayer: false,
-            unsupportedBrowsers: [],
-            tileOptions: {
-                maxGetUrlLength: 2048
-            }
-        });
-        flowlinesLayer.id = 'nhd-flowlines-layer';
-        this.defaultMapConfig.layers.overlays.push(flowlinesLayer);
-
-        LOG.debug('AFINCH.MapPanel::constructor: Setting up flow lines WMS Data Layer');
         var flowlinesWMSData = new OpenLayers.Layer.FlowlinesData(
                 "Flowline WMS (Data)",
-                CONFIG.endpoint.geoserver + 'glri/wms',
-                {
-                    layers: [this.nhdFlowlineLayername],
-                    styles: 'FlowlineStreamOrder',
-                    format: "image/png",
-                    tiled: "true"
-                },
-                {
-    isBaseLayer: false,
-    opacity: 0,
-    displayInLayerSwitcher: true,
-    tileOptions: {
-        crossOriginKeyword: 'anonymous'
-    }
-});
+                CONFIG.endpoint.geoserver + 'glri/wms'
+                );
         flowlinesWMSData.id = 'nhd-flowlines-data-layer';
-        this.defaultMapConfig.layers.overlays.push(flowlinesWMSData);
 
-        LOG.debug('AFINCH.MapPanel::constructor: Setting up flowlines raster Layer');
-        this.flowlineAboveClipPixel = this.createFlowlineAboveClipPixel({
-            a: this.flowlineAboveClipPixelA,
-            b: this.flowlineAboveClipPixelB,
-            g: this.flowlineAboveClipPixelG,
-            r: this.flowlineAboveClipPixelR
-        });
         var flowlineRaster = new OpenLayers.Layer.FlowlinesRaster({
             name: "NHD Flowlines Raster",
-            data: flowlinesWMSData.createFlowlineClipData({
-                streamOrderClipValue: this.streamOrderClipValue,
-                flowlineAboveClipPixel: this.flowlineAboveClipPixel
-            })
+            dataLayer: flowlinesWMSData,
+            streamOrderClipValue: this.streamOrderClipValue
         });
         flowlineRaster.id = 'nhd-flowlines-raster-layer';
-        this.defaultMapConfig.layers.overlays.push(flowlineRaster);
-
 
         // ////////////////////////////////////////////// GAGES
-        var gageLocationsLayer = new OpenLayers.Layer.WMS(
-                'Gage Locations',
-                CONFIG.endpoint.geoserver + 'glri/wms',
-                {
-                    layers: 'GageLoc',    
-                    tiled: true,
-                    sld_body: this.gagePointSymbolizer,
-                    format: "image/png"
-                },
-        {
-            isBaseLayer: false,
-            unsupportedBrowsers: [],
-            tileOptions: {
-                maxGetUrlLength: 2048,
-                crossOriginKeyword: 'anonymous'
-            }
-        });
-        gageLocationsLayer.id = 'gage-location-layer';
-        this.defaultMapConfig.layers.overlays.push(gageLocationsLayer);
-
-        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
-            url: CONFIG.endpoint.geoserver + 'glri/wfs'
+        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations (GF Layer)', {
+            url: CONFIG.endpoint.geoserver + 'wfs',
+            streamOrderClipValue: this.streamOrderClipValue
         });
         gageFeatureLayer.id = 'gage-feature-layer';
-        this.defaultMapConfig.layers.overlays.push(gageFeatureLayer);
-        var gageWMSData = new OpenLayers.Layer.GageData(
+
+        var gageData = new OpenLayers.Layer.GageData(
                 "Gage WMS (Data)",
-                CONFIG.endpoint.geoserver + 'glri/wms',
-                {
-                    layers: [this.gageLayername]
-                }
-        );
-        var gageComposite = OpenLayers.Raster.Composite.fromLayer(gageWMSData, {int32: true});
+                CONFIG.endpoint.geoserver + 'wms'
+                );
+        gageData.id = 'gage-location-data';
+
+        var gageRaster = new OpenLayers.Layer.GageRaster({
+            name: "Gage Location",
+            dataLayer: gageData,
+            streamOrderClipValue: this.streamOrderClipValue
+        });
+        gageRaster.id = 'gage-location-raster';
+
+        mapLayers.push(flowlinesWMSData);
+        mapLayers.push(gageData);
+        mapLayers.push(flowlineRaster);
+        mapLayers.push(gageRaster);
+        mapLayers.push(gageFeatureLayer);
 
         // MAP
         this.map = new OpenLayers.Map({
@@ -174,44 +100,100 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 }),
                 new OpenLayers.Control.LayerSwitcher(),
                 new OpenLayers.Control.Zoom()
-            ]
+            ],
+            isValidZoomLevel: function(zoomLevel) {
+                return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
+            }
         });
-
         config = Ext.apply({
             id: 'map-panel',
             region: 'center',
             map: this.map,
-            extent: this.defaultMapConfig.initialExtent,
+            extent: this.restrictedMapExtent,
             prettyStateKeys: true,
             layers: new GeoExt.data.LayerStore({
                 initDir: GeoExt.data.LayerStore.STORE_TO_MAP,
                 map: this.map,
-                layers: this.defaultMapConfig.layers.baseLayers.union(this.defaultMapConfig.layers.overlays)
+                layers: mapLayers
             }),
             border: false,
             listeners: {
-                afterlayout: function(panel, layout) {
+                added: function(panel, owner, idx) {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
-
-                    panel.map.isValidZoomLevel = function(zoomLevel) {
-                        return zoomLevel && zoomLevel >= mapZoomForExtent && zoomLevel < this.getNumZoomLevels();
-                    };
-
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
-
                     panel.streamOrderClipValue = panel.streamOrderClipValues[panel.map.zoom];
+
+                    panel.streamOrderSlider = new Ext.slider.SingleSlider({
+                        fieldLabel: "Stream Order",
+                        width: 120,
+                        value: panel.streamOrderClipValue,
+                        increment: 1,
+                        minValue: 1,
+                        maxValue: 7,
+                        listeners: {
+                            change: function(element, newValue) {
+                                if (newValue !== panel.streamOrderClipValue) {
+                                    panel.streamOrderClipValue = newValue;
+                                    panel.updateFromClipValue();
+                                }
+                            }
+                        }
+                    });
+
+                    for (var zoomIndex = 0; zoomIndex < panel.streamOrderTable.length; ++zoomIndex) {
+                        panel.streamOrderTable[zoomIndex] = new Ext.slider.SingleSlider({
+                            fieldLabel: '' + zoomIndex,
+                            value: panel.streamOrderClipValues[zoomIndex],
+                            minValue: 1,
+                            maxValue: 7,
+                            zoom: zoomIndex,
+                            listeners: {
+                                change: function(element, newValue) {
+                                    panel.setClipValueForZoom(element.zoom, newValue);
+                                    if (element.zoom === map.zoom) {
+                                        panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
+                                        if (newValue !== panel.streamOrderClipValue) {
+                                            panel.streamOrderClipValue = newValue;
+                                            panel.updateFromClipValue();
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    panel.map.events.register(
+                            'zoomend',
+                            panel.map,
+                            function() {
+                                var zoom = panel.map.zoom;
+                                LOG.info('Current map zoom: ' + zoom);
+                                panel.streamOrderClipValue = panel.getClipValueForZoom(zoom);
+                                panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
+                                panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
+                            },
+                            true);
+                    
+                    this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0].updateVisibility();
+                    this.map.getLayersBy('id', 'gage-location-raster')[0].updateVisibility();
+                    panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
                 }
             }
         }, config);
-
         AFINCH.MapPanel.superclass.constructor.call(this, config);
+
         LOG.info('map.js::constructor(): Construction complete.');
 
         this.wmsGetFeatureInfoControl = new OpenLayers.Control.WMSGetFeatureInfo({
             title: 'gage-identify-control',
             hover: false,
             autoActivate: true,
-            layers: this.defaultMapConfig.layers.overlays,
+            layers: [
+//        flowlinesLayer, 
+                flowlinesWMSData,
+                flowlineRaster,
+                gageFeatureLayer
+            ],
             queryVisible: true,
             output: 'object',
             drillDown: true,
@@ -220,7 +202,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 radius: 5
             }
         });
-
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
     },
@@ -241,7 +222,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             'NHDFlowline': []
         };
         var gageLocFeatureStore, nhdFlowLineFeatureStore;
-
         if (features.length) {
             features.each(function(feature) {
                 layerFeatures[feature.gml.featureType].push(feature);
@@ -258,7 +238,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             ],
             initDir: 0
         });
-
         nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.NHDFlowline,
             fields: [
@@ -267,10 +246,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             ],
             initDir: 0
         });
-
         if (gageLocFeatureStore.totalLength || nhdFlowLineFeatureStore.totalLength) {
             var featureGrids = [];
-
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
                 singleSelect: true,
@@ -293,9 +270,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                             height: 400,
                             width: 800
                         });
-
                         var statsCallback = function(statsStores, success) {
-                            if(!success || !statsStores){
+                            if (!success || !statsStores) {
                                 return;
                             }
                             var tabPanel = this.items.first();
@@ -308,18 +284,15 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                             });
                             this.show();
                         };
-
                         //init a window that will be used as context for the callback
                         var win = new Ext.Window({
                             id: 'data-display-window',
                             items: [dataTabPanel]
                         });
-                        
                         var params = {
-                                sosEndpointUrl: self.sosEndpointUrl
-                            };
+                            sosEndpointUrl: self.sosEndpointUrl
+                        };
                         var statsStore = new AFINCH.data.StatsStore();
-                        
                         statsStore.load({
                             params: params,
                             scope: win,
@@ -328,7 +301,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     }
                 }
             });
-
             if (gageLocFeatureStore.totalLength) {
                 featureGrids.push(new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-gage',
@@ -387,8 +359,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 ],
                 listeners: {
                     show: function() {
-                        // Remove the anchor element (setting anchored to 
-                        // false does not do this for us. *Shaking fist @ GeoExt)
+// Remove the anchor element (setting anchored to 
+// false does not do this for us. *Shaking fist @ GeoExt)
                         Ext.select('.gx-popup-anc').remove();
                         this.syncSize();
                         this.setHeight(this.items.first().getActiveTab().getHeight());
@@ -401,16 +373,27 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         }
 
     },
-    createFlowlineAboveClipPixel: function(args) {
-        var flowlineAboveClipPixelA = args.a;
-        var flowlineAboveClipPixelB = args.b;
-        var flowlineAboveClipPixelG = args.g;
-        var flowlineAboveClipPixelR = args.r;
-
-        return ((flowlineAboveClipPixelA & 0xff) << 24 |
-                (flowlineAboveClipPixelB & 0xff) << 16 |
-                (flowlineAboveClipPixelG & 0xff) << 8 |
-                (flowlineAboveClipPixelR & 0xff));
+    getClipValueForZoom: function(zoom) {
+        return this.streamOrderTable[zoom].getValue();
+    },
+    setClipValueForZoom: function(zoom, value) {
+        if (this.streamOrderLock === true) {
+            for (var zoomIndex = 0; zoomIndex < this.streamOrderTable.length; ++zoomIndex) {
+                if (zoomIndex < zoom) {
+                    if (this.streamOrderTable[zoomIndex].getValue() < value) {
+                        this.streamOrderTable[zoomIndex].setValue(value);
+                    }
+                } else if (zoomIndex > zoom) {
+                    if (this.streamOrderTable[zoomIndex].getValue() > value) {
+                        this.streamOrderTable[zoomIndex].setValue(value);
+                    }
+                } else {
+                    this.streamOrderTable[zoomIndex].setValue(value);
+                }
+            }
+        } else {
+            this.streamOrderTable[zoom].setValue(value);
+        }
     },
     streamOrderClipValues: [
         7, // 0
@@ -435,40 +418,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         1,
         1  // 20
     ],
-    gagePointSymbolizer: new OpenLayers.Format.SLD().write({
-        namedLayers: [{
-                name: "glri:GageLoc",
-                userStyles: [
-                    new OpenLayers.Style("Gage Style",
-                            {
-                                rules: [
-                                    new OpenLayers.Rule({
-                                        symbolizer: {
-                                            Point: new OpenLayers.Symbolizer.Point({
-                                                graphicName: 'Circle',
-                                                strokeColor: '#99FF99',
-                                                fillColor: '#00FF00',
-                                                pointRadius: 4,
-                                                fillOpacity: 0.5,
-                                                strokeOpacity: 0.5
-                                            })
-                                        }
-                                    })
-                                ]
-                            })
-                ]
-            }]
-    }),
-    createGageStyle: function(args) {
-        var gageStyleA = args.a;
-        var gageStyleR = args.R;
-        var gageStyleG = args.G;
-        var gageStyleB = args.B;
-        return ("rgba(" +
-                gageStyleR + "," +
-                gageStyleG + "," +
-                gageStyleB + "," +
-                gageStyleA / 255 + ")");
-
+    updateFromClipValue: function() {
+        [
+            this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0],
+            this.map.getLayersBy('id', 'gage-location-raster')[0],
+            this.map.getLayersBy('id', 'gage-feature-layer')[0]
+        ].each(function(layer) {
+            layer.updateFromClipValue();
+        });
     }
 });
