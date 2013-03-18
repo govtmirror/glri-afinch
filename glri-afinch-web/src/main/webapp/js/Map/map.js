@@ -33,10 +33,21 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 Ext.apply(EPSG900913Options, {numZoomLevels: 14})
                 ));
         mapLayers.push(new OpenLayers.Layer.XYZ(
-                "World Terrain Base",
-                "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief" + zyx,
-                Ext.apply(EPSG900913Options, {numZoomLevels: 14})
-                ));
+                "World Imagery",
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery" + zyx,
+                {isBaseLayer: true, units: "m"}));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Physical Map",
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map" + zyx,
+                {isBaseLayer: true, units: "m"}));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Street Map",
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map" + zyx,
+                {isBaseLayer: true, units: "m"}));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Topo Map",
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" + zyx,
+                {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Terrain Base",
                 "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief" + zyx,
@@ -92,8 +103,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.MousePosition({
                     prefix: 'POS: '
                 }),
-                new OpenLayers.Control.Attribution({template:
-                            '<img id="attribution" src="' + CONFIG.mapLogoUrl + '"/>'}),
+                new OpenLayers.Control.Attribution({template: '<img id="attribution" src="' + CONFIG.mapLogoUrl + '"/>'}),
                 new OpenLayers.Control.OverviewMap(),
                 new OpenLayers.Control.ScaleLine({
                     geodesic: true
@@ -109,7 +119,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             id: 'map-panel',
             region: 'center',
             map: this.map,
-            extent: this.restrictedMapExtent,
             prettyStateKeys: true,
             layers: new GeoExt.data.LayerStore({
                 initDir: GeoExt.data.LayerStore.STORE_TO_MAP,
@@ -173,10 +182,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
                             },
                             true);
-                    
-                    this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0].updateVisibility();
-                    this.map.getLayersBy('id', 'gage-location-raster')[0].updateVisibility();
-                    panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
+
+                    panel.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0].updateVisibility();
+                    panel.map.getLayersBy('id', 'gage-location-raster')[0].updateVisibility();
                 }
             }
         }, config);
@@ -189,7 +197,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-//        flowlinesLayer, 
+                // flowlinesLayer, 
                 flowlinesWMSData,
                 flowlineRaster,
                 gageFeatureLayer
@@ -359,8 +367,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 ],
                 listeners: {
                     show: function() {
-// Remove the anchor element (setting anchored to 
-// false does not do this for us. *Shaking fist @ GeoExt)
+                        // Remove the anchor element (setting anchored to 
+                        // false does not do this for us. *Shaking fist @ GeoExt)
                         Ext.select('.gx-popup-anc').remove();
                         this.syncSize();
                         this.setHeight(this.items.first().getActiveTab().getHeight());
@@ -395,6 +403,15 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             this.streamOrderTable[zoom].setValue(value);
         }
     },
+    updateFromClipValue: function() {
+        [
+            this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0],
+            this.map.getLayersBy('id', 'gage-location-raster')[0],
+            this.map.getLayersBy('id', 'gage-feature-layer')[0]
+        ].each(function(layer) {
+            layer.updateFromClipValue();
+        });
+    },
     streamOrderClipValues: [
         7, // 0
         7,
@@ -417,14 +434,5 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         1,
         1,
         1  // 20
-    ],
-    updateFromClipValue: function() {
-        [
-            this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0],
-            this.map.getLayersBy('id', 'gage-location-raster')[0],
-            this.map.getLayersBy('id', 'gage-feature-layer')[0]
-        ].each(function(layer) {
-            layer.updateFromClipValue();
-        });
-    }
+    ]
 });
