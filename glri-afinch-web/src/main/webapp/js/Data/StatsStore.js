@@ -152,15 +152,13 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
             throw new Error("Cannot parse zero-length string.");
         }
         var lines = data.split("\n");//note: the string might terminate with a newline
-        if(lines.length === 0){
-            throw new Error("Cannot parse data - only one line given");
-        }
+        
         //tables will be objects with 'title', 'headers', and 'values' properties
         var tables = [];
         for(var i = 0; i < lines.length; i++){
             var line = lines[i];
             //if it's a line describing column headers
-            if('"' === line[0]){
+            if(/^".*"$/.test(line)){//roughly matches comma-separated, double-quoted values
                 var headerStrings = line.split(',');
                 //take out the leading and trailing quotes
                 headerStrings=headerStrings.map(function(n){
@@ -174,8 +172,11 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
                 currentTable.values = [];
             }
             //if it's a line describing values
-            else if(/[0-9]/.test(line[0])){
+            else if(/[0-9]/.test(line[0])){//this is not very robust. Could split on ',' and kill quotes and parseFloat().
                 var values = line.split(',');
+                values = values.map(function(value){
+                    return parseFloat(value);
+                })
                 currentTable.values.push(values);
             }
             //if it's a line describing a new table name
