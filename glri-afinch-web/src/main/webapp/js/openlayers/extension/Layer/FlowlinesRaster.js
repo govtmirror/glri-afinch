@@ -16,6 +16,7 @@ OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
     flowlineAboveClipPixelA: 128,
     CLASS_NAME: "OpenLayers.Layer.FlowlinesRaster",
     initialize: function(config) {
+        this.createFlowlineAboveClipPixel();
         config.isBaseLayer = false;
         if (!config.data && config.dataLayer) {
             var flowlineComposite = OpenLayers.Raster.Composite.fromLayer(config.dataLayer, {int32: true});
@@ -39,15 +40,10 @@ OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
         }))(composite);
     },
     createFlowlineAboveClipPixel: function(args) {
-        var flowlineAboveClipPixelA = args.a;
-        var flowlineAboveClipPixelR = args.r;
-        var flowlineAboveClipPixelG = args.g;
-        var flowlineAboveClipPixelB = args.b;
-
-        return ((flowlineAboveClipPixelA & 0xff) << 24 |
-                (flowlineAboveClipPixelB & 0xff) << 16 |
-                (flowlineAboveClipPixelG & 0xff) << 8 |
-                (flowlineAboveClipPixelR & 0xff));
+        this.flowlineAboveClipPixel =(this.flowlineAboveClipPixelA & 0xff) << 24 |
+                (this.flowlineAboveClipPixelB & 0xff) << 16 |
+                (this.flowlineAboveClipPixelG & 0xff) << 8 |
+                (this.flowlineAboveClipPixelR & 0xff);
     },
     updateFromClipValue: function() {
         if (this.getVisibility()) {
