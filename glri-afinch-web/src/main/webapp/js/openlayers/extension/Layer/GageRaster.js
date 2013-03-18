@@ -27,19 +27,8 @@ OpenLayers.Layer.GageRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
         }
         OpenLayers.Layer.Raster.prototype.initialize.apply(this, [config]);
         this.createGageStyle();
-        this.events.on('visibilitychanged',this.updateVisibility);
+        this.events.on('visibilitychanged', this.updateVisibility);
     },
-    flowlineClipOperation: OpenLayers.Raster.Operation.create(function(pixel) {
-        if (pixel >> 24 === 0) {
-            return 0;
-        }
-        var value = pixel & 0x00ffffff;
-        if (value >= this.streamOrderClipValue && value < 0x00ffffff) {
-            return this.flowlineAboveClipPixel;
-        } else {
-            return 0;
-        }
-    }),
     createGageStyle: function() {
         this.gageStyle =
                 "rgba(" +
@@ -48,26 +37,29 @@ OpenLayers.Layer.GageRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
                 this.gageStyleB + "," +
                 this.gageStyleA / 255 + ")";
     },
-    clipOperation: OpenLayers.Raster.Operation.create(function(pixel, x, y) {
-        var value = pixel & 0x00ffffff;
-        if (value >= this.streamOrderClipValue && value < 0x00ffffff) {
-            this.context.beginPath();
-            this.context.fillStyle = this.gageStyle;
-            this.context.strokeStyle = this.gageStyle;
-            this.context.arc(x, y, this.gageRadius, 0, 2 * Math.PI);
-            if (this.gageFill) {
-                this.context.fill();
-            } else {
-                this.context.stroke();
+    clipOperation: function(composite) {
+        var scope = this;
+        return (OpenLayers.Raster.Operation.create(function(pixel, x, y) {
+            var value = pixel & 0x00ffffff;
+            if (value >= (scope.streamOrderClipValue || 0) && value < 0x00ffffff) {
+                scope.context.beginPath();
+                scope.context.fillStyle = scope.gageStyle;
+                scope.context.strokeStyle = scope.gageStyle;
+                scope.context.arc(x, y, scope.gageRadius, 0, 2 * Math.PI);
+                if (scope.gageFill) {
+                    scope.context.fill();
+                } else {
+                    scope.context.stroke();
+                }
             }
-        }
-    }),
+        }))(composite)
+    },
     updateFromClipValue: function() {
         if (this.getVisibility()) {
             this.onDataUpdate();
         }
     },
-                updateVisibility: function() {
+    updateVisibility: function() {
         //            flowlineRasterWindow.setVisible(flowlineRaster.getVisibility());
     }
 });

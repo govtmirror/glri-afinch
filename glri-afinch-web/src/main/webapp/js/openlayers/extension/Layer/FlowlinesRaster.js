@@ -22,19 +22,22 @@ OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
             config.data = this.clipOperation(flowlineComposite);
         }
         OpenLayers.Layer.Raster.prototype.initialize.apply(this, [config]);
-        this.events.on('visibilitychanged',this.updateVisibility);
+        this.events.on('visibilitychanged', this.updateVisibility);
     },
-    clipOperation: OpenLayers.Raster.Operation.create(function(pixel) {
-        if (pixel >> 24 === 0) {
-            return 0;
-        }
-        var value = pixel & 0x00ffffff;
-        if (value >= this.streamOrderClipValue && value < 0x00ffffff) {
-            return this.flowlineAboveClipPixel;
-        } else {
-            return 0;
-        }
-    }),
+    clipOperation: function(composite) {
+        var scope = this;
+        return  (OpenLayers.Raster.Operation.create(function(pixel) {
+            if (pixel >> 24 === 0) {
+                return 0;
+            }
+            var value = pixel & 0x00ffffff;
+            if (value >= scope.streamOrderClipValue && value < 0x00ffffff) {
+                return scope.flowlineAboveClipPixel;
+            } else {
+                return 0;
+            }
+        }))(composite);
+    },
     createFlowlineAboveClipPixel: function(args) {
         var flowlineAboveClipPixelA = args.a;
         var flowlineAboveClipPixelR = args.r;
