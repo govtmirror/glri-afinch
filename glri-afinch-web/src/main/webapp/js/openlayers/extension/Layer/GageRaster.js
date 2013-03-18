@@ -41,7 +41,7 @@ OpenLayers.Layer.GageRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
         var scope = this;
         return (OpenLayers.Raster.Operation.create(function(pixel, x, y) {
             var value = pixel & 0x00ffffff;
-            if (value >= (scope.streamOrderClipValue || 0) && value < 0x00ffffff) {
+            if (value >= scope.streamOrderClipValue && value < 0x00ffffff) {
                 scope.context.beginPath();
                 scope.context.fillStyle = scope.gageStyle;
                 scope.context.strokeStyle = scope.gageStyle;
