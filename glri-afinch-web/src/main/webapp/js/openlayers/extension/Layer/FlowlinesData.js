@@ -26,22 +26,5 @@ OpenLayers.Layer.FlowlinesData = OpenLayers.Class(OpenLayers.Layer.WMS, {
         var newArguments = [];
         newArguments.push(name, url, params, options);
         OpenLayers.Layer.WMS.prototype.initialize.apply(this, newArguments);
-    },
-    createFlowlineClipData: function(args) {
-        var compositeLayer = OpenLayers.Raster.Composite.fromLayer(this, {int32: true});
-        var streamOrderClipValue = args.streamOrderClipValue;
-        var flowlineAboveClipPixel = args.flowlineAboveClipPixel;
-        var createFunct = OpenLayers.Raster.Operation.create(function(pixel) {
-            if (pixel >> 24 === 0) {
-                return 0;
-            }
-            var value = pixel & 0x00ffffff;
-            if (value >= streamOrderClipValue && value < 0x00ffffff) {
-                return flowlineAboveClipPixel;
-            } else {
-                return 0;
-            }
-        });
-        return createFunct.call(compositeLayer);
     }
 });

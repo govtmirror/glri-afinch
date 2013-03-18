@@ -197,7 +197,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-                // flowlinesLayer, 
                 flowlinesWMSData,
                 flowlineRaster,
                 gageFeatureLayer

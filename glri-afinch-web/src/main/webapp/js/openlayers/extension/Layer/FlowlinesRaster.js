@@ -39,7 +39,7 @@ OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
             }
         }))(composite);
     },
-    createFlowlineAboveClipPixel: function(args) {
+    createFlowlineAboveClipPixel: function() {
         this.flowlineAboveClipPixel =(this.flowlineAboveClipPixelA & 0xff) << 24 |
                 (this.flowlineAboveClipPixelB & 0xff) << 16 |
                 (this.flowlineAboveClipPixelG & 0xff) << 8 |
