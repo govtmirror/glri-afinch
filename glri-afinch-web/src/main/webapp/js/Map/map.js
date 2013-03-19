@@ -402,15 +402,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         }
     },
     updateFromClipValue: function(val) {
-        this.streamOrderClipValue = val
-        var layers = [
-            this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0],
-            this.map.getLayersBy('id', 'gage-location-raster')[0],
-            this.map.getLayersBy('id', 'gage-feature-layer')[0]
-        ];
-
-        for (var layerIdx = 0; layerIdx < layers.length; layerIdx++) {
-            layers[layerIdx].updateFromClipValue(val);
+        this.streamOrderClipValue = val;
+        for (var layerIdx = 0; layerIdx < this.map.layers.length; layerIdx++) {
+            var mapLayer = this.map.layers[layerIdx];
+            if (typeof mapLayer.updateFromClipValue === 'function') {
+                mapLayer.updateFromClipValue(val);
+            }
         }
     },
     streamOrderClipValues: [
