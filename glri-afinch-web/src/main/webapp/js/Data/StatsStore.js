@@ -192,5 +192,25 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
         }
         return tables;
     },
-    load: AFINCH.data.statsStoreLoad
+    load: AFINCH.data.statsStoreLoad,
+   /**
+    * Converts a storeinto a csv string
+    * 
+    * @returns string - a csv representation of the store
+    */
+    toCsv: function(){
+        var store = this;    
+    
+        var keys = store.fields.keys;
+        var csv = keys.join(',') + '\n';
+
+        store.data.items.each(function(record) {
+            var values = [];
+            keys.each(function(key) {
+                values.push(record.data[key]);
+            });
+            csv += values.join(',') + '\n';
+        });
+        return csv;
+    }
 });

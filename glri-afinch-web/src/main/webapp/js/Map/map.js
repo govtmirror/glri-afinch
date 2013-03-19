@@ -247,6 +247,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     title: 'Error',
                     msg: "Error retrieving data from server. See browser logs for details."
                 }).show(document);  
+                return;
             }
             this.show();
             this.center();
@@ -271,8 +272,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //init a window that will be used as context for the callback
         var win = new AFINCH.ui.GageDataWindow({
             id: 'data-display-window',
-            title: title,
-            items: [new Ext.Panel()] 
+            title: title
         });
         
 //        var params = {
