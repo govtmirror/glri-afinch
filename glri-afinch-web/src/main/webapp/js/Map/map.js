@@ -57,7 +57,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         // ////////////////////////////////////////////// FLOWLINES
         var flowlinesWMSData = new OpenLayers.Layer.FlowlinesData(
                 "Flowline WMS (Data)",
-                CONFIG.endpoint.geoserver + 'glri/wms'
+                CONFIG.endpoint.geoserver + 'wms'
                 );
         flowlinesWMSData.id = 'nhd-flowlines-data-layer';
 
@@ -135,7 +135,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 var zoom = panel.map.zoom;
                                 LOG.info('Current map zoom: ' + zoom);
                                 panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
-                                panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
                                 
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
                             },
@@ -144,43 +143,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
                     panel.updateFromClipValue(panel.streamOrderClipValues[panel.map.zoom]);
-
-                    panel.streamOrderSlider = new Ext.slider.SingleSlider({
-                        fieldLabel: "Stream Order",
-                        width: 120,
-                        value: panel.streamOrderClipValue,
-                        increment: 1,
-                        minValue: 1,
-                        maxValue: 7,
-                        listeners: {
-                            change: function(element, newValue) {
-                                if (newValue !== panel.streamOrderClipValue) {
-                                    panel.updateFromClipValue(newValue);
-                                }
-                            }
-                        }
-                    });
-
-                    for (var zoomIndex = 0; zoomIndex < panel.streamOrderTable.length; ++zoomIndex) {
-                        panel.streamOrderTable[zoomIndex] = new Ext.slider.SingleSlider({
-                            fieldLabel: '' + zoomIndex,
-                            value: panel.streamOrderClipValues[zoomIndex],
-                            minValue: 1,
-                            maxValue: 7,
-                            zoom: zoomIndex,
-                            listeners: {
-                                change: function(element, newValue) {
-                                    panel.setClipValueForZoom(element.zoom, newValue);
-                                    if (element.zoom === map.zoom) {
-                                        panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
-                                        if (newValue !== panel.streamOrderClipValue) {
-                                            panel.updateFromClipValue(newValue);
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
 
                     panel.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0].updateVisibility();
                     panel.map.getLayersBy('id', 'gage-location-raster')[0].updateVisibility();
@@ -380,7 +342,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
     },
     getClipValueForZoom: function(zoom) {
-        return this.streamOrderTable[zoom].getValue();
+        return this.streamOrderClipValues[zoom];
     },
     setClipValueForZoom: function(zoom, value) {
         if (this.streamOrderLock === true) {
