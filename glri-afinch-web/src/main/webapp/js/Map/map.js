@@ -131,6 +131,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
                     panel.streamOrderClipValue = panel.streamOrderClipValues[panel.map.zoom];
+                    panel.updateFromClipValue();
 
                     panel.streamOrderSlider = new Ext.slider.SingleSlider({
                         fieldLabel: "Stream Order",
@@ -179,6 +180,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 LOG.info('Current map zoom: ' + zoom);
                                 panel.streamOrderClipValue = panel.getClipValueForZoom(zoom);
                                 panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
+                                panel.updateFromClipValue();
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
                             },
                             true);
@@ -403,13 +405,15 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         }
     },
     updateFromClipValue: function() {
-        [
+        var layers = [
             this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0],
             this.map.getLayersBy('id', 'gage-location-raster')[0],
             this.map.getLayersBy('id', 'gage-feature-layer')[0]
-        ].each(function(layer) {
-            layer.updateFromClipValue();
-        });
+        ];
+
+        for (var layerIdx = 0; layerIdx < layers.length; layerIdx++) {
+            layers[layerIdx].updateFromClipValue(this.streamOrderClipValue);
+        }
     },
     streamOrderClipValues: [
         7, // 0

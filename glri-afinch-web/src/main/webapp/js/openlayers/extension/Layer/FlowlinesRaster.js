@@ -45,7 +45,8 @@ OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
                 (this.flowlineAboveClipPixelG & 0xff) << 8 |
                 (this.flowlineAboveClipPixelR & 0xff);
     },
-    updateFromClipValue: function() {
+    updateFromClipValue: function(cv) {
+        this.streamOrderClipValue = cv;
         if (this.getVisibility()) {
             this.onDataUpdate();
         }

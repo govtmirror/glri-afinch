@@ -52,9 +52,10 @@ OpenLayers.Layer.GageRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
                     scope.context.stroke();
                 }
             }
-        }))(composite)
+        }))(composite);
     },
-    updateFromClipValue: function() {
+    updateFromClipValue: function(cv) {
+        this.streamOrderClipValue = cv;
         if (this.getVisibility()) {
             this.onDataUpdate();
         }
