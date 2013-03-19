@@ -128,10 +128,22 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             border: false,
             listeners: {
                 added: function(panel, owner, idx) {
+                    panel.map.events.register(
+                            'zoomend',
+                            panel.map,
+                            function() {
+                                var zoom = panel.map.zoom;
+                                LOG.info('Current map zoom: ' + zoom);
+                                panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
+                                panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
+                                
+                                panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
+                            },
+                            true);
+
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
-                    panel.streamOrderClipValue = panel.streamOrderClipValues[panel.map.zoom];
-                    panel.updateFromClipValue();
+                    panel.updateFromClipValue(panel.streamOrderClipValues[panel.map.zoom]);
 
                     panel.streamOrderSlider = new Ext.slider.SingleSlider({
                         fieldLabel: "Stream Order",
@@ -143,8 +155,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         listeners: {
                             change: function(element, newValue) {
                                 if (newValue !== panel.streamOrderClipValue) {
-                                    panel.streamOrderClipValue = newValue;
-                                    panel.updateFromClipValue();
+                                    panel.updateFromClipValue(newValue);
                                 }
                             }
                         }
@@ -163,27 +174,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                     if (element.zoom === map.zoom) {
                                         panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
                                         if (newValue !== panel.streamOrderClipValue) {
-                                            panel.streamOrderClipValue = newValue;
-                                            panel.updateFromClipValue();
+                                            panel.updateFromClipValue(newValue);
                                         }
                                     }
                                 }
                             }
                         });
                     }
-
-                    panel.map.events.register(
-                            'zoomend',
-                            panel.map,
-                            function() {
-                                var zoom = panel.map.zoom;
-                                LOG.info('Current map zoom: ' + zoom);
-                                panel.streamOrderClipValue = panel.getClipValueForZoom(zoom);
-                                panel.streamOrderSlider.setValue(panel.streamOrderClipValue);
-                                panel.updateFromClipValue();
-                                panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
-                            },
-                            true);
 
                     panel.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0].updateVisibility();
                     panel.map.getLayersBy('id', 'gage-location-raster')[0].updateVisibility();
@@ -404,7 +401,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             this.streamOrderTable[zoom].setValue(value);
         }
     },
-    updateFromClipValue: function() {
+    updateFromClipValue: function(val) {
+        this.streamOrderClipValue = val
         var layers = [
             this.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0],
             this.map.getLayersBy('id', 'gage-location-raster')[0],
@@ -412,7 +410,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         ];
 
         for (var layerIdx = 0; layerIdx < layers.length; layerIdx++) {
-            layers[layerIdx].updateFromClipValue(this.streamOrderClipValue);
+            layers[layerIdx].updateFromClipValue(val);
         }
     },
     streamOrderClipValues: [

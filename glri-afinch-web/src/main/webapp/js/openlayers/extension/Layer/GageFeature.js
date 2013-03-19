@@ -51,7 +51,6 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, newArguments);
     },
     updateGageStreamOrderFilter: function() {
-LOG.info(this.streamOrderClipValue);
         this.strategies[1].setFilter(new OpenLayers.Filter.Comparison({
             type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
             property: "StreamOrde",
