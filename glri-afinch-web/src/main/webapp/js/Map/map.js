@@ -28,14 +28,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         // ////////////////////////////////////////////// BASE LAYERS
         var zyx = '/MapServer/tile/${z}/${y}/${x}';
         mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Imagery",
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery" + zyx,
+                {isBaseLayer: true, units: "m"}));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Light Gray Base",
                 "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
                 Ext.apply(EPSG900913Options, {numZoomLevels: 14})
                 ));
-        mapLayers.push(new OpenLayers.Layer.XYZ(
-                "World Imagery",
-                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery" + zyx,
-                {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Physical Map",
                 "http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map" + zyx,
