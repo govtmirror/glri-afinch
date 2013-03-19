@@ -59,7 +59,7 @@ AFINCH.data.statsStoreLoad =  function(options){
         method: 'POST',
         params: wpsRequestData,
         success: function(response, options){
-            if (response.responseText.toLowerCase().contains('exception')) {
+            if (response.responseText.toLowerCase().indexOf('exception') !== -1) {
                 var errMsg = response.responseXML.getElementsByTagName('ns\:ExceptionText')[0].textContent;
                 new Ext.ux.Notify({
                     msgWidth: 200,

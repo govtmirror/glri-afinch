@@ -84,6 +84,9 @@
         <script type="text/javascript" src="js/Map/map.js"></script>
         <script type="text/javascript" src="js/Data/StatsStore.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
+        <script type="text/javascript" src="js/Ui/DataExportToolbar.js"></script>
+        <script type="text/javascript" src="js/Ui/SeriesToggleButtonGroup.js"></script>
+        <script type="text/javascript" src="js/Ui/GageDataWindow.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
         <script type="text/javascript" src="js/Ui/DataDisplayPanel.js"></script>

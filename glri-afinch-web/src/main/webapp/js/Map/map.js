@@ -223,6 +223,71 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
+//debug:
+//this.displayGageDataWindow({data:{"feature":{"layer":null,"lonlat":null,"data":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"id":"OpenLayers.Feature.Vector_5664","geometry":{"id":"OpenLayers.Geometry.Point_5663","x":-9383394.31635411,"y":5570754.48056071},"state":null,"attributes":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"style":null,"gml":{"featureType":"GageLoc","featureNS":"http://cida.usgs.gov/glri","featureNSPrefix":"glri"},"fid":"GageLoc.644"},"state":null,"fid":"GageLoc.644","ComID":12952772,"TotDASqKM":"2789.4069","REACHCODE":"04070007000079","SOURCE_FEA":"04136000"}});
+},
+    displayGageDataWindow: function(gageRecord){
+        
+        //check to see if a Gage data window already exists. If so, destroy it.
+        var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
+        if (dataDisplayWindow) {
+            LOG.debug('Removing previous data display window');
+            dataDisplayWindow.destroy();
+        }
+        var name = gageRecord.data.GNIS_NAME || "";
+        var gageID = gageRecord.data.COMID || "";
+        var title = name.length ? name + " - " : "";
+            title += gageID;
+
+        var statsCallback = function(statsStores, success) {
+            
+            if(!success || !statsStores){
+                new Ext.ux.Notify({
+                    msgWidth: 200,
+                    title: 'Error',
+                    msg: "Error retrieving data from server. See browser logs for details."
+                }).show(document);  
+            }
+            this.show();
+            this.center();
+            var div = this.items.first().getEl().dom;
+            var g = new Dygraph(
+                // containing div
+                div,
+                // CSV or path to a CSV file.
+                "Date,Temperature\n" +
+                "2008-05-07,75\n" +
+                "2008-05-08,70\n" +
+                "2008-05-09,80\n"
+
+                );
+            
+//            statsStores.each(function(statsStore) {
+//               
+//            
+//            });
+        };
+
+        //init a window that will be used as context for the callback
+        var win = new AFINCH.ui.GageDataWindow({
+            id: 'data-display-window',
+            title: title,
+            items: [new Ext.Panel()] 
+        });
+        
+//        var params = {
+//            sosEndpointUrl: self.sosEndpointUrl
+//        };
+//        var statsStore = new AFINCH.data.StatsStore();
+//                        
+//        statsStore.load({
+//            params: params,
+//            scope: win,
+//            callback: statsCallback
+//        });
+
+//mock the callback:
+           statsCallback.call(win, true, true);         
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
         var self = this;
@@ -276,55 +341,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 singleSelect: true,
                 listeners: {
                     rowselect: function(obj, rowIndex, record) {
-                        var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
-                        if (dataDisplayWindow) {
-                            LOG.debug('Removing previous data display window');
-                            dataDisplayWindow.destroy();
-                        }
-
-                        var dataTabPanel = new Ext.TabPanel({
-                            id: 'data-tab-pabel',
-                            region: 'center',
-                            activeTab: 0,
-                            autoScroll: true,
-                            layoutOnTabChange: true,
-                            monitorResize: true,
-                            resizeTabs: true,
-                            height: 400,
-                            width: 800
-                        });
-
-                        var statsCallback = function(statsStores, success) {
-                            if(!success || !statsStores){
-                                return;
-                            }
-                            var tabPanel = this.items.first();
-                            statsStores.each(function(statsStore) {
-                                tabPanel.add(new AFINCH.ui.DataDisplayPanel({
-                                    statsStore: statsStore,
-                                    region: 'center',
-                                    width: 1050
-                                }));
-                            });
-                            this.show();
-                        };
-
-                        //init a window that will be used as context for the callback
-                        var win = new Ext.Window({
-                            id: 'data-display-window',
-                            items: [dataTabPanel]
-                        });
-                        
-                        var params = {
-                                sosEndpointUrl: self.sosEndpointUrl
-                            };
-                        var statsStore = new AFINCH.data.StatsStore();
-                        
-                        statsStore.load({
-                            params: params,
-                            scope: win,
-                            callback: statsCallback
-                        });
+                        self.displayGageDataWindow(record);
                     }
                 }
             });
