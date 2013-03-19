@@ -81,17 +81,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 );
         gageData.id = 'gage-location-data';
 
-        var gageRaster = new OpenLayers.Layer.GageRaster({
-            name: "Gage Location",
-            dataLayer: gageData,
-            streamOrderClipValue: this.streamOrderClipValue
-        });
-        gageRaster.id = 'gage-location-raster';
-
         mapLayers.push(flowlinesWMSData);
         mapLayers.push(gageData);
         mapLayers.push(flowlineRaster);
-        mapLayers.push(gageRaster);
         mapLayers.push(gageFeatureLayer);
 
         // MAP
@@ -145,7 +137,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     panel.updateFromClipValue(panel.streamOrderClipValues[panel.map.zoom]);
 
                     panel.map.getLayersBy('id', 'nhd-flowlines-raster-layer')[0].updateVisibility();
-                    panel.map.getLayersBy('id', 'gage-location-raster')[0].updateVisibility();
                 }
             }
         }, config);
