@@ -1,6 +1,6 @@
 Ext.ns("AFINCH.ui");
 
-AFINCH.ui.GageDataWindow = Ext.extend(Ext.Window, {
+AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
     constructor: function(config) {
         var title = config.title || "";
         var width = config.width || 800;
@@ -20,7 +20,7 @@ AFINCH.ui.GageDataWindow = Ext.extend(Ext.Window, {
             fbar: new AFINCH.ui.DataExportToolbar()
         }, config);
 
-        AFINCH.ui.GageDataWindow.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.GageDataWindow::constructor(): Construction complete.');
+        AFINCH.ui.DataWindow.superclass.constructor.call(this, config);
+        LOG.info('AFINCH.ui.DataWindow::constructor(): Construction complete.');
     }
 });
