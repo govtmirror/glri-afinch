@@ -12,6 +12,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     streamOrderTable: new Array(21),
     streamOrderSlider: undefined,
     streamOrderLock: true,
+    streamOrderClipValues: undefined,
     constructor: function(config) {
         LOG.debug('map.js::constructor()');
         var config = config || {};
@@ -121,12 +122,20 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             listeners: {
                 added: function(panel, owner, idx) {
 
+                    var clipCount = 7;
+                    var zoomLevels = CONFIG.mapPanel.map.getNumZoomLevels();
+                    panel.streamOrderClipValues = new Array(zoomLevels);
+                    var tableLength = panel.streamOrderClipValues.length;
+
+                    for (var cInd = 0; cInd < tableLength; cInd++) {
+                        panel.streamOrderClipValues[cInd] = Math.ceil((tableLength - cInd) * (clipCount / tableLength));
+                    }
+                    
                     var flowlineWfsMapping = {
                         wfs1: [],
                         wfs2: [],
                         binTable: []
                     }
-
                     panel.map.events.register(
                             'zoomend',
                             panel.map,
@@ -136,41 +145,40 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
 
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
-
-                                Ext.Ajax.request({
-                                    url: CONFIG.endpoint.geoserver + 'glri/ows',
-                                    scope: flowlineWfsMapping,
-                                    params: {
-                                        service: 'WFS',
-                                        version: '1.0.0',
-                                        outputFormat: 'GML2',
-                                        request: 'GetFeature',
-                                        typeName: 'glri:NHDFlowline',
-                                        propertyName: 'StreamOrde',
-                                        'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue
-                                    },
-                                    success: function(response, opts) {
-                                        this.wfs1 = new OpenLayers.Format.GML.v2().read(response.responseText);
-                                        Ext.Ajax.request({
-                                            url: CONFIG.endpoint.geoserver + 'glri/ows',
-                                            scope: this,
-                                            params: {
-                                                service: 'WFS',
-                                                version: '1.1.0',
-                                                request: 'GetFeature',
-                                                typeName: 'glri:NHDFlowline',
-                                                propertyName: 'StreamLeve',
-                                                featureID : this.wfs1.map(function(l){ return l.fid }).join()
-//                                              'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue,
-//                                                sortBy: 'featureId'
-                                            },
-                                            success: function(response, opts) {
-                                                this.wfs2 = new OpenLayers.Format.GML().read(response.responseText);
-                                                var a = 1;
-                                            }
-                                        });
-                                    }
-                                });
+//
+//                                Ext.Ajax.request({
+//                                    url: CONFIG.endpoint.geoserver + 'glri/ows',
+//                                    scope: flowlineWfsMapping,
+//                                    params: {
+//                                        service: 'WFS',
+//                                        version: '1.0.0',
+//                                        outputFormat: 'json',
+//                                        request: 'GetFeature',
+//                                        typeName: 'glri:NHDFlowline',
+//                                        propertyName: 'StreamOrde',
+//                                        'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue
+//                                    },
+//                                    success: function(response, opts) {
+//                                        this.wfs1 = Ext.util.JSON.decode(response.responseText);
+//                                        Ext.Ajax.request({
+//                                            url: CONFIG.endpoint.geoserver + 'glri/ows',
+//                                            scope: this,
+//                                            params: {
+//                                                service: 'WFS',
+//                                                version: '1.1.0',
+//                                                outputFormat: 'json',
+//                                                request: 'GetFeature',
+//                                                typeName: 'glri:NHDFlowline',
+//                                                propertyName: 'StreamOrde,StreamLeve',
+//                                                'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue
+//                                            },
+//                                            success: function(response, opts) {
+//                                                this.wfs2 = Ext.util.JSON.decode(response.responseText);
+//                                                var a = 1;
+//                                            }
+//                                        });
+//                                    }
+//                                });
 
 
 
@@ -407,28 +415,5 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 mapLayer.updateFromClipValue(val);
             }
         }
-    },
-    streamOrderClipValues: [
-        7, // 0
-        7,
-        7,
-        6,
-        6,
-        6, // 5
-        5,
-        5,
-        5,
-        4,
-        4, // 10
-        4,
-        3,
-        3,
-        3,
-        2, // 15
-        2,
-        2,
-        1,
-        1,
-        1  // 20
-    ]
+    }
 });
