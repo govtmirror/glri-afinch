@@ -120,25 +120,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             border: false,
             listeners: {
                 added: function(panel, owner, idx) {
-                    
-                    var wfs1 = '';
-                    var wfs2 = '';
-                    
-                    Ext.Ajax.request({
-                        url : CONFIG.endpoint.geoserver + 'glri/ows',
-                        params : {
-                            service : 'WFS',
-                            version : '2.0.0',
-                            request : 'GetFeature',
-                            typeName : 'glri:NHDFlowline',
-                            propertyName : 'StreamOrde',
-                            maxFeatures : '50'
-                        },
-                        success : function(response, opts) {
-                            var a = 1;
-                        }
-                    })
-                    
+
+                    var flowlineWfsMapping = {
+                        wfs1: [],
+                        wfs2: [],
+                        binTable: []
+                    }
+
                     panel.map.events.register(
                             'zoomend',
                             panel.map,
@@ -146,8 +134,46 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 var zoom = panel.map.zoom;
                                 LOG.info('Current map zoom: ' + zoom);
                                 panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
-                                
+
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
+
+                                Ext.Ajax.request({
+                                    url: CONFIG.endpoint.geoserver + 'glri/ows',
+                                    scope: flowlineWfsMapping,
+                                    params: {
+                                        service: 'WFS',
+                                        version: '1.0.0',
+                                        outputFormat: 'GML2',
+                                        request: 'GetFeature',
+                                        typeName: 'glri:NHDFlowline',
+                                        propertyName: 'StreamOrde',
+                                        'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue
+                                    },
+                                    success: function(response, opts) {
+                                        this.wfs1 = new OpenLayers.Format.GML.v2().read(response.responseText);
+                                        Ext.Ajax.request({
+                                            url: CONFIG.endpoint.geoserver + 'glri/ows',
+                                            scope: this,
+                                            params: {
+                                                service: 'WFS',
+                                                version: '1.1.0',
+                                                request: 'GetFeature',
+                                                typeName: 'glri:NHDFlowline',
+                                                propertyName: 'StreamLeve',
+                                                featureID : this.wfs1.map(function(l){ return l.fid }).join()
+//                                              'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue,
+//                                                sortBy: 'featureId'
+                                            },
+                                            success: function(response, opts) {
+                                                this.wfs2 = new OpenLayers.Format.GML().read(response.responseText);
+                                                var a = 1;
+                                            }
+                                        });
+                                    }
+                                });
+
+
+
                             },
                             true);
 
