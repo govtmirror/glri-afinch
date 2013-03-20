@@ -231,7 +231,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
      *@param success - whether or not the request was successful
      */
     statsCallback : function(statsStores, success) {
-
+            var self = this;
+            var win = self.dataWindow;
+            
             if(!success || !statsStores){
                 new Ext.ux.Notify({
                     msgWidth: 200,
@@ -240,8 +242,16 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 }).show(document);  
                 return;
             }
-            debugger;
+            
+            //
+            
+            var decStore = statsStores.find(function(store){
+                return store.title == 'deciles'; //@todo x-hardcoding
+            });
+            self.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: decStore});
+            win.add(self.gridPanel);
 
+            
 
         //            statsStores.each(function(statsStore) {
         //               
@@ -316,13 +326,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 [new Date('1902/11/01'), null, null, 175, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
                 [new Date('1902/12/01'), null, null, 150, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
             ],
-            headers: ['Date','Annual Median Flow','Annual Mean Flow',/*'Monthly Flow',*/'Monthly Median Flow','Monthly Mean Flow','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9']
+            headers: ['Date','Annual Median Flow','Annual Mean Flow','Monthly Median Flow','Monthly Mean Flow','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9']
         };
-        
         win.graphPanel = new AFINCH.ui.StatsGraphPanel({
             initialData: monthlyFlowData
         });
         win.add(win.graphPanel);
+        
+        
         win.show();
         win.center();
 
@@ -348,7 +359,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //init a window that will be used as context for the callback
         self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
-            title: title
+            title: title,
+            listeners: {
+                afterrender: function(p1, p2, p3){
+                    console.dir(params);
+                    debugger;
+                }
+            }
         });
         var params = {};//@todo pass record properties into ajax params
         Ext.Ajax.request({

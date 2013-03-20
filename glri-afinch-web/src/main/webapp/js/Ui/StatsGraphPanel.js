@@ -6,6 +6,7 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
     constructor: function(config) {
         var self = this;
         config = Ext.apply({
+            width: 500,
             listeners: {
                 afterrender: function(panel) {
                     var data = self.initialData.data;
@@ -14,6 +15,11 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
                         labels: labels,
                         connectSeparatedPoints: true
                     });
+                    var win = panel.findParentByType('dataWindow');
+                    var labelPanel = win.lablePanel = new AFINCH.ui.StatsLabelPanel();
+                    
+                    win.add(labelPanel);
+                    win.doLayout();
                 }
             }
         }, config);

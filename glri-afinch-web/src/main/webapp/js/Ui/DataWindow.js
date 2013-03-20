@@ -16,11 +16,13 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
             tbar: buttonGroup,
             title: title,
             collapsible: true,
-            layout : 'vbox',
-            fbar: new AFINCH.ui.DataExportToolbar()
+            layout : 'hbox',
+            fbar: new AFINCH.ui.DataExportToolbar(),
+            xtype: 'window'
         }, config);
 
         AFINCH.ui.DataWindow.superclass.constructor.call(this, config);
         LOG.info('AFINCH.ui.DataWindow::constructor(): Construction complete.');
     }
 });
+Ext.reg('dataWindow', AFINCH.ui.DataWindow);

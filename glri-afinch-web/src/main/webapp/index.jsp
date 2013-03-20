@@ -89,6 +89,7 @@
         <script type="text/javascript" src="js/Ui/DataWindow.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
+        <script type="text/javascript" src="js/Ui/StatsLabelPanel.js"></script>
         <script type="text/javascript" src="js/Ui/DataDisplayPanel.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>
     </head>
