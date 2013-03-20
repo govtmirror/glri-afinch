@@ -15,7 +15,7 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
             filter: new OpenLayers.Filter.Comparison({
                 type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
                 property: "StreamOrde",
-                value: 0
+                value: this.streamOrderClipValue
             })
         })
     ],
@@ -49,5 +49,18 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
         });
         newArguments.push(name, options);
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, newArguments);
+    },
+    updateGageStreamOrderFilter: function() {
+        this.strategies[1].setFilter(new OpenLayers.Filter.Comparison({
+            type: OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO,
+            property: "StreamOrde",
+            value: this.streamOrderClipValue
+        }));
+    },
+    updateFromClipValue: function(cv) {
+        this.streamOrderClipValue = cv;
+        if (this.getVisibility()) {
+            this.updateGageStreamOrderFilter();
+        }
     }
 });
