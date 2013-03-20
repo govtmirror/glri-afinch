@@ -224,8 +224,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
 //debug:
-this.displayGageDataWindow({data:{"feature":{"layer":null,"lonlat":null,"data":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"id":"OpenLayers.Feature.Vector_5664","geometry":{"id":"OpenLayers.Geometry.Point_5663","x":-9383394.31635411,"y":5570754.48056071},"state":null,"attributes":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"style":null,"gml":{"featureType":"GageLoc","featureNS":"http://cida.usgs.gov/glri","featureNSPrefix":"glri"},"fid":"GageLoc.644"},"state":null,"fid":"GageLoc.644","ComID":12952772,"TotDASqKM":"2789.4069","REACHCODE":"04070007000079","SOURCE_FEA":"04136000"}});
+//this.displayDataWindow({data:{"feature":{"layer":null,"lonlat":null,"data":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"id":"OpenLayers.Feature.Vector_5664","geometry":{"id":"OpenLayers.Geometry.Point_5663","x":-9383394.31635411,"y":5570754.48056071},"state":null,"attributes":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"style":null,"gml":{"featureType":"GageLoc","featureNS":"http://cida.usgs.gov/glri","featureNSPrefix":"glri"},"fid":"GageLoc.644"},"state":null,"fid":"GageLoc.644","ComID":12952772,"TotDASqKM":"2789.4069","REACHCODE":"04070007000079","SOURCE_FEA":"04136000"}});
 },
+    /**
+     *@param statsStores - array of StatStores
+     *@param success - whether or not the request was successful
+     */
     statsCallback : function(statsStores, success) {
 
             if(!success || !statsStores){
@@ -236,35 +240,91 @@ this.displayGageDataWindow({data:{"feature":{"layer":null,"lonlat":null,"data":{
                 }).show(document);  
                 return;
             }
-            //attach it to the Ext window so header, footer elts will have easy access
-            this.statsStores = statsStores;
-            this.add(new AFINCH.ui.StatsGraphPanel({
-                statsStores: statsStores
-            }));
-            this.show();
-            this.center();
+            debugger;
 
 
         //            statsStores.each(function(statsStore) {
         //               
         //            
         //            });
+        
+        //attach it to the Ext window so header, footer elts will have easy access
+            this.statsStores = statsStores;
+            //update statsStores
         },
+    /**
+     * @param ajax - response
+     * @param options - the options that initiated the Ajax request
+     * @scope the window in which the data will be visualized
+     */
     sosCallback : function(response, options){
-        var win = this;
-
-        var params = {
+        var self = this;
+        var win = self.dataWindow;
+      
+        var rParams = {
             sosEndpointUrl: self.sosEndpointUrl
         };
-        //@todo: this is getting instantiated only to use the method, then discarded
-        //          make it a static method
-        var statsStore = new AFINCH.data.StatsStore();
 
-        statsStore.load({
-            params: params,
-            scope: win,
-            callback: statsCallback
+        var tempStatsStore = new AFINCH.data.StatsStore();
+        //kick off the next ajax call...
+        tempStatsStore.load({
+            params: rParams,
+            scope: self,
+            callback: self.statsCallback
         });
+        //...while we're waiting, parse the response already received from the last ajax call
+        
+        //@todo get monthly flow series from response instead of mocking data
+        var monthlyFlowData = {
+            data :  [
+                [new Date('1900/01/01'), 150, 175, 150, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/02/01'), null, null, 160, 185, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/03/01'), null, null, 170, 195, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/04/01'), null, null, 180, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/05/01'), null, null, 195, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/06/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/07/01'), null, null, 205, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/08/01'), null, null, 210, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/09/01'), null, null, 215, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/10/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/11/01'), null, null, 175, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1900/12/01'), null, null, 150, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                //
+                [new Date('1901/01/01'), 250, 275, 150, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/02/01'), null, null, 160, 185, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/03/01'), null, null, 170, 195, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/04/01'), null, null, 180, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/05/01'), null, null, 195, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/06/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/07/01'), null, null, 205, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/08/01'), null, null, 210, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/09/01'), null, null, 215, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/10/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/11/01'), null, null, 175, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1901/12/01'), null, null, 150, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                //
+                [new Date('1902/01/01'), 50, 75, 150, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/02/01'), null, null, 160, 185, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/03/01'), null, null, 170, 195, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/04/01'), null, null, 180, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/05/01'), null, null, 195, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/06/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/07/01'), null, null, 205, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/08/01'), null, null, 210, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/09/01'), null, null, 215, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/10/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/11/01'), null, null, 175, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+                [new Date('1902/12/01'), null, null, 150, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
+            ],
+            headers: ['Date','Annual Median Flow','Annual Mean Flow',/*'Monthly Flow',*/'Monthly Median Flow','Monthly Mean Flow','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9']
+        };
+        
+        win.graphPanel = new AFINCH.ui.StatsGraphPanel({
+            initialData: monthlyFlowData
+        });
+        win.add(win.graphPanel);
+        win.show();
+        win.center();
 
     },
 
@@ -273,30 +333,29 @@ this.displayGageDataWindow({data:{"feature":{"layer":null,"lonlat":null,"data":{
      * 
      */
     displayDataWindow: function(record){
-
+        var self = this;
         //check to see if a Gage data window already exists. If so, destroy it.
         var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
         if (dataDisplayWindow) {
             LOG.debug('Removing previous data display window');
             dataDisplayWindow.destroy();
         }
-        var name = gageRecord.data.GNIS_NAME || "";
-        var gageID = gageRecord.data.COMID || "";
+        var name = record.data.GNIS_NAME || "";
+        var gageID = record.data.COMID || "";
         var title = name.length ? name + " - " : "";
         title += gageID;
 
         //init a window that will be used as context for the callback
-        var win = new AFINCH.ui.GageDataWindow({
+        self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
             title: title
         });
-        
         var params = {};//@todo pass record properties into ajax params
-        Ext.ajax.request({
+        Ext.Ajax.request({
             url: '/glri-afinch/js/Data/dummyValues.xml',
             success: self.sosCallback,
             params: params,
-            scope: win
+            scope: self
         }
         );        
     },
