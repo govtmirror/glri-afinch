@@ -120,6 +120,25 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             border: false,
             listeners: {
                 added: function(panel, owner, idx) {
+                    
+                    var wfs1 = '';
+                    var wfs2 = '';
+                    
+                    Ext.Ajax.request({
+                        url : CONFIG.endpoint.geoserver + 'glri/ows',
+                        params : {
+                            service : 'WFS',
+                            version : '2.0.0',
+                            request : 'GetFeature',
+                            typeName : 'glri:NHDFlowline',
+                            propertyName : 'StreamOrde',
+                            maxFeatures : '50'
+                        },
+                        success : function(response, opts) {
+                            var a = 1;
+                        }
+                    })
+                    
                     panel.map.events.register(
                             'zoomend',
                             panel.map,
