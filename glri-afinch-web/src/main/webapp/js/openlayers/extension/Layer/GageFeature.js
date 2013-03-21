@@ -21,7 +21,7 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
     ],
     styleMap: new OpenLayers.StyleMap({
         'default': new OpenLayers.Style({
-            'pointRadius': 6,
+            'pointRadius': 2,
             'fillColor': '#ee9900',
             'fillOpacity': 0.4,
             'strokeColor': '#ee9900',
@@ -29,7 +29,7 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
             'strokeWidth': 1
         }),
         'select': new OpenLayers.Style({
-            'pointRadius': 6,
+            'pointRadius': 2,
             'fillColor': '#ee9900',
             'fillOpacity': 0.4,
             'strokeColor': '#ffffff',
