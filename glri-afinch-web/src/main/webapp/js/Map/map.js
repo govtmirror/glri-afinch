@@ -238,8 +238,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
-//debug:
-//this.displayDataWindow({data:{"feature":{"layer":null,"lonlat":null,"data":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"id":"OpenLayers.Feature.Vector_5664","geometry":{"id":"OpenLayers.Geometry.Point_5663","x":-9383394.31635411,"y":5570754.48056071},"state":null,"attributes":{"COMID":"0","EVENTDATE":"2006-11-21T00:00:00","REACHCODE":"04070007000079","REACHRESOL":"Medium","FEATURECOM":"0","FEATURECLA":"0","SOURCE_ORI":"USGS, Water Resources Division","SOURCE_DAT":null,"SOURCE_FEA":"04136000","FEATUREDET":"http://waterdata.usgs.gov/nwis/nwisman/?site_no=04136000","MEASURE":"68.9925654625","OFFSET":"0.0","EVENTTYPE":"StreamGage","ComID":"12952772","Fdate":"2011-01-08T00:00:00","StreamLeve":"1","StreamOrde":"5","StreamCalc":"5","FromNode":"90036983","ToNode":"90037109","Hydroseq":"90012175","LevelPathI":"90005945","Pathlength":"136.438","TerminalPa":"90005945","ArbolateSu":"639.214","Divergence":"0","StartFlag":"0","TerminalFl":"0","DnLevel":"1","ThinnerCod":"0","UpLevelPat":"90005945","UpHydroseq":"90012364","DnLevelPat":"90005945","DnMinorHyd":"0","DnDrainCou":"1","DnHydroseq":"90011993","FromMeas":"0.0","ToMeas":"100.0","LengthKM":"6.468","Fcode":"46006","RtnDiv":"0","OutDiv":"0","DivEffect":"0","VPUIn":"0","VPUOut":"0","TravTime":"0.0","PathTime":"0.0","AreaSqKM":"13.2039","TotDASqKM":"2789.4069","DivDASqKM":"2789.4069"},"style":null,"gml":{"featureType":"GageLoc","featureNS":"http://cida.usgs.gov/glri","featureNSPrefix":"glri"},"fid":"GageLoc.644"},"state":null,"fid":"GageLoc.644","ComID":12952772,"TotDASqKM":"2789.4069","REACHCODE":"04070007000079","SOURCE_FEA":"04136000"}});
 },
     /**
      *@param statsStores - array of StatStores
@@ -258,24 +256,53 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 return;
             }
             
-            //@todo all of these find calls are gross. Consider refactoring rParser to output a title-to-store map
-            var decStore = statsStores.find(function(store){
-                return store.title == 'deciles'; //@todo x-hardcoding
+            //put stores into a title-to-store map
+            var tempStores = {};
+            statsStores.each(function(store){
+               tempStores[store.title] = store; 
             });
-            var annualStores = statsStores.find(function(store){
-                return store.title.indexOf('annual') !== -1;
-            });
-            var monthlyAggregationStores = statsStores.find(function(store){
-                return store.title.indexOf('monthly');
-            });
+            statsStores = tempStores;
+            
             var decileValues = [];//this will be appended onto the end of every row of the new data
-            decStore.each(function(record){
+            statsStores.deciles.each(function(record){
                decileValues.push(record.get('q'));
             });
             
             var data = win.graphPanel.data.values;
+            data = data.map(function(row){
+                for(var i = 2; i < 11; i++){
+                    row[i] = decileValues[i-2];
+                }
+                return row;
+            });
+            
             var headers = win.graphPanel.data.headers;
-            win.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: decStore});
+//            headers = headers.concat(['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9']);
+            
+                        
+            win.graphPanel.graph.updateOptions({
+               labels: headers,
+               file: data
+            });
+            
+//            win.graphPanel.graph.updateOptions({
+//               labels: headers
+//            });
+//            
+//            win.graphPanel.graph.updateOptions({
+//               file: data
+//            });
+            
+            
+//            win.graphPanel.graph.updateOptions({
+//               file: data
+//            });
+//            
+//            win.graphPanel.graph.updateOptions({
+//               labels: headers
+//            });
+            
+            win.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: statsStores.deciles});
             win.insert(1, win.gridPanel);
             win.doLayout();
         },
@@ -295,15 +322,21 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
          * [<date>, <null or flow>] 
          * @todo talk to Sibley, fix date bugs.
          */
-        var parseSosResponse=function(responseTxt){
+        var parseSosResponse=function(responseTxt, numFieldsLoadedLater){
             var rows = responseTxt.split(' ');
+            var rightPadding = [];
+            for(var i = 0; i < numFieldsLoadedLater; i++){
+                rightPadding.push(null);
+            }
+                
             rows = rows.map(function(row){
                 var tokens = row.split(',');
                 
                 var dateStr = tokens[0].to(tokens[0].indexOf('T'));
                 var date = new Date(dateStr);
                 var flow = parseFloat(tokens[1]);
-                return [date, flow];
+                return [date, flow].concat(rightPadding);
+                
             });
             return rows;
             /*
@@ -321,8 +354,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             return inflatedRows;
             */
         };    
-        var values = parseSosResponse(responseTxt);
-        var labels = ['Date', 'Monthly Flow'];
+        var values = parseSosResponse(responseTxt, 9);
+        var labels = ['Date', 'Monthly Flow', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'];
         //@todo get monthly flow series from response instead of mocking data
         win.graphPanel.data={
             values : values,
