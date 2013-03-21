@@ -193,10 +193,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             var monthlyAggregationStores = statsStores.find(function(store){
                 return store.title.indexOf('monthly');
             });
+            var decileValues = [];//this will be appended onto the end of every row of the new data
+            decStore.each(function(record){
+               decileValues.push(record.get('q'));
+            });
             
             var data = win.graphPanel.graph.data;
             var headers = win.graphPanel.graph.getOption('labels');
-            
             self.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: decStore});
             win.add(self.gridPanel);
             win.doLayout();

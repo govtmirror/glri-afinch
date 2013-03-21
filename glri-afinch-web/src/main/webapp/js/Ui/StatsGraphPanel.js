@@ -19,7 +19,6 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
                         showRangeSelector: true        
                     });
                     win.graphPanel.graph.data = data;
-                    win.graphPanel.graph.getOption('labels');
                     var labelPanel = win.labelPanel = new AFINCH.ui.StatsLabelPanel();
                     
                     win.add(labelPanel);
