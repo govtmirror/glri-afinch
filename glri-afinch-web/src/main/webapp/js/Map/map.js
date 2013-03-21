@@ -320,7 +320,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         /**
          * Given response text, return an array of arrays. The row array has format
          * [<date>, <null or flow>] 
-         * @todo talk to Sibley, fix date bugs.
          */
         var parseSosResponse=function(responseTxt, numFieldsLoadedLater){
             var rows = responseTxt.split(' ');
