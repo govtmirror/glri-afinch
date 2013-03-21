@@ -333,6 +333,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 var tokens = row.split(',');
                 
                 var dateStr = tokens[0].to(tokens[0].indexOf('T'));
+                dateStr = dateStr.replace(/-/g,'/');
                 var date = new Date(dateStr);
                 var flow = parseFloat(tokens[1]);
                 return [date, flow].concat(rightPadding);
