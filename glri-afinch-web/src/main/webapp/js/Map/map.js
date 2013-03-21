@@ -130,12 +130,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     for (var cInd = 0; cInd < tableLength; cInd++) {
                         panel.streamOrderClipValues[cInd] = Math.ceil((tableLength - cInd) * (clipCount / tableLength));
                     }
-                    
-                    var flowlineWfsMapping = {
-                        wfs1: [],
-                        wfs2: [],
-                        binTable: []
-                    }
+
                     panel.map.events.register(
                             'zoomend',
                             panel.map,
@@ -145,43 +140,58 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
 
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
-//
-//                                Ext.Ajax.request({
-//                                    url: CONFIG.endpoint.geoserver + 'glri/ows',
-//                                    scope: flowlineWfsMapping,
-//                                    params: {
-//                                        service: 'WFS',
-//                                        version: '1.0.0',
-//                                        outputFormat: 'json',
-//                                        request: 'GetFeature',
-//                                        typeName: 'glri:NHDFlowline',
-//                                        propertyName: 'StreamOrde',
-//                                        'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue
-//                                    },
-//                                    success: function(response, opts) {
-//                                        this.wfs1 = Ext.util.JSON.decode(response.responseText);
-//                                        Ext.Ajax.request({
-//                                            url: CONFIG.endpoint.geoserver + 'glri/ows',
-//                                            scope: this,
-//                                            params: {
-//                                                service: 'WFS',
-//                                                version: '1.1.0',
-//                                                outputFormat: 'json',
-//                                                request: 'GetFeature',
-//                                                typeName: 'glri:NHDFlowline',
-//                                                propertyName: 'StreamOrde,StreamLeve',
-//                                                'CQL_FILTER': 'StreamOrde >= ' + panel.streamOrderClipValue
-//                                            },
-//                                            success: function(response, opts) {
-//                                                this.wfs2 = Ext.util.JSON.decode(response.responseText);
-//                                                var a = 1;
-//                                            }
-//                                        });
-//                                    }
-//                                });
 
+                                var getFeatureResponses = Object.extended();
+                                var filter = 'StreamOrde>=' + panel.streamOrderClipValue;
+                                Ext.Ajax.request({
+                                    url: CONFIG.endpoint.geoserver + 'ows',
+                                    scope: getFeatureResponses,
+                                    params: {
+                                        service: 'WFS',
+                                        version: '1.1.0',
+                                        outputFormat: 'json',
+                                        request: 'GetFeature',
+                                        typeName: panel.nhdFlowlineLayername,
+                                        propertyName: 'StreamOrde',
+                                        'CQL_FILTER': filter
+                                    },
+                                    success: function(response, opts) {
+                                        this.streamOrder = Ext.util.JSON.decode(response.responseText);
+                                        Ext.Ajax.request({
+                                            url: CONFIG.endpoint.geoserver + 'ows',
+                                            scope: this,
+                                            params: {
+                                                service: 'WFS',
+                                                version: '1.1.0',
+                                                outputFormat: 'json',
+                                                request: 'GetFeature',
+                                                typeName: panel.nhdFlowlineLayername,
+                                                propertyName: 'StreamOrde,StreamLeve',
+                                                'CQL_FILTER': filter
+                                            },
+                                            success: function(response, opts) {
+                                                this.streamLevel = Ext.util.JSON.decode(response.responseText);
+                                                var a = 1;
+//                                                var lookupTable = new Array(7);
+//                                                var currentIndex = panel.streamOrderClipValue - 1;
 
-
+//                                                if (lookupTable[currentIndex] == undefined) {
+//                                                    for (var fInd = 0; fInd < this.streamOrder.features.length; fInd++) {
+//                                                        var f = this.streamOrder.features[fInd];
+//                                                        var fid = f.id;
+//                                                        var streamOrder = f.properties.StreamOrde;
+//                                                        var matchingStreamLevel = this.streamLevel.features.find(function(f2) {
+//                                                            return f.id == f2.id;
+//                                                        });
+//                                                        var streamLevel = matchingStreamLevel.properties.StreamLeve;
+//                                                        lookupTable[currentIndex].push(fid, streamOrder, streamLevel);
+//                                                    }
+//                                                }
+//                                                console.log(lookupTable)
+                                            }
+                                        });
+                                    }
+                                });
                             },
                             true);
 
