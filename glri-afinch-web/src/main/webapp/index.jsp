@@ -76,7 +76,10 @@
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
             CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
-            CONFIG.endpoint.rwps = 'rwps/';
+            CONFIG.endpoint.rwps = '<%= props.getProperty("afinch.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
+            CONFIG.endpoint.rwpsProxy = 'rwps/';
+            CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
+            CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
 
         </script>

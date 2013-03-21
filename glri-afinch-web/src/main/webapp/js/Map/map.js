@@ -198,10 +198,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                decileValues.push(record.get('q'));
             });
             
-            var data = win.graphPanel.graph.data;
-            var headers = win.graphPanel.graph.getOption('labels');
-            self.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: decStore});
-            win.add(self.gridPanel);
+            var data = win.graphPanel.data.values;
+            var headers = win.graphPanel.data.headers;
+            win.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: decStore});
+            win.insert(1, win.gridPanel);
             win.doLayout();
         },
     /**
@@ -213,20 +213,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //establish scope
         var self = this;
         var win = self.dataWindow;
-        
-        //kick off the next ajax call...
-        var rParams = {
-            sosEndpointUrl: self.sosEndpointUrl
-        };
-
-        var tempStatsStore = new AFINCH.data.StatsStore();
-        
-        tempStatsStore.load({
-            params: rParams,
-            scope: self,
-            callback: self.statsCallback
-        });
-        //...while we're waiting, parse the response already received from the last ajax call
         var responseTxt = response.responseText;
         
         /**
@@ -260,22 +246,35 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             return inflatedRows;
             */
         };    
-        
-
+        var values = parseSosResponse(responseTxt);
+        var labels = ['Date', 'Monthly Flow'];
         //@todo get monthly flow series from response instead of mocking data
-        var monthlyFlowData = {
-            data :  parseSosResponse(responseTxt),
-            headers: ['Date', 'Monthly Flow']//, 'Annual Median Flow', 'Annual Mean Flow', 'Monthly Median Flow', 'Monthly Mean Flow', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9']
+        win.graphPanel.data={
+            values : values,
+            headers: labels
         };
-        win.graphPanel = new AFINCH.ui.StatsGraphPanel({
-            initialData: monthlyFlowData
+        // 'Annual Median Flow', 'Annual Mean Flow', 'Monthly Median Flow', 'Monthly Mean Flow', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9']
+          win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, {
+            labels: labels,
+            connectSeparatedPoints: true,
+            showRangeSelector: true,
+            labelsDiv: 'statsLabelPanel',
+            labelsSeparateLines: true,
+            legend: 'always'
         });
-        win.add(win.graphPanel);
-        
-        
-        win.show();
-        win.center();
+//kick off the next ajax call...
+        var rParams = {
+            sosEndpointUrl: self.sosEndpointUrl
+        };
 
+        var tempStatsStore = new AFINCH.data.StatsStore();
+        
+        tempStatsStore.load({
+            params: rParams,
+            scope: self,
+            callback: self.statsCallback
+        });        
+        win.doLayout();
     },
 
     /**
@@ -296,13 +295,20 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         title += gageID;
 
         //init a window that will be used as context for the callback
-        self.dataWindow = new AFINCH.ui.DataWindow({
+        var win = self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
             title: title
         });
+ 
+        win.show();
+        win.center();
+        win.toFront();
+        
+        
         var params = {};//@todo pass record properties into ajax params
+        //@todo use correct thredds Url
         Ext.Ajax.request({
-            url: '/glri-afinch/js/Data/dummyValues.xml',
+            url: CONFIG.endpoint.threddsProxy + 'dummySosResponse.xml',
             success: self.sosCallback,
             params: params,
             scope: self

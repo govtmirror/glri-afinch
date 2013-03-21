@@ -51,14 +51,11 @@ AFINCH.data.statsStoreLoad =  function(options){
     '</wps:ResponseForm>'+
     '</wps:Execute>';
 
-    var wpsUrl = CONFIG.endpoint.rwps + 
+    var wpsUrl = CONFIG.endpoint.rwpsProxy + 
     'WebProcessingService?Service=WPS&Request=execute&Identifier=org.n52.wps.server.r.monthlyq_swe_csv_stats';
-
-    Ext.Ajax.request({
-        url: wpsUrl,
-        method: 'POST',
-        params: wpsRequestData,
-        success: function(response, options){
+//@todo remove this debug-only url:
+    wpsUrl = 'js/Data/dummyRwpsResponse.xml';
+    var successCallback = function(response, options){
             if (response.responseText.toLowerCase().indexOf('exception') !== -1) {
                 var errMsg = response.responseXML.getElementsByTagName('ns\:ExceptionText')[0].textContent;
                 new Ext.ux.Notify({
@@ -107,7 +104,14 @@ AFINCH.data.statsStoreLoad =  function(options){
             }
             AFINCH.data.statsStoreLoad.cachedResults[stringifiedParams] = statsStores;
             callback.call(context, statsStores, true);
-        },
+        };
+//debug:
+var dummyData = ''
+    Ext.Ajax.request({
+        url: wpsUrl,
+        method: 'POST',
+        params: wpsRequestData,
+        success: successCallback,
         failure: function(response, options){
             LOG.error(response);
             new Ext.ux.Notify({

@@ -10,17 +10,7 @@ AFINCH.ui.StatsLabelPanel = Ext.extend(Ext.Panel, {
     constructor: function(config) {
         var self = this;
         config = Ext.apply({
-            id: 'statsLabelPanel',
-listeners: {
-                afterrender: function(panel) {
-                    var win = panel.findParentByType('dataWindow');
-                    win.graphPanel.graph.updateOptions({
-                        labelsDiv: 'statsLabelPanel',
-                        labelsSeparateLines: true,
-                        legend: 'always'
-                    });
-                }
-            }
+            id: 'statsLabelPanel'
         }, config);
 
         AFINCH.ui.StatsLabelPanel.superclass.constructor.call(this, config);
