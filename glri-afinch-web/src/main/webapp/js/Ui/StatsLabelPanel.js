@@ -1,5 +1,5 @@
 /**
- * Just an empty panel with a fancy afterrender event. Dygraph puts it's label in here.
+ * Just an empty panel with a fancy afterrender event. Dygraph puts its label in here.
  * @warning this will break unless instantiated from the afterrender event of the relevant Dygraph panel
  */
 Ext.ns("AFINCH.ui");
@@ -10,11 +10,12 @@ AFINCH.ui.StatsLabelPanel = Ext.extend(Ext.Panel, {
     constructor: function(config) {
         var self = this;
         config = Ext.apply({
-            listeners: {
+            id: 'statsLabelPanel',
+listeners: {
                 afterrender: function(panel) {
                     var win = panel.findParentByType('dataWindow');
                     win.graphPanel.graph.updateOptions({
-                        labelsDiv: panel.getEl().dom,
+                        labelsDiv: 'statsLabelPanel',
                         labelsSeparateLines: true,
                         legend: 'always'
                     });

@@ -183,24 +183,23 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 return;
             }
             
-            //
-            
+            //@todo all of these find calls are gross. Consider refactoring rParser to output a title-to-store map
             var decStore = statsStores.find(function(store){
                 return store.title == 'deciles'; //@todo x-hardcoding
             });
+            var annualStores = statsStores.find(function(store){
+                return store.title.indexOf('annual') !== -1;
+            });
+            var monthlyAggregationStores = statsStores.find(function(store){
+                return store.title.indexOf('monthly');
+            });
+            
+            var data = win.graphPanel.graph.data;
+            var headers = win.graphPanel.graph.getOption('labels');
+            
             self.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: decStore});
             win.add(self.gridPanel);
-
-            
-
-        //            statsStores.each(function(statsStore) {
-        //               
-        //            
-        //            });
-        
-        //attach it to the Ext window so header, footer elts will have easy access
-            this.statsStores = statsStores;
-            //update statsStores
+            win.doLayout();
         },
     /**
      * @param ajax - response
@@ -208,65 +207,62 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
      * @scope the window in which the data will be visualized
      */
     sosCallback : function(response, options){
+        //establish scope
         var self = this;
         var win = self.dataWindow;
-      
+        
+        //kick off the next ajax call...
         var rParams = {
             sosEndpointUrl: self.sosEndpointUrl
         };
 
         var tempStatsStore = new AFINCH.data.StatsStore();
-        //kick off the next ajax call...
+        
         tempStatsStore.load({
             params: rParams,
             scope: self,
             callback: self.statsCallback
         });
         //...while we're waiting, parse the response already received from the last ajax call
+        var responseTxt = response.responseText;
         
+        /**
+         * Given response text, return an array of arrays. The row array has format
+         * [<date>, <null or flow>] 
+         * @todo talk to Sibley, fix date bugs.
+         */
+        var parseSosResponse=function(responseTxt){
+            var rows = responseTxt.split(' ');
+            rows = rows.map(function(row){
+                var tokens = row.split(',');
+                
+                var dateStr = tokens[0].to(tokens[0].indexOf('T'));
+                var date = new Date(dateStr);
+                var flow = parseFloat(tokens[1]);
+                return [date, flow];
+            });
+            return rows;
+            /*
+            //should now have all date, flow pairs, but need
+            //to add in null flows for every month of the given years
+            var inflatedRows = [];
+            rows.each(function(januaryRow){
+               inflatedRows.push(januaryRow);
+               for(var i = 1; i < 12; i++) {
+                   var date = Date.create(januaryRow[0]);
+                   date.setMonth(i);
+                   inflatedRows.push([date, null]);
+               }               
+            });
+            return inflatedRows;
+            */
+        };    
+        
+
         //@todo get monthly flow series from response instead of mocking data
         var monthlyFlowData = {
-            data :  [
-                [new Date('1900/01/01'), 150, 175, 150, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/02/01'), null, null, 160, 185, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/03/01'), null, null, 170, 195, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/04/01'), null, null, 180, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/05/01'), null, null, 195, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/06/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/07/01'), null, null, 205, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/08/01'), null, null, 210, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/09/01'), null, null, 215, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/10/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/11/01'), null, null, 175, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1900/12/01'), null, null, 150, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                //
-                [new Date('1901/01/01'), 250, 275, 150, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/02/01'), null, null, 160, 185, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/03/01'), null, null, 170, 195, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/04/01'), null, null, 180, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/05/01'), null, null, 195, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/06/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/07/01'), null, null, 205, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/08/01'), null, null, 210, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/09/01'), null, null, 215, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/10/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/11/01'), null, null, 175, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1901/12/01'), null, null, 150, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                //
-                [new Date('1902/01/01'), 50, 75, 150, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/02/01'), null, null, 160, 185, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/03/01'), null, null, 170, 195, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/04/01'), null, null, 180, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/05/01'), null, null, 195, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/06/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/07/01'), null, null, 205, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/08/01'), null, null, 210, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/09/01'), null, null, 215, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/10/01'), null, null, 200, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/11/01'), null, null, 175, 150, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-                [new Date('1902/12/01'), null, null, 150, 175, 37, 74, 111, 149, 186, 223, 261, 298, 335],
-            ],
-            headers: ['Date','Annual Median Flow','Annual Mean Flow','Monthly Median Flow','Monthly Mean Flow','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9']
+            data :  parseSosResponse(responseTxt),
+            headers: ['Date', 'Monthly Flow']//, 'Annual Median Flow', 'Annual Mean Flow', 'Monthly Median Flow', 'Monthly Mean Flow', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9']
         };
         win.graphPanel = new AFINCH.ui.StatsGraphPanel({
             initialData: monthlyFlowData
@@ -299,13 +295,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //init a window that will be used as context for the callback
         self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
-            title: title,
-            listeners: {
-                afterrender: function(p1, p2, p3){
-                    console.dir(params);
-                    debugger;
-                }
-            }
+            title: title
         });
         var params = {};//@todo pass record properties into ajax params
         Ext.Ajax.request({
