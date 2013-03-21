@@ -10,8 +10,8 @@
  */
 OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
     flowlineAboveClipPixel: undefined,
-    flowlineAboveClipPixelR: 255,
-    flowlineAboveClipPixelG: 255,
+    flowlineAboveClipPixelR: 0,
+    flowlineAboveClipPixelG: 0,
     flowlineAboveClipPixelB: 255,
     flowlineAboveClipPixelA: 128,
     CLASS_NAME: "OpenLayers.Layer.FlowlinesRaster",
@@ -50,8 +50,5 @@ OpenLayers.Layer.FlowlinesRaster = OpenLayers.Class(OpenLayers.Layer.Raster, {
         if (this.getVisibility()) {
             this.onDataUpdate();
         }
-    },
-    updateVisibility: function() {
-        //            flowlineRasterWindow.setVisible(flowlineRaster.getVisibility());
     }
 });
