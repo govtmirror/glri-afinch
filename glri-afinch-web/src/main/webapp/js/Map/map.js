@@ -258,7 +258,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             labels: labels,
             connectSeparatedPoints: true,
             showRangeSelector: true,
-            labelsDiv: 'statsLabelPanel',
+            labelsDiv: win.labelPanel.getEl().dom,
             labelsSeparateLines: true,
             legend: 'always'
         });

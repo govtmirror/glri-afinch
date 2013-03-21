@@ -10,7 +10,7 @@ AFINCH.ui.StatsLabelPanel = Ext.extend(Ext.Panel, {
     constructor: function(config) {
         var self = this;
         config = Ext.apply({
-            id: 'statsLabelPanel'
+
         }, config);
 
         AFINCH.ui.StatsLabelPanel.superclass.constructor.call(this, config);
