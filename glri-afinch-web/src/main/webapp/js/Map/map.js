@@ -137,22 +137,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         panel.streamOrderClipValues[cInd] = Math.ceil((tableLength - cInd) * (clipCount / tableLength));
                     }
 
-//                    panel.map.events.register(
-//                            'movestart',
-//                            panel.map,
-//                            function(evt) {
-//                                
-//                            },
-//                            true);
-//                    
-//                    panel.map.events.register(
-//                            'moveend',
-//                            panel.map,
-//                            function(evt) {
-//                                
-//                            },
-//                            true);
-
                     panel.map.events.register(
                             'zoomend',
                             panel.map,
@@ -164,16 +148,22 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
 
                                 var getFeatureResponses = Object.extended();
-                                var filter = 'StreamOrde>=' + panel.streamOrderClipValue;
                                 if (!localStorage.getItem('glri-afinch')) {
                                     localStorage.setItem('glri-afinch', Ext.util.JSON.encode({
-                                        lookupTable: Array.create([[], [], [], [], [], [], []])
+                                        lookupTable: Array.create([[], [], [], [], [], []])
                                     }));
                                 }
-
+                                var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-afinch'));
                                 // Check to see if we have the lookup table for clip order values at the current clip value. If we do we don't need to 
                                 // make the call again. If we don't, make a call to get the values for the lookup table, create the lookup table 
-                                if (!Ext.util.JSON.decode(localStorage.getItem('glri-afinch')).lookupTable[panel.streamOrderClipValue - 1].length) {
+                                if (!storageObject.lookupTable[panel.streamOrderClipValue - 1].length) {
+                                    var needed = []
+                                    for (var i = panel.streamOrderClipValue;i < storageObject.lookupTable.length + 1;i++) {
+                                        if (!storageObject.lookupTable[i - 1].length) {
+                                            needed.push(i);
+                                        }
+                                    }
+                                    var filter = "StreamOrde IN ('" + needed.join("','") + "')";
                                     Ext.Ajax.request({
                                         url: CONFIG.endpoint.geoserver + 'ows',
                                         scope: getFeatureResponses,
