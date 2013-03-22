@@ -291,13 +291,18 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             
             var headers = win.graphPanel.data.headers;
-//            headers = headers.concat(['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9']);
-            
                         
             win.graphPanel.graph.updateOptions({
                labels: headers,
                file: data
             });
+            
+            //now enable the series toggle buttons
+            var toggleButtons = win.getTopToolbar().items.items;
+            for( var j = 1; j < toggleButtons.length; j++){
+                win.getTopToolbar().items.items[j].enable();    
+            }
+            
         },
     /**
      * @param ajax - response
@@ -347,6 +352,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             return rows;
         };
         var values = parseSosResponse(responseTxt, 13);
+        
+        //@todo: Holy Hardcoding Batman! and encapsulate most of this Dygraph setup
         var decileSuffix = "th % (cfs)";
         var decileLabels = ['90','80','70','60','50','40','30','20','10'].map(
             function(prefix){
@@ -417,7 +424,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         
         Object.merge(opts, allSeriesOptions);
         win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, opts);
-//kick off the next ajax call...
+        //kick off the next ajax call...
         var rParams = {
             sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
         };

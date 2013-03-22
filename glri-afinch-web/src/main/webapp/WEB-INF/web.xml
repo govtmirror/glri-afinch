@@ -5,11 +5,14 @@
         <servlet-name>NetCDFServlet</servlet-name>
         <servlet-class>gov.usgs.cida.glri.afinch.NetCDFServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Export</servlet-name>
+        <servlet-class>gov.usgs.cida.glri.afinch.Export</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>NetCDFServlet</servlet-name>
         <url-pattern>/NetCDFServlet</url-pattern>
     </servlet-mapping>
-    
     <!-- Geoserver Proxy -->
     <servlet>
         <servlet-name>GeoServerServlet</servlet-name>
@@ -27,7 +30,6 @@
         <servlet-name>GeoServerServlet</servlet-name>
         <url-pattern>/geoserver/*</url-pattern>
     </servlet-mapping>
-    
     <!-- R-WPS Proxy -->
     <servlet>
         <servlet-name>wpsServerServlet</servlet-name>
@@ -60,7 +62,11 @@
     <servlet-mapping>
         <servlet-name>threddsServerServlet</servlet-name>
         <url-pattern>/thredds/*</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Export</servlet-name>
+        <url-pattern>/export</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

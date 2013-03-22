@@ -4,7 +4,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
     constructor: function(config) {
         var self = this;
         var title = config.title || "";
-        var width = config.width || 1200;
+        var width = config.width || 1000;
         var height = config.height || 500;
         
         var buttonGroup = new AFINCH.ui.SeriesToggleButtonGroup({

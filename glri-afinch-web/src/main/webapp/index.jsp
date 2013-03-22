@@ -80,6 +80,7 @@
             CONFIG.endpoint.rwpsProxy = 'rwps/';
             CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
+            CONFIG.endpoint.exporter = 'export';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
 
         </script>
@@ -110,5 +111,6 @@
             <jsp:param name="site-url" value="" />
             <jsp:param name="contact-info" value="" />
         </jsp:include>
+        <iframe id="download" style="display: none;"></iframe>
     </body>
 </html>
