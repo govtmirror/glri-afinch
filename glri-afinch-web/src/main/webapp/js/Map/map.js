@@ -263,15 +263,29 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             statsStores = tempStores;
             
+            var data = win.graphPanel.data.values;
+            //add the annual aggregations
+            for(var dataIndex = 0, annualIndex = 0; dataIndex < data.length; dataIndex+=12, annualIndex++){
+                data[dataIndex][2] = statsStores.mean_annual_flow.getAt(annualIndex).get('x');
+                data[dataIndex][3] = statsStores.median_annual_flow.getAt(annualIndex).get('medianq');
+            }
+            
+            //add the monthly aggregations
+            for(var monthlyIndex = 0; monthlyIndex < data.length; monthlyIndex++){
+                data[monthlyIndex][4] = statsStores.mean_monthly_flow.getAt(monthlyIndex % 12).get('meanq');
+                data[monthlyIndex][5] = statsStores.median_monthly_flow.getAt(monthlyIndex % 12).get('medianq');
+            }
+            
             var decileValues = [];//this will be appended onto the end of every row of the new data
             statsStores.deciles.each(function(record){
                decileValues.push(record.get('q'));
             });
+            //add the deciles to the data
             
-            var data = win.graphPanel.data.values;
             data = data.map(function(row){
-                for(var i = 2; i < 11; i++){
-                    row[i] = decileValues[i-2];
+                var decileStart = 6;
+                for(var i = decileStart; i < 15; i++){
+                    row[i] = decileValues[i-decileStart];
                 }
                 return row;
             });
@@ -353,15 +367,17 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             return inflatedRows;
             */
-        };    
-        var values = parseSosResponse(responseTxt, 9);
-        var labels = ['Date', 'Monthly Flow', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'];
+        };
+        var values = parseSosResponse(responseTxt, 13);
+        var labels = 
+            ['Date', 'Monthly Flow',//initial fields
+            'Mean Annual Flow', 'Median Annual Flow', 'Mean Monthly Flow', 'Median Monthly Flow',//subsequent data fields
+            '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'];//subsequent decile psuedo-series
         //@todo get monthly flow series from response instead of mocking data
         win.graphPanel.data={
             values : values,
             headers: labels
         };
-        // 'Annual Median Flow', 'Annual Mean Flow', 'Monthly Median Flow', 'Monthly Mean Flow', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9']
           win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, {
             labels: labels,
             connectSeparatedPoints: true,
