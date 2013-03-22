@@ -7,7 +7,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     gageStyleName: "GageLocStreamOrder",
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
-    sosEndpointUrl: 'ftp://ftpext.usgs.gov/pub/er/wi/middleton/dblodgett/example_monthly_swecsv.xml',
+    sosEndpointUrl: undefined,//defined in displayDataWindow
     restrictedMapExtent: new OpenLayers.Bounds(-93.18993823245728, 40.398554803028716, -73.65211352945056, 48.11264392438207).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")),
     streamOrderClipValue: 0,
     streamOrderTable: new Array(21),
@@ -308,13 +308,26 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //establish scope
         var self = this;
         var win = self.dataWindow;
-        var responseTxt = response.responseText;
+        if(response.responseText.toLowerCase().indexOf('exception') !== -1){
+            new Ext.ux.Notify({
+                msgWidth: 200,
+                title: 'Error',
+                msg: "Error retrieving data from server. See browser logs for details."
+            }).show(document);  
+            LOG(response.responseText);
+            return;
+        }
+        //todo: fix... very breakable
+        var responseTxt = response.responseXML.childNodes[0].childNodes[7].childNodes[1].
+            childNodes[7].childNodes[0].childNodes[3].textContent;
+        
         
         /**
          * Given response text, return an array of arrays. The row array has format
          * [<date>, <null or flow>] 
          */
         var parseSosResponse=function(responseTxt, numFieldsLoadedLater){
+            responseTxt = responseTxt.slice(0, responseTxt.length-2);//kill terminal ' \n'
             var rows = responseTxt.split(' ');
             var rightPadding = [];
             for(var i = 0; i < numFieldsLoadedLater; i++){
@@ -332,51 +345,59 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 
             });
             return rows;
-            /*
-            //should now have all date, flow pairs, but need
-            //to add in null flows for every month of the given years
-            var inflatedRows = [];
-            rows.each(function(januaryRow){
-               inflatedRows.push(januaryRow);
-               for(var i = 1; i < 12; i++) {
-                   var date = Date.create(januaryRow[0]);
-                   date.setMonth(i);
-                   inflatedRows.push([date, null]);
-               }               
-            });
-            return inflatedRows;
-            */
         };
         var values = parseSosResponse(responseTxt, 13);
-        var decileLabels = ['90th %','80th %','70th %','60th %','50th %','40th %','30th %','20th %','10th %'];
-        var labels = 
-            ['Date', 'Monthly Flow',//initial fields
-            'Mean Annual Flow', 'Median Annual Flow', 'Mean Monthly Flow', 'Median Monthly Flow'].concat(decileLabels);//subsequent data fields
-        //@todo get monthly flow series from response instead of mocking data
+        var decileSuffix = "th % (cfs)";
+        var decileLabels = ['90','80','70','60','50','40','30','20','10'].map(
+            function(prefix){
+                return prefix + decileSuffix;
+            });
+        
+        var mainLabelSuffix = " (cfs)";
+        var mainLabels = 
+        [
+        'Monthly Flow',//initial field
+        //subsequently-loaded fields:
+        'Mean Annual Flow',
+        'Median Annual Flow',
+        'Mean Monthly Flow',
+        'Median Monthly Flow'
+        ].map(function(prefix){
+            return prefix + mainLabelSuffix;
+        });
+        //must include x axis label as well:
+        var labels = ['Date'].concat(mainLabels).concat(decileLabels);
+        
         var canonicalDecileSeriesOptions = {
-            strokeWidth: 1
+            strokeWidth: 1,
+            stepPlot: false
         };
         var allDecileSeriesOptions ={};
         decileLabels.each(function(label){
-           allDecileSeriesOptions[label] = canonicalDecileSeriesOptions;
+            allDecileSeriesOptions[label] = canonicalDecileSeriesOptions;
         });
         var otherSeriesOptions = {
             'Monthly Flow':{
-                strokeWidth: 3
+                strokeWidth: 3,
+                stepPlot: false
             },
             'Mean Annual Flow':{
-                strokeWidth: 2
+                strokeWidth: 2,
+                stepPlot: true
             },
             'Median Annual Flow':{
-                strokeWidth: 2
+                strokeWidth: 2,
+                stepPlot: true
             },
             'Mean Monthly Flow': {
-                strokeWidth: 2
+                strokeWidth: 2,
+                stepPlot: false
             },
             'Median Monthly Flow':{
-                strokeWidth: 2
+                strokeWidth: 2,
+                stepPlot: false
             }
-        }
+        };
         var allSeriesOptions ={};
         Object.merge(allSeriesOptions, allDecileSeriesOptions);
         Object.merge(allSeriesOptions, otherSeriesOptions);
@@ -384,19 +405,21 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             values : values,
             headers: labels
         };
-        win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, {
+        var opts = {
             labels: labels,
             colors: ['purple','orange','blue','red','green','black','black','black','black','black','black','black','black','black'],
             connectSeparatedPoints: true,
             showRangeSelector: true,
             labelsDiv: win.labelPanel.getEl().dom,
             labelsSeparateLines: true,
-            legend: 'always',
-            series: allSeriesOptions
-        });
+            legend: 'always'
+        };
+        
+        Object.merge(opts, allSeriesOptions);
+        win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, opts);
 //kick off the next ajax call...
         var rParams = {
-            sosEndpointUrl: self.sosEndpointUrl
+            sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
         };
 
         var tempStatsStore = new AFINCH.data.StatsStore();
@@ -436,16 +459,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         win.center();
         win.toFront();
         
-        
-        var params = {};//@todo pass record properties into ajax params
-        //@todo use correct thredds Url
+        self.sosUrlWithoutBase = 'out.nc?service=SOS&request=GetObservation&Version=1.0.0&offering=' + record.data.COMID +'&observedProperty=QAccCon'
         Ext.Ajax.request({
-            url: CONFIG.endpoint.threddsProxy + 'dummySosResponse.xml',
+            url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
             success: self.sosCallback,
-            params: params,
             scope: self
         }
-        );        
+        );
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
         var self = this;

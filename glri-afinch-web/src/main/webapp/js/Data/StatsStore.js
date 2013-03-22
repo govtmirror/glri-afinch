@@ -40,7 +40,7 @@ AFINCH.data.statsStoreLoad =  function(options){
     '<wps:Input>'+
     '<ows:Identifier>model_url</ows:Identifier>'+
     '<wps:Data>'+
-    '<wps:LiteralData>'+ sosEndpointUrl +'</wps:LiteralData>'+
+    '<wps:LiteralData><![CDATA['+ sosEndpointUrl +']]></wps:LiteralData>'+
     '</wps:Data>'+
     '</wps:Input>'+
     '</wps:DataInputs>'+
@@ -52,9 +52,9 @@ AFINCH.data.statsStoreLoad =  function(options){
     '</wps:Execute>';
 
     var wpsUrl = CONFIG.endpoint.rwpsProxy + 
-    'WebProcessingService?Service=WPS&Request=execute&Identifier=org.n52.wps.server.r.monthlyq_swe_csv_stats';
+    'WebProcessingService';
 //@todo remove this debug-only url:
-    wpsUrl = 'js/Data/dummyRwpsResponse.xml';
+//    wpsUrl = 'js/Data/dummyRwpsResponse.xml';
     var successCallback = function(response, options){
             if (response.responseText.toLowerCase().indexOf('exception') !== -1) {
                 var errMsg = response.responseXML.getElementsByTagName('ns\:ExceptionText')[0].textContent;
