@@ -281,7 +281,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                decileValues.push(record.get('q'));
             });
             //add the deciles to the data
-            
+            decileValues = decileValues.reverse();
             data = data.map(function(row){
                 var decileStart = 6;
                 for(var i = decileStart; i < 15; i++){
@@ -298,27 +298,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                labels: headers,
                file: data
             });
-            
-//            win.graphPanel.graph.updateOptions({
-//               labels: headers
-//            });
-//            
-//            win.graphPanel.graph.updateOptions({
-//               file: data
-//            });
-            
-            
-//            win.graphPanel.graph.updateOptions({
-//               file: data
-//            });
-//            
-//            win.graphPanel.graph.updateOptions({
-//               labels: headers
-//            });
-            
-            win.gridPanel = new AFINCH.ui.StatsGridPanel({statsStore: statsStores.deciles});
-            win.insert(1, win.gridPanel);
-            win.doLayout();
         },
     /**
      * @param ajax - response
@@ -369,22 +348,51 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             */
         };
         var values = parseSosResponse(responseTxt, 13);
+        var decileLabels = ['90th %','80th %','70th %','60th %','50th %','40th %','30th %','20th %','10th %'];
         var labels = 
             ['Date', 'Monthly Flow',//initial fields
-            'Mean Annual Flow', 'Median Annual Flow', 'Mean Monthly Flow', 'Median Monthly Flow',//subsequent data fields
-            '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'];//subsequent decile psuedo-series
+            'Mean Annual Flow', 'Median Annual Flow', 'Mean Monthly Flow', 'Median Monthly Flow'].concat(decileLabels);//subsequent data fields
         //@todo get monthly flow series from response instead of mocking data
+        var canonicalDecileSeriesOptions = {
+            strokeWidth: 1
+        };
+        var allDecileSeriesOptions ={};
+        decileLabels.each(function(label){
+           allDecileSeriesOptions[label] = canonicalDecileSeriesOptions;
+        });
+        var otherSeriesOptions = {
+            'Monthly Flow':{
+                strokeWidth: 3
+            },
+            'Mean Annual Flow':{
+                strokeWidth: 2
+            },
+            'Median Annual Flow':{
+                strokeWidth: 2
+            },
+            'Mean Monthly Flow': {
+                strokeWidth: 2
+            },
+            'Median Monthly Flow':{
+                strokeWidth: 2
+            }
+        }
+        var allSeriesOptions ={};
+        Object.merge(allSeriesOptions, allDecileSeriesOptions);
+        Object.merge(allSeriesOptions, otherSeriesOptions);
         win.graphPanel.data={
             values : values,
             headers: labels
         };
-          win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, {
+        win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, {
             labels: labels,
+            colors: ['purple','orange','blue','red','green','black','black','black','black','black','black','black','black','black'],
             connectSeparatedPoints: true,
             showRangeSelector: true,
             labelsDiv: win.labelPanel.getEl().dom,
             labelsSeparateLines: true,
-            legend: 'always'
+            legend: 'always',
+            series: allSeriesOptions
         });
 //kick off the next ajax call...
         var rParams = {
