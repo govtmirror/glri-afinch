@@ -6,7 +6,7 @@ AFINCH.ui.StatsGridPanel = Ext.extend(Ext.grid.GridPanel, {
         var columnObjs = AFINCH.util.wrapEachWithKey(statsStore.fields.keys, 'header');
         var colModel = new Ext.grid.ColumnModel({
             defaults: {
-                width: 120,
+                width: 50,
                 sortable: true
             },
             columns: columnObjs
@@ -14,7 +14,9 @@ AFINCH.ui.StatsGridPanel = Ext.extend(Ext.grid.GridPanel, {
 
         config = Ext.apply({
             store: statsStore,
-            colModel: colModel
+            colModel: colModel,
+            height: 350,
+            width: 125
         }, config);
 
         AFINCH.ui.StatsGridPanel.superclass.constructor.call(this, config);

@@ -76,7 +76,11 @@
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
             CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
-            CONFIG.endpoint.rwps = 'rwps/';
+            CONFIG.endpoint.rwps = '<%= props.getProperty("afinch.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
+            CONFIG.endpoint.rwpsProxy = 'rwps/';
+            CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
+            CONFIG.endpoint.threddsProxy = 'thredds/';
+            CONFIG.endpoint.exporter = 'export';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
 
         </script>
@@ -84,8 +88,12 @@
         <script type="text/javascript" src="js/Map/map.js"></script>
         <script type="text/javascript" src="js/Data/StatsStore.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
+        <script type="text/javascript" src="js/Ui/DataExportToolbar.js"></script>
+        <script type="text/javascript" src="js/Ui/SeriesToggleButtonGroup.js"></script>
+        <script type="text/javascript" src="js/Ui/DataWindow.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
+        <script type="text/javascript" src="js/Ui/StatsLabelPanel.js"></script>
         <script type="text/javascript" src="js/Ui/DataDisplayPanel.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>
     </head>
@@ -103,5 +111,6 @@
             <jsp:param name="site-url" value="" />
             <jsp:param name="contact-info" value="" />
         </jsp:include>
+        <iframe id="download" style="display: none;"></iframe>
     </body>
 </html>

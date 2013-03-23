@@ -40,7 +40,7 @@ AFINCH.data.statsStoreLoad =  function(options){
     '<wps:Input>'+
     '<ows:Identifier>model_url</ows:Identifier>'+
     '<wps:Data>'+
-    '<wps:LiteralData>'+ sosEndpointUrl +'</wps:LiteralData>'+
+    '<wps:LiteralData><![CDATA['+ sosEndpointUrl +']]></wps:LiteralData>'+
     '</wps:Data>'+
     '</wps:Input>'+
     '</wps:DataInputs>'+
@@ -51,15 +51,12 @@ AFINCH.data.statsStoreLoad =  function(options){
     '</wps:ResponseForm>'+
     '</wps:Execute>';
 
-    var wpsUrl = CONFIG.endpoint.rwps + 
-    'WebProcessingService?Service=WPS&Request=execute&Identifier=org.n52.wps.server.r.monthlyq_swe_csv_stats';
-
-    Ext.Ajax.request({
-        url: wpsUrl,
-        method: 'POST',
-        params: wpsRequestData,
-        success: function(response, options){
-            if (response.responseText.toLowerCase().contains('exception')) {
+    var wpsUrl = CONFIG.endpoint.rwpsProxy + 
+    'WebProcessingService';
+//@todo remove this debug-only url:
+//    wpsUrl = 'js/Data/dummyRwpsResponse.xml';
+    var successCallback = function(response, options){
+            if (response.responseText.toLowerCase().indexOf('exception') !== -1) {
                 var errMsg = response.responseXML.getElementsByTagName('ns\:ExceptionText')[0].textContent;
                 new Ext.ux.Notify({
                     msgWidth: 200,
@@ -107,7 +104,14 @@ AFINCH.data.statsStoreLoad =  function(options){
             }
             AFINCH.data.statsStoreLoad.cachedResults[stringifiedParams] = statsStores;
             callback.call(context, statsStores, true);
-        },
+        };
+//debug:
+var dummyData = ''
+    Ext.Ajax.request({
+        url: wpsUrl,
+        method: 'POST',
+        params: wpsRequestData,
+        success: successCallback,
         failure: function(response, options){
             LOG.error(response);
             new Ext.ux.Notify({
@@ -192,5 +196,25 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
         }
         return tables;
     },
-    load: AFINCH.data.statsStoreLoad
+    load: AFINCH.data.statsStoreLoad,
+   /**
+    * Converts a storeinto a csv string
+    * 
+    * @returns string - a csv representation of the store
+    */
+    toCsv: function(){
+        var store = this;    
+    
+        var keys = store.fields.keys;
+        var csv = keys.join(',') + '\n';
+
+        store.data.items.each(function(record) {
+            var values = [];
+            keys.each(function(key) {
+                values.push(record.data[key]);
+            });
+            csv += values.join(',') + '\n';
+        });
+        return csv;
+    }
 });
