@@ -2,7 +2,7 @@ Ext.ns("AFINCH");
 AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
     map: undefined,
-    currentZoom : 0,
+    currentZoom: 0,
     nhdFlowlineLayername: 'glri:NHDFlowline',
     gageStyleName: "GageLocStreamOrder",
     wmsGetFeatureInfoControl: undefined,
@@ -74,7 +74,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
             url: CONFIG.endpoint.geoserver + 'wfs',
             streamOrderClipValue: this.streamOrderClipValue,
-            visibility : false
+            visibility: false
         });
         gageFeatureLayer.id = 'gage-feature-layer';
 
@@ -103,7 +103,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     geodesic: true
                 }),
                 new OpenLayers.Control.LayerSwitcher({
-                    roundedCorner : true
+                    roundedCorner: true
                 }),
                 new OpenLayers.Control.Zoom()
             ],
@@ -138,14 +138,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     }
 
                     panel.map.events.register(
-                            'movestart',
-                            panel.map,
-                            function(evt) {
-                                
-                            },
-                            true);
-
-                    panel.map.events.register(
                             'zoomend',
                             panel.map,
                             function() {
@@ -154,58 +146,83 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                                 panel.updateFromClipValue(panel.getClipValueForZoom(zoom));
 
                                 panel.map.getLayersBy('id', 'gage-feature-layer')[0].updateGageStreamOrderFilter();
-
+                                
+// To be used in a future release
 //                                var getFeatureResponses = Object.extended();
-//                                var filter = 'StreamOrde>=' + panel.streamOrderClipValue;
-//                                Ext.Ajax.request({
-//                                    url: CONFIG.endpoint.geoserver + 'ows',
-//                                    scope: getFeatureResponses,
-//                                    params: {
-//                                        service: 'WFS',
-//                                        version: '1.1.0',
-//                                        outputFormat: 'json',
-//                                        request: 'GetFeature',
-//                                        typeName: panel.nhdFlowlineLayername,
-//                                        propertyName: 'StreamOrde',
-//                                        'CQL_FILTER': filter
-//                                    },
-//                                    success: function(response, opts) {
-//                                        this.streamOrder = Ext.util.JSON.decode(response.responseText);
-//                                        Ext.Ajax.request({
-//                                            url: CONFIG.endpoint.geoserver + 'ows',
-//                                            scope: this,
-//                                            params: {
-//                                                service: 'WFS',
-//                                                version: '1.1.0',
-//                                                outputFormat: 'json',
-//                                                request: 'GetFeature',
-//                                                typeName: panel.nhdFlowlineLayername,
-//                                                propertyName: 'StreamOrde,StreamLeve',
-//                                                'CQL_FILTER': filter
-//                                            },
-//                                            success: function(response, opts) {
-//                                                this.streamLevel = Ext.util.JSON.decode(response.responseText);
-//                                                var a = 1;
-//                                                var lookupTable = new Array(7);
-//                                                var currentIndex = panel.streamOrderClipValue - 1;
-//
-//                                                if (lookupTable[currentIndex] == undefined) {
-//                                                    for (var fInd = 0; fInd < this.streamOrder.features.length; fInd++) {
-//                                                        var f = this.streamOrder.features[fInd];
-//                                                        var fid = f.id;
-//                                                        var streamOrder = f.properties.StreamOrde;
-//                                                        var matchingStreamLevel = this.streamLevel.features.find(function(f2) {
-//                                                            return f.id == f2.id;
-//                                                        });
-//                                                        var streamLevel = matchingStreamLevel.properties.StreamLeve;
-//                                                        lookupTable[currentIndex].push(fid, streamOrder, streamLevel);
-//                                                    }
-//                                                }
-//                                                console.log(lookupTable)
-//                                            }
-//                                        });
+//                                if (!localStorage.getItem('glri-afinch')) {
+//                                    localStorage.setItem('glri-afinch', Ext.util.JSON.encode({
+//                                        lookupTable: Array.create([[], [], [], [], [], []])
+//                                    }));
+//                                }
+//                                var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-afinch'));
+                                // Check to see if we have the lookup table for clip order values at the current clip value. If we do we don't need to 
+                                // make the call again. If we don't, make a call to get the values for the lookup table, create the lookup table 
+//                                if (!storageObject.lookupTable[panel.streamOrderClipValue - 1].length) {
+//                                    var needed = []
+//                                    for (var i = panel.streamOrderClipValue;i < storageObject.lookupTable.length + 1;i++) {
+//                                        if (!storageObject.lookupTable[i - 1].length) {
+//                                            needed.push(i);
+//                                        }
 //                                    }
-//                                });
+//                                    var filter = "StreamOrde IN ('" + needed.join("','") + "')";
+//                                    Ext.Ajax.request({
+//                                        url: CONFIG.endpoint.geoserver + 'ows',
+//                                        scope: getFeatureResponses,
+//                                        method: 'GET',
+//                                        params: {
+//                                            service: 'WFS',
+//                                            version: '1.1.0',
+//                                            outputFormat: 'json',
+//                                            request: 'GetFeature',
+//                                            typeName: panel.nhdFlowlineLayername,
+//                                            propertyName: 'StreamOrde,Hydroseq',
+//                                            sortBy: 'Hydroseq',
+//                                            'CQL_FILTER': filter
+//                                        },
+//                                        success: function(response, opts) {
+//                                            this.streamOrder = Ext.util.JSON.decode(response.responseText);
+//                                            Ext.Ajax.request({
+//                                                url: CONFIG.endpoint.geoserver + 'ows',
+//                                                scope: this,
+//                                                method: 'GET',
+//                                                params: {
+//                                                    service: 'WFS',
+//                                                    version: '1.1.0',
+//                                                    outputFormat: 'json',
+//                                                    request: 'GetFeature',
+//                                                    typeName: panel.nhdFlowlineLayername,
+//                                                    propertyName: 'StreamLeve,StreamOrde,Hydroseq',
+//                                                    sortBy: 'Hydroseq',
+//                                                    'CQL_FILTER': filter
+//                                                },
+//                                                success: function(response, opts) {
+//                                                    this.streamLevel = Ext.util.JSON.decode(response.responseText);
+//                                                    var storageObject = Ext.util.JSON.decode(localStorage.getItem('glri-afinch'));
+//
+//                                                    for (var i = 0; i < 6; i++) {
+//                                                        if (!storageObject.lookupTable[i].length) {
+//                                                            var soSublist = this.streamOrder.features.findAll(function(j) {
+//                                                                return j.properties.StreamOrde === (i + 1);
+//                                                            });
+//
+//                                                            for (var soInd = 0; soInd < soSublist.length; soInd++) {
+//                                                                var seq = soSublist[soInd].properties.Hydroseq;
+//                                                                var order = soSublist[soInd].properties.StreamOrde;
+//                                                                var level = soSublist[soInd].properties.StreamLeve;
+//
+//                                                                storageObject.lookupTable[order - 1].push([seq, order, level])
+//                                                            }
+//                                                        }
+//                                                    }
+//
+//
+//                                                    localStorage.setItem('glri-afinch', Ext.util.JSON.encode(storageObject));
+//                                                }
+//                                            });
+//                                        }
+//                                    });
+//                                }
+
                             },
                             true);
 
