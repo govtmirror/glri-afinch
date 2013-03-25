@@ -15,14 +15,16 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             allData.each(function(row){
                 csv += row.join(',') + '\n'
             });
-            
-            var filename = escape('nhd_flowlines_stats.csv');
+            var filename = win.title.length > 0 ? win.title : CONFIG.defaultExportFilename;
+            filename += '.csv';
+            filename = escape(filename);
             var type = escape('text/csv');
             var data = escape(csv);
             
-            var urlParams = '?filename=' + filename + '&type=' + type + '&data=' + data;
-            var url = CONFIG.endpoint.exporter + urlParams;
-            document.getElementById('download').src = url;
+            $('#filename_value').val(filename);
+            $('#type_value').val(type);
+            $('#data_value').val(data);
+            $('#download_form').submit();
         };
         var button = {
             xtype: 'button', 
@@ -30,7 +32,8 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             handler: exportHandler
         };
         config = Ext.apply({
-            items : ['->', button]
+            items : ['->', button],
+            defaultExportName : ''
         }, config);
 
         AFINCH.ui.DataExportToolbar.superclass.constructor.call(this, config);
