@@ -63,7 +63,9 @@
         <jsp:include page="js/geoext/ux/SOS/SOS.jsp"/>
         <jsp:include page="js/ext/ux/notify/notify.jsp"/>
         <jsp:include page="js/gxp/gxp.jsp"/>
-
+        <jsp:include page="js/jquery/jquery.jsp">
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
         <script type="text/javascript">
             OpenLayers.ProxyHost = null;
             var CONFIG = Object.extended();
@@ -82,6 +84,7 @@
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
+            CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
 
         </script>
 
@@ -111,6 +114,12 @@
             <jsp:param name="site-url" value="" />
             <jsp:param name="contact-info" value="" />
         </jsp:include>
-        <iframe id="download" style="display: none;"></iframe>
+        <form id="download_form" style="display:none;" action="export" method="post" target="download_iframe">
+            <input id="filename_value" name="filename" type="text" value=""/>
+            <input id="type_value" name="type" type="text" value=""/>
+            <input id="data_value" name="data" type="text" value=""/>
+            <input type ="submit"/>
+        </form> 
+        <iframe name="download_iframe" id="download" style="display: none;"></iframe>
     </body>
 </html>
