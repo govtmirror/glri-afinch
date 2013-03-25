@@ -401,23 +401,23 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             allDecileSeriesOptions[label] = canonicalDecileSeriesOptions;
         });
         var otherSeriesOptions = {
-            'Monthly Flow':{
+            'Monthly Flow (cfs)':{
                 strokeWidth: 3,
                 stepPlot: false
             },
-            'Mean Annual Flow':{
+            'Mean Annual Flow (cfs)':{
                 strokeWidth: 2,
                 stepPlot: true
             },
-            'Median Annual Flow':{
+            'Median Annual Flow (cfs)':{
                 strokeWidth: 2,
                 stepPlot: true
             },
-            'Mean Monthly Flow': {
+            'Mean Monthly Flow (cfs)': {
                 strokeWidth: 2,
                 stepPlot: false
             },
-            'Median Monthly Flow':{
+            'Median Monthly Flow (cfs)':{
                 strokeWidth: 2,
                 stepPlot: false
             }
@@ -434,6 +434,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             colors: ['purple','orange','blue','red','green','black','black','black','black','black','black','black','black','black'],
             connectSeparatedPoints: true,
             showRangeSelector: true,
+            highlightCircleSize: 0,
             labelsDiv: win.labelPanel.getEl().dom,
             labelsSeparateLines: true,
             legend: 'always'
