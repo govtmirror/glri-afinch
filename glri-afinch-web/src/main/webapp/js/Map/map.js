@@ -364,10 +364,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             LOG(response.responseText);
             return;
         }
-        //todo: fix... very breakable
-        var responseTxt = response.responseXML.childNodes[0].childNodes[7].childNodes[1].
-            childNodes[7].childNodes[0].childNodes[3].textContent;
-        
+        var responseTxt = $(response.responseXML).find('swe\\:values').text();
         
         /**
          * Given response text, return an array of arrays. The row array has format
