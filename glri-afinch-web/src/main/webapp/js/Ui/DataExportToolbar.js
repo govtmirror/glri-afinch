@@ -16,6 +16,7 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 csv += row.join(',') + '\n'
             });
             var filename = win.title.length > 0 ? win.title : CONFIG.defaultExportFilename;
+            filename = filename.replace(/ /g, '_');
             filename += '.csv';
             filename = escape(filename);
             var type = escape('text/csv');
