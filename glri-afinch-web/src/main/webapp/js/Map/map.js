@@ -269,11 +269,11 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     msgWidth: 200,
                     title: 'Error',
                     msg: "Error retrieving data from server. See browser logs for details."
-                }).show(document);  
+                }).show(document);
                 return;
             }
             
-            //put stores into a title-to-store map
+            //put stores into a title-to-store map for convenient access later
             var tempStores = {};
             statsStores.each(function(store){
                tempStores[store.title] = store; 
@@ -281,28 +281,53 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             statsStores = tempStores;
             
             var data = win.graphPanel.data.values;
-            //add the annual aggregations
-            for(var dataIndex = 0, annualIndex = 0; dataIndex < data.length; dataIndex+=12, annualIndex++){
-                data[dataIndex][2] = statsStores.mean_annual_flow.getAt(annualIndex).get('x');
-                data[dataIndex][3] = statsStores.median_annual_flow.getAt(annualIndex).get('medianq');
-            }
-            
-            //add the monthly aggregations
-            for(var monthlyIndex = 0; monthlyIndex < data.length; monthlyIndex++){
-                data[monthlyIndex][4] = statsStores.mean_monthly_flow.getAt(monthlyIndex % 12).get('meanq');
-                data[monthlyIndex][5] = statsStores.median_monthly_flow.getAt(monthlyIndex % 12).get('medianq');
-            }
             
             var decileValues = [];//this will be appended onto the end of every row of the new data
             statsStores.deciles.each(function(record){
                decileValues.push(record.get('q'));
             });
-            //add the deciles to the data
-            decileValues = decileValues.reverse();
+            
+            /**
+             * Declare some constants to be used in the table update:
+             * 
+             * - Variables with 'Index' in the name are indexing columns in the 
+             * array of arrays that we will pass to Dygraphs
+             * 
+             * - Variables with 'ColumnName' in the name refer to field names in the StatStores
+             * 
+             */
+            
+            var dateIndex = 0,
+                annualMeanIndex = 2,
+                annualMedianIndex = 3,
+                monthlyMeanIndex = 4,
+                monthlyMedianIndex = 5,
+                lowestDecileIndex = 6,
+                highestDecileIndex = 15,
+                yearColumnName = 'Year',
+                monthColumnName = 'Month',
+                meanFlowColumnName = 'meanq',
+                medianFlowColumnName = 'medianq';
+            
             data = data.map(function(row){
-                var decileStart = 6;
-                for(var i = decileStart; i < 15; i++){
-                    row[i] = decileValues[i-decileStart];
+                var month = row[dateIndex].getMonth();
+                //native javascript months are 0-indexed
+                //but the RWPS process feeds the stats store a 1-based month index.
+                //so...
+                var extStoreMonth = month+1;
+                var isJanuary = 0 === month;
+                if(isJanuary){
+                    //add the annual stats
+                    var year = row[dateIndex].getFullYear();
+                    row[annualMeanIndex] = statsStores.mean_annual_flow.query(yearColumnName, year).first().get(meanFlowColumnName);
+                    row[annualMedianIndex] = statsStores.median_annual_flow.query(yearColumnName, year).first().get(medianFlowColumnName);
+                }
+                //use the ext-adjusted storeMonth in the statsStores queries
+                row[monthlyMeanIndex] = statsStores.mean_monthly_flow.query(monthColumnName, extStoreMonth).first().get(meanFlowColumnName);
+                row[monthlyMedianIndex] = statsStores.median_monthly_flow.query(monthColumnName, extStoreMonth).first().get(medianFlowColumnName);
+                //append the deciles to the end of the row
+                for(var i = lowestDecileIndex; i < highestDecileIndex; i++){
+                    row[i] = decileValues[i-lowestDecileIndex];
                 }
                 return row;
             });
