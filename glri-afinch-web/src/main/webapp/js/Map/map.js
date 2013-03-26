@@ -537,13 +537,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             var featureGrids = [];
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
-                singleSelect: true,
-                listeners: {
-                    rowselect: function(obj, rowIndex, record) {
-                        self.displayDataWindow(record);
-                    }
-                }
+                singleSelect: true
             });
+            featureSelectionModel.on({
+                'rowselect' : {
+                    fn : function(obj, rowIndex, record) { self.displayDataWindow(record); },
+                    delay: 100 
+                 }
+             });
             if (gageLocFeatureStore.totalLength) {
                 featureGrids.push(new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-gage',
