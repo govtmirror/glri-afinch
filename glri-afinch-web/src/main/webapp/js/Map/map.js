@@ -392,78 +392,16 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         };
         var values = parseSosResponse(responseTxt, 13);
         
-        //@todo: Holy Hardcoding Batman! and encapsulate most of this Dygraph setup
-        var decileSuffix = "th % (cfs)";
-        var decileLabels = ['90','80','70','60','50','40','30','20','10'].map(
-            function(prefix){
-                return prefix + decileSuffix;
-            });
+        win.graphPanel.graph = AFINCH.ui.FlowDygraph(
+            win.graphPanel.getEl().dom, 
+            win.labelPanel.getEl().dom,
+            values);
         
-        var mainLabelSuffix = " (cfs)";
-        var mainLabels = 
-        [
-        'Monthly Flow',//initial field
-        //subsequently-loaded fields:
-        'Mean Annual Flow',
-        'Median Annual Flow',
-        'Mean Monthly Flow',
-        'Median Monthly Flow'
-        ].map(function(prefix){
-            return prefix + mainLabelSuffix;
-        });
-        //must include x axis label as well:
-        var labels = ['Date'].concat(mainLabels).concat(decileLabels);
-        
-        var canonicalDecileSeriesOptions = {
-            strokeWidth: 1,
-            stepPlot: false
-        };
-        var allDecileSeriesOptions ={};
-        decileLabels.each(function(label){
-            allDecileSeriesOptions[label] = canonicalDecileSeriesOptions;
-        });
-        var otherSeriesOptions = {
-            'Monthly Flow (cfs)':{
-                strokeWidth: 3,
-                stepPlot: false
-            },
-            'Mean Annual Flow (cfs)':{
-                strokeWidth: 2,
-                stepPlot: true
-            },
-            'Median Annual Flow (cfs)':{
-                strokeWidth: 2,
-                stepPlot: true
-            },
-            'Mean Monthly Flow (cfs)': {
-                strokeWidth: 2,
-                stepPlot: false
-            },
-            'Median Monthly Flow (cfs)':{
-                strokeWidth: 2,
-                stepPlot: false
-            }
-        };
-        var allSeriesOptions ={};
-        Object.merge(allSeriesOptions, allDecileSeriesOptions);
-        Object.merge(allSeriesOptions, otherSeriesOptions);
+        //attach the info to the graphPanel for easy access during data export
         win.graphPanel.data={
             values : values,
-            headers: labels
+            headers: win.graphPanel.graph.getLabels()
         };
-        var opts = {
-            labels: labels,
-            colors: ['purple','orange','blue','red','green','black','black','black','black','black','black','black','black','black'],
-            connectSeparatedPoints: true,
-            showRangeSelector: true,
-            highlightCircleSize: 0,
-            labelsDiv: win.labelPanel.getEl().dom,
-            labelsSeparateLines: true,
-            legend: 'always'
-        };
-        
-        Object.merge(opts, allSeriesOptions);
-        win.graphPanel.graph = new Dygraph(win.graphPanel.getEl().dom, values, opts);
         //kick off the next ajax call...
         var rParams = {
             sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
