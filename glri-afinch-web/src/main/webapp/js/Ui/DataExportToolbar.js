@@ -9,7 +9,12 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             var headers = win.graphPanel.data.headers;
             var allData = [];
             allData.push(headers);
-            values.each(function(dataRow){allData.push(dataRow);});
+            values.each(function(dataRow){
+                var myDataRow = [].concat(dataRow);//make a copy of the array so we don't modify the source
+                var formattedDate = myDataRow[0].format('{Mon} {year}');
+                myDataRow[0] = formattedDate;
+                allData.push(myDataRow);
+            });
             
             var csv = '';
             allData.each(function(row){
