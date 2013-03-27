@@ -48,7 +48,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Topo Map",
-                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/World_Topo_Map/MapServer" + zyx,
+                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/World_Topo_Map" + zyx,
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Terrain Base",
