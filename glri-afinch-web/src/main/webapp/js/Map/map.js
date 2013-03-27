@@ -229,6 +229,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
                     panel.updateFromClipValue(panel.streamOrderClipValues[panel.map.zoom]);
+                    
+                },
+                afterrender: function(panel){
+                
                 }
             }
         }, config);
@@ -255,6 +259,18 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
+
+        var html = '<div><img src="'+ CONFIG.mapLogoUrl +'" style="width: 30em;"/></div><div style="text-align: right;">Data furnished by NHDPlus</div>';
+        Ext.Msg.show({
+            title: 'Data furnished by NHDPlus',
+            msg: html,
+            maxWidth: 400
+        });
+        var attribPopup = Ext.Msg.getDialog();
+        var closeAttribPopup = function(){
+            attribPopup.close();
+        }
+        setTimeout(closeAttribPopup, 2000);
 },
     /**
      *@param statsStores - array of StatStores
