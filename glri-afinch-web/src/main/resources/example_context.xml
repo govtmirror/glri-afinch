@@ -11,4 +11,5 @@
 <Environment name="afinch.endpoint.geoserver" type="java.lang.String" value="http://localhost:8081/glri-geoserver/" />
 <Environment name="afinch.endpoint.rwps" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/" />
 <Environment name="afinch.endpoint.thredds" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/thredds/sos/glri-afinch/" />
+<Environment name="afinch.endpoint.arcgis" type="java.lang.String" value="http://services.arcgisonline.com/" /> <!-- this url will be constant on dev, qa, and prod-->
 <!-- /AFINCH Mapper -->

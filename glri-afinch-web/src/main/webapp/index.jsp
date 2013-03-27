@@ -83,6 +83,8 @@
             CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
+            CONFIG.endpoint.arcgis = '<%= props.getProperty("afinch.endpoint.arcgis", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
+            CONFIG.endpoint.arcgisProxy = 'arcgis/';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
 
