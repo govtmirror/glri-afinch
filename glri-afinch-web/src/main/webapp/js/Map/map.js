@@ -31,35 +31,35 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var zyx = '/MapServer/tile/${z}/${y}/${x}';
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Imagery",
-                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/World_Imagery" + zyx,
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery" + zyx,
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Light Gray Base",
-                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
+                "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base" + zyx,
                 Ext.apply(EPSG900913Options, {numZoomLevels: 14})
                 ));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Physical Map",
-                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/World_Physical_Map" + zyx,
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map" + zyx,
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Street Map",
-                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/World_Street_Map" + zyx,
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map" + zyx,
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Topo Map",
-                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/World_Topo_Map" + zyx,
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" + zyx,
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Terrain Base",
-                CONFIG.endpoint.arcgisProxy + "ArcGIS/rest/services/World_Shaded_Relief" + zyx,
+                "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief" + zyx,
                 Ext.apply(EPSG900913Options, {numZoomLevels: 14})
                 ));
 
         // ////////////////////////////////////////////// FLOWLINES
         var flowlinesWMSData = new OpenLayers.Layer.FlowlinesData(
                 "Flowline WMS (Data)",
-                CONFIG.endpoint.geoserverProxy + 'wms'
+                CONFIG.endpoint.geoserver + 'wms'
                 );
         flowlinesWMSData.id = 'nhd-flowlines-data-layer';
 
@@ -72,7 +72,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         // ////////////////////////////////////////////// GAGES
         var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
-            url: CONFIG.endpoint.geoserverProxy + 'wfs',
+            url: CONFIG.endpoint.geoserver + 'wfs',
             streamOrderClipValue: this.streamOrderClipValue,
             visibility: false
         });
@@ -80,7 +80,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         var gageData = new OpenLayers.Layer.GageData(
                 "Gage WMS (Data)",
-                CONFIG.endpoint.geoserverProxy + 'wms'
+                CONFIG.endpoint.geoserver + 'wms'
                 );
         gageData.id = 'gage-location-data';
 
@@ -166,7 +166,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //                                    }
 //                                    var filter = "StreamOrde IN ('" + needed.join("','") + "')";
 //                                    Ext.Ajax.request({
-//                                        url: CONFIG.endpoint.geoserverProxy + 'ows',
+//                                        url: CONFIG.endpoint.geoserver + 'ows',
 //                                        scope: getFeatureResponses,
 //                                        method: 'GET',
 //                                        params: {
@@ -182,7 +182,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //                                        success: function(response, opts) {
 //                                            this.streamOrder = Ext.util.JSON.decode(response.responseText);
 //                                            Ext.Ajax.request({
-//                                                url: CONFIG.endpoint.geoserverProxy + 'ows',
+//                                                url: CONFIG.endpoint.geoserver + 'ows',
 //                                                scope: this,
 //                                                method: 'GET',
 //                                                params: {

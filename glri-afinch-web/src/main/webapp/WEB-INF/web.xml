@@ -67,22 +67,6 @@
         <servlet-name>Export</servlet-name>
         <url-pattern>/export</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>arcGisServlet</servlet-name>
-        <servlet-class>gov.usgs.cida.proxy.AlternateProxyServlet</servlet-class>
-        <init-param>
-            <param-name>forward-url-param</param-name>
-            <param-value>afinch.endpoint.arcgis</param-value>
-        </init-param>
-        <init-param>
-            <param-name>readTimeout</param-name>
-            <param-value>300000</param-value>
-        </init-param>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>arcGisServlet</servlet-name>
-        <url-pattern>/arcgis/*</url-pattern>
-    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
