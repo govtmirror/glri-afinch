@@ -264,13 +264,13 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 },
     showAttributionSplash: function(){
         var slogan = 'Data furnished by NHDPlus';
-        var attribPopupTimeout = 2000;
-        var html = '<div><a class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
+        var attribPopupTimeout = 3000;
+        var html = '<div><a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
         '<img src="'+ CONFIG.mapLogoUrl +'" style="width: 30em;"/></div>' + 
         '<div style="font-size: 1.25em; font-weight: bold; text-align: right;">'+ 
         '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+slogan +'</a></div>';
-    
         var msgWidth = 400;
+        
         Ext.Msg.show({
             title: 'Loading...',
             msg: html,
