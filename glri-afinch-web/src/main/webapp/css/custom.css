@@ -6,3 +6,8 @@
             position: relative;
             top: 3em;
             }
+.no_hover_change:hover {
+    text-decoration: none;
+    background: none;
+    color: none;
+}

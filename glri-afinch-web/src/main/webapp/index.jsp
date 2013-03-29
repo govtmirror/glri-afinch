@@ -84,6 +84,7 @@
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
             CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
+            CONFIG.attributionUrl = 'http://www.horizon-systems.com/nhdplus/';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
 
         </script>
