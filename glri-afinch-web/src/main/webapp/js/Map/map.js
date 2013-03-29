@@ -340,10 +340,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             
             //now enable the series toggle buttons
-            var toggleButtons = win.getTopToolbar().items.items;
-            for( var j = 1; j < toggleButtons.length; j++){
-                win.getTopToolbar().items.items[j].enable();    
-            }
+            //@todo find a stable Ext way to access the checked items
+            var checkedItems = win.getTopToolbar().getSeriesTogglers();
+            checkedItems.each(function(checkedItem){
+                checkedItem.enable();
+                checkedItem.fireEvent('checkchange', checkedItem, checkedItem.initialConfig.checked, win.graphPanel.graph);
+            });
             
         },
     /**
@@ -356,11 +358,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var self = this;
         var win = self.dataWindow;
         if(response.responseText.toLowerCase().indexOf('exception') !== -1){
-            new Ext.ux.Notify({
-                msgWidth: 200,
-                title: 'Error',
-                msg: "Error retrieving data from server. See browser logs for details."
-            }).show(document);  
+            self.errorNotify("Error retrieving data from server. See browser logs for details.");
             LOG(response.responseText);
             return;
         }
@@ -454,6 +452,16 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             scope: self
         }
         );
+    },
+    errorNotify: function(message){
+        if(undefined === message){
+            message = "An Error occurred. See browser logs for details.";
+        }
+        new Ext.ux.Notify({
+                msgWidth: 200,
+                title: 'Error',
+                msg: message
+            }).show(document);
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
         var self = this;

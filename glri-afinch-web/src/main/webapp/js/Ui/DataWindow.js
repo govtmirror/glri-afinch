@@ -7,9 +7,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
         var width = config.width || 1000;
         var height = config.height || 500;
         
-        var buttonGroup = new AFINCH.ui.SeriesToggleButtonGroup({
-           width: "100%"
-        });
+        var toggleBar = self.toggleBar = new AFINCH.ui.SeriesToggleToolbar();
                //attach the contained components so that they can be easily referenced later
         self.graphPanel = new AFINCH.ui.StatsGraphPanel();
         self.labelPanel = new AFINCH.ui.StatsLabelPanel();
@@ -17,7 +15,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
         config = Ext.apply({
             width: width,
             height: height,
-            tbar: buttonGroup,
+            tbar: toggleBar,
             title: title,
             collapsible: true,
             layout : 'hbox',
