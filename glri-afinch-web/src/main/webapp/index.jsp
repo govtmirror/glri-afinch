@@ -76,8 +76,15 @@
             CONFIG.development = <%= development%>;
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
+            
             CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
+            if(Ext.isIE9){
+                //IE9 always taints the canvas with cross-origin images, even if their 
+                //Since this breaks things, we must use a GeoServer proxy instead of CORS 
+                CONFIG.endpoint.geoserver = CONFIG.endpoint.geoserverProxy;
+            }
+            
             CONFIG.endpoint.rwps = '<%= props.getProperty("afinch.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
             CONFIG.endpoint.rwpsProxy = 'rwps/';
             CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
