@@ -79,9 +79,11 @@
             
             CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
-            if(Ext.isIE9){
-                //IE9 always taints the canvas with cross-origin images, even if their 
-                //Since this breaks things, we must use a GeoServer proxy instead of CORS 
+            
+            //IE always taints the canvas with cross-origin images, even if their
+            //cross origin keywords are set to prevent tainting.
+            //Since this breaks things, we must use a GeoServer proxy instead of CORS
+            if(Ext.isIE){
                 CONFIG.endpoint.geoserver = CONFIG.endpoint.geoserverProxy;
             }
             
