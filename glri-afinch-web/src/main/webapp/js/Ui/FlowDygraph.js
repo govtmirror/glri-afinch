@@ -62,7 +62,12 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
     var allSeriesOptions ={};
     Object.merge(allSeriesOptions, allDecileSeriesOptions);
     Object.merge(allSeriesOptions, otherSeriesOptions);
-
+    
+    //function to customize the display of dates on the Dygraph
+    var dateToStringWithoutDay = function(ms){
+        return new Date(ms).format('{Mon}. {yyyy}');
+    };
+    
     var opts = {
         labels: labels,
         colors: ['purple','orange','blue','red','green',
@@ -75,7 +80,13 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
         xlabel: 'Date',
         labelsDiv: legendElt,
         labelsSeparateLines: true,
-        legend: 'always'
+        legend: 'always',
+        axes:{
+            x: {
+                valueFormatter: dateToStringWithoutDay,
+                axisLabelFormatter: dateToStringWithoutDay
+            }
+        }
     };
         
     Object.merge(opts, allSeriesOptions);
