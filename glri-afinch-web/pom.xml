@@ -230,6 +230,7 @@
 
                         <!-- <actual code being tested -->
                             <include>target/glri-afinch-web/js/Util/Util.js</include>
+                            <include>target/glri-afinch-web/js/Data/ParseSosResponse.js</include>
                             <include>target/glri-afinch-web/js/Data/StatsStore.js</include>
                         <!-- </actual code being tested -->
 

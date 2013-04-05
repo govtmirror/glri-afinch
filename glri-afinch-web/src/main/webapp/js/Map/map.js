@@ -367,31 +367,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             responseTxt = $(response.responseXML).find('values').text();
         }
         
-        /**
-         * Given response text, return an array of arrays. The row array has format
-         * [<date>, <null or flow>] 
-         */
-        var parseSosResponse=function(responseTxt, numFieldsLoadedLater){
-            responseTxt = responseTxt.slice(0, responseTxt.length-2);//kill terminal ' \n'
-            var rows = responseTxt.split(' ');
-            var rightPadding = [];
-            for(var i = 0; i < numFieldsLoadedLater; i++){
-                rightPadding.push(null);
-            }
-                
-            rows = rows.map(function(row){
-                var tokens = row.split(',');
-                
-                var dateStr = tokens[0].to(tokens[0].indexOf('T'));
-                dateStr = dateStr.replace(/-/g,'/');
-                var date = new Date(dateStr);
-                var flow = parseFloat(tokens[1]);
-                return [date, flow].concat(rightPadding);
-                
-            });
-            return rows;
-        };
-        var values = parseSosResponse(responseTxt, 13);
+        var values = AFINCH.data.parseSosResponse(responseTxt, 13);
         
         win.graphPanel.graph = AFINCH.ui.FlowDygraph(
             win.graphPanel.getEl().dom, 
