@@ -5,6 +5,8 @@ AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
     },
     constructor: function(config) {
          var toggleSeriesHandler = function(checkItem, checked, optionalGraph){
+            var lowestDecileGraphIndex = 5;
+            var highestDecileGraphIndex = 14;
             var graph;
             if(optionalGraph){
                 graph = optionalGraph;
@@ -15,7 +17,7 @@ AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
             
             if(checkItem.chartColumn !== undefined || checkItem.statName){
                 if(checkItem.statName == 'deciles'){
-                    for(var i = 5; i < 14; i++){
+                    for(var i = lowestDecileGraphIndex; i < highestDecileGraphIndex; i++){
                         graph.setVisibility(i, checked);
                     }
                 }
