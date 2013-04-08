@@ -6,3 +6,16 @@
             position: relative;
             top: 3em;
             }
+.no_hover_change:hover {
+    text-decoration: none;
+    background: none;
+    color: none;
+}
+.attribution_splash img{
+    width: 30em;
+}
+.attribution_text_link_wrapper{
+    font-size: 1.25em;
+    font-weight: bold;
+    text-align: right;
+}

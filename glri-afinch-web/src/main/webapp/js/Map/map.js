@@ -15,6 +15,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     streamOrderLock: true,
     streamOrderClipValues: undefined,
     constructor: function(config) {
+        var self = this;
         LOG.debug('map.js::constructor()');
         var config = config || {};
         var mapLayers = [];
@@ -98,7 +99,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.MousePosition({
                     prefix: 'POS: '
                 }),
-                new OpenLayers.Control.Attribution({template: '<img id="attribution" src="' + CONFIG.mapLogoUrl + '"/>'}),
+                new OpenLayers.Control.Attribution({
+                    template: '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
+                    '<img id="attribution" src="' + CONFIG.mapLogoUrl + '"/></a>'
+                }),
                 new OpenLayers.Control.ScaleLine({
                     geodesic: true
                 }),
@@ -229,7 +233,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
                     panel.updateFromClipValue(panel.streamOrderClipValues[panel.map.zoom]);
-                }
+                    
+                },
+                afterrender: self.showAttributionSplash
             }
         }, config);
         AFINCH.MapPanel.superclass.constructor.call(this, config);
@@ -256,6 +262,27 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
 },
+    showAttributionSplash: function(){
+        var slogan = 'Data furnished by NHDPlus';
+        var attribPopupTimeout = 3000;
+        var html = '<div class="attribution_splash"><a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
+        '<img src="'+ CONFIG.mapLogoUrl +'"/></div>' + 
+        '<div class="attribution_text_link_wrapper">'+ 
+        '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+slogan +'</a></div>';
+        var msgWidth = 400;
+        
+        Ext.Msg.show({
+            title: 'Loading...',
+            msg: html,
+            maxWidth: msgWidth,
+            minWidth: msgWidth
+        });
+        var attribPopup = Ext.Msg.getDialog();
+        var closeAttribPopup = function(){
+            attribPopup.close();
+        }
+        setTimeout(closeAttribPopup, attribPopupTimeout);
+    },
     /**
      *@param statsStores - array of StatStores
      *@param success - whether or not the request was successful
