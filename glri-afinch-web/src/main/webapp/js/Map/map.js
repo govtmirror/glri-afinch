@@ -367,10 +367,11 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             
             //now enable the series toggle buttons
-            var toggleButtons = win.getTopToolbar().items.items;
-            for( var j = 1; j < toggleButtons.length; j++){
-                win.getTopToolbar().items.items[j].enable();    
-            }
+            var checkedItems = win.getTopToolbar().getSeriesTogglers();
+            checkedItems.each(function(checkedItem){
+                checkedItem.enable();
+                checkedItem.fireEvent('checkchange', checkedItem, checkedItem.initialConfig.checked, win.graphPanel.graph);
+            });
             
         },
     /**
@@ -383,68 +384,41 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var self = this;
         var win = self.dataWindow;
         if(response.responseText.toLowerCase().indexOf('exception') !== -1){
-            new Ext.ux.Notify({
-                msgWidth: 200,
-                title: 'Error',
-                msg: "Error retrieving data from server. See browser logs for details."
-            }).show(document);  
-            LOG(response.responseText);
-            return;
+            AFINCH.ui.errorNotify("Error retrieving data from server. See browser logs for details.");
+            LOG.error(response.responseText);
         }
-        var responseTxt = $(response.responseXML).find('swe\\:values').text();
-        if (0 === responseTxt.length){
-            responseTxt = $(response.responseXML).find('values').text();
-        }
-        
-        /**
-         * Given response text, return an array of arrays. The row array has format
-         * [<date>, <null or flow>] 
-         */
-        var parseSosResponse=function(responseTxt, numFieldsLoadedLater){
-            responseTxt = responseTxt.slice(0, responseTxt.length-2);//kill terminal ' \n'
-            var rows = responseTxt.split(' ');
-            var rightPadding = [];
-            for(var i = 0; i < numFieldsLoadedLater; i++){
-                rightPadding.push(null);
+        else{
+            var responseTxt = $(response.responseXML).find('swe\\:values').text();
+            if (0 === responseTxt.length){
+                responseTxt = $(response.responseXML).find('values').text();
             }
-                
-            rows = rows.map(function(row){
-                var tokens = row.split(',');
-                
-                var dateStr = tokens[0].to(tokens[0].indexOf('T'));
-                dateStr = dateStr.replace(/-/g,'/');
-                var date = new Date(dateStr);
-                var flow = parseFloat(tokens[1]);
-                return [date, flow].concat(rightPadding);
-                
-            });
-            return rows;
-        };
-        var values = parseSosResponse(responseTxt, 13);
-        
-        win.graphPanel.graph = AFINCH.ui.FlowDygraph(
-            win.graphPanel.getEl().dom, 
-            win.labelPanel.getEl().dom,
-            values);
-        
-        //attach the info to the graphPanel for easy access during data export
-        win.graphPanel.data={
-            values : values,
-            headers: win.graphPanel.graph.getLabels()
-        };
-        //kick off the next ajax call...
-        var rParams = {
-            sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
-        };
+            var numFieldsToLoadLater = 13;
+            var values = AFINCH.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
-        var tempStatsStore = new AFINCH.data.StatsStore();
-        
-        tempStatsStore.load({
-            params: rParams,
-            scope: self,
-            callback: self.statsCallback
-        });        
-        win.doLayout();
+            win.graphPanel.graph = AFINCH.ui.FlowDygraph(
+                win.graphPanel.getEl().dom, 
+                win.labelPanel.getEl().dom,
+                values);
+
+            //attach the info to the graphPanel for easy access during data export
+            win.graphPanel.data={
+                values : values,
+                headers: win.graphPanel.graph.getLabels()
+            };
+            //kick off the next ajax call...
+            var rParams = {
+                sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
+            };
+
+            var tempStatsStore = new AFINCH.data.StatsStore();
+
+            tempStatsStore.load({
+                params: rParams,
+                scope: self,
+                callback: self.statsCallback
+            });        
+            win.doLayout();
+        }
     },
 
     /**

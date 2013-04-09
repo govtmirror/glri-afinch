@@ -5,6 +5,8 @@ Ext.ns('AFINCH.ui');
  * @param values - the array of arrays containing the data to graph
  */
 AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
+    $([graphElt, legendElt]).addClass('generous_left_margin');
+    
     var decileSuffix = "th % (cfs)";
     var decileLabels = ['90','80','70','60','50','40','30','20','10'].map(
         function(prefix){
@@ -59,7 +61,12 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
     var allSeriesOptions ={};
     Object.merge(allSeriesOptions, allDecileSeriesOptions);
     Object.merge(allSeriesOptions, otherSeriesOptions);
-
+    
+    //function to customize the display of dates on the Dygraph
+    var dateToStringWithoutDay = function(ms){
+        return new Date(ms).format('{Mon}. {yyyy}');
+    };
+    
     var opts = {
         labels: labels,
         colors: ['purple','orange','blue','red','green',
@@ -68,9 +75,17 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
         connectSeparatedPoints: true,
         showRangeSelector: true,
         highlightCircleSize: 0,
+        ylabel: 'Discharge (CFS)',
+        xlabel: 'Date',
         labelsDiv: legendElt,
         labelsSeparateLines: true,
-        legend: 'always'
+        legend: 'always',
+        axes:{
+            x: {
+                valueFormatter: dateToStringWithoutDay,
+                axisLabelFormatter: dateToStringWithoutDay
+            }
+        }
     };
         
     Object.merge(opts, allSeriesOptions);

@@ -6,6 +6,9 @@
             position: relative;
             top: 3em;
             }
+.generous_left_margin{
+            margin-left: 20px;
+            }
 .no_hover_change:hover {
     text-decoration: none;
     background: none;
