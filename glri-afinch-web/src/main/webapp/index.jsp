@@ -126,7 +126,7 @@
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
             <jsp:param name="site-url" value="" />
-            <jsp:param name="contact-info" value="" />
+            <jsp:param name="contact-info" value="glri_database" />
         </jsp:include>
         <form id="download_form" style="display:none;" action="export" method="post" target="download_iframe">
             <input id="filename_value" name="filename" type="text" value=""/>
