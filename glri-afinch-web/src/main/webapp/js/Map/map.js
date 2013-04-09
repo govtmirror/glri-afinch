@@ -367,10 +367,15 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             
             //now enable the series toggle buttons
-            var checkedItems = win.getTopToolbar().getSeriesTogglers();
+            var tbar = win.getTopToolbar()
+            var checkedItems = tbar.getSeriesTogglers();
             checkedItems.each(function(checkedItem){
                 checkedItem.enable();
-                checkedItem.fireEvent('checkchange', checkedItem, checkedItem.initialConfig.checked, win.graphPanel.graph);
+                checkedItem.fireEvent('checkchange', checkedItem, 
+                                        checkedItem.initialConfig.checked, 
+                                        win.graphPanel.graph,
+                                        tbar.menu
+                                    );
             });
             
         },

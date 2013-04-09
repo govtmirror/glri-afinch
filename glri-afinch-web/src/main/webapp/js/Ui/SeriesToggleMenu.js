@@ -10,8 +10,9 @@ AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
     getSeriesTogglers: function(){
       return this.items.items;  
     },
-    toggleSeriesHandler: function(checkItem, checked, optionalGraph){
-        var self = this;
+    toggleSeriesHandler: function(checkItem, checked, optionalGraph, context){
+        
+        var self = context ? context : this;
         
         //update the seriesIdToStats map
         if(checked){
