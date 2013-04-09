@@ -475,7 +475,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var gageLocFeatureStore, nhdFlowLineFeatureStore;
         if (features.length) {
             features.each(function(feature) {
-                layerFeatures[feature.gml.featureType].push(feature);
+                if (feature.data['StreamOrde'] >= self.streamOrderClipValue) {
+                    layerFeatures[feature.gml.featureType].push(feature);
+                }
             });
         }
 
