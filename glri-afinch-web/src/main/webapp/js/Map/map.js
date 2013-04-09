@@ -58,15 +58,15 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 ));
 
         // ////////////////////////////////////////////// FLOWLINES
-        var flowlinesWMSData = new OpenLayers.Layer.FlowlinesData(
+        var flowlinesData = new OpenLayers.Layer.FlowlinesData(
                 "Flowline WMS (Data)",
                 CONFIG.endpoint.geoserver + 'wms'
                 );
-        flowlinesWMSData.id = 'nhd-flowlines-data-layer';
+        flowlinesData.id = 'nhd-flowlines-data-layer';
 
         var flowlineRaster = new OpenLayers.Layer.FlowlinesRaster({
             name: "NHD Flowlines",
-            dataLayer: flowlinesWMSData,
+            dataLayer: flowlinesData,
             streamOrderClipValue: this.streamOrderClipValue
         });
         flowlineRaster.id = 'nhd-flowlines-raster-layer';
@@ -85,7 +85,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 );
         gageData.id = 'gage-location-data';
 
-        mapLayers.push(flowlinesWMSData);
+        mapLayers.push(flowlinesData);
         mapLayers.push(gageData);
         mapLayers.push(flowlineRaster);
         mapLayers.push(gageFeatureLayer);
@@ -247,7 +247,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             hover: false,
             autoActivate: true,
             layers: [
-                flowlinesWMSData,
+                flowlinesData,
                 flowlineRaster,
                 gageData
             ],
