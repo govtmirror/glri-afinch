@@ -9,3 +9,16 @@
 .generous_left_margin{
             margin-left: 20px;
             }
+.no_hover_change:hover {
+    text-decoration: none;
+    background: none;
+    color: none;
+}
+.attribution_splash img{
+    width: 30em;
+}
+.attribution_text_link_wrapper{
+    font-size: 1.25em;
+    font-weight: bold;
+    text-align: right;
+}

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/glri-afinch">
-    <Environment name="afinch.endpoint.geoserver" type="java.lang.String" value="http://cida-wiwsc-wsdev.er.usgs.gov:8080/geoserver/" />
-</Context>
