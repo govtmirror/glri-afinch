@@ -15,6 +15,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     streamOrderLock: true,
     streamOrderClipValues: undefined,
     constructor: function(config) {
+        var self = this;
         LOG.debug('map.js::constructor()');
         var config = config || {};
         var mapLayers = [];
@@ -48,7 +49,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Topo Map",
-                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer" + zyx,
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map" + zyx,
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Terrain Base",
@@ -98,7 +99,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.MousePosition({
                     prefix: 'POS: '
                 }),
-                new OpenLayers.Control.Attribution({template: '<img id="attribution" src="' + CONFIG.mapLogoUrl + '"/>'}),
+                new OpenLayers.Control.Attribution({
+                    template: '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
+                    '<img id="attribution" src="' + CONFIG.mapLogoUrl + '"/></a>'
+                }),
                 new OpenLayers.Control.ScaleLine({
                     geodesic: true
                 }),
@@ -229,7 +233,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     var mapZoomForExtent = panel.map.getZoomForExtent(panel.map.restrictedExtent);
                     panel.map.setCenter(panel.map.restrictedExtent.getCenterLonLat(), mapZoomForExtent);
                     panel.updateFromClipValue(panel.streamOrderClipValues[panel.map.zoom]);
-                }
+                    
+                },
+                afterrender: self.showAttributionSplash
             }
         }, config);
         AFINCH.MapPanel.superclass.constructor.call(this, config);
@@ -256,6 +262,27 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
 },
+    showAttributionSplash: function(){
+        var slogan = 'Data furnished by NHDPlus';
+        var attribPopupTimeout = 3000;
+        var html = '<div class="attribution_splash"><a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
+        '<img src="'+ CONFIG.mapLogoUrl +'"/></div>' + 
+        '<div class="attribution_text_link_wrapper">'+ 
+        '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+slogan +'</a></div>';
+        var msgWidth = 400;
+        
+        Ext.Msg.show({
+            title: 'Loading...',
+            msg: html,
+            maxWidth: msgWidth,
+            minWidth: msgWidth
+        });
+        var attribPopup = Ext.Msg.getDialog();
+        var closeAttribPopup = function(){
+            attribPopup.close();
+        }
+        setTimeout(closeAttribPopup, attribPopupTimeout);
+    },
     /**
      *@param statsStores - array of StatStores
      *@param success - whether or not the request was successful
@@ -340,7 +367,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             });
             
             //now enable the series toggle buttons
-            //@todo find a stable Ext way to access the checked items
             var checkedItems = win.getTopToolbar().getSeriesTogglers();
             checkedItems.each(function(checkedItem){
                 checkedItem.enable();
@@ -358,40 +384,41 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var self = this;
         var win = self.dataWindow;
         if(response.responseText.toLowerCase().indexOf('exception') !== -1){
-            self.errorNotify("Error retrieving data from server. See browser logs for details.");
-            LOG(response.responseText);
-            return;
+            AFINCH.ui.errorNotify("Error retrieving data from server. See browser logs for details.");
+            LOG.error(response.responseText);
         }
-        var responseTxt = $(response.responseXML).find('swe\\:values').text();
-        if (0 === responseTxt.length){
-            responseTxt = $(response.responseXML).find('values').text();
-        }
-        
-        var values = AFINCH.data.parseSosResponse(responseTxt, 13);
-        
-        win.graphPanel.graph = AFINCH.ui.FlowDygraph(
-            win.graphPanel.getEl().dom, 
-            win.labelPanel.getEl().dom,
-            values);
-        
-        //attach the info to the graphPanel for easy access during data export
-        win.graphPanel.data={
-            values : values,
-            headers: win.graphPanel.graph.getLabels()
-        };
-        //kick off the next ajax call...
-        var rParams = {
-            sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
-        };
+        else{
+            var responseTxt = $(response.responseXML).find('swe\\:values').text();
+            if (0 === responseTxt.length){
+                responseTxt = $(response.responseXML).find('values').text();
+            }
+            var numFieldsToLoadLater = 13;
+            var values = AFINCH.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
-        var tempStatsStore = new AFINCH.data.StatsStore();
-        
-        tempStatsStore.load({
-            params: rParams,
-            scope: self,
-            callback: self.statsCallback
-        });        
-        win.doLayout();
+            win.graphPanel.graph = AFINCH.ui.FlowDygraph(
+                win.graphPanel.getEl().dom, 
+                win.labelPanel.getEl().dom,
+                values);
+
+            //attach the info to the graphPanel for easy access during data export
+            win.graphPanel.data={
+                values : values,
+                headers: win.graphPanel.graph.getLabels()
+            };
+            //kick off the next ajax call...
+            var rParams = {
+                sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
+            };
+
+            var tempStatsStore = new AFINCH.data.StatsStore();
+
+            tempStatsStore.load({
+                params: rParams,
+                scope: self,
+                callback: self.statsCallback
+            });        
+            win.doLayout();
+        }
     },
 
     /**
@@ -428,16 +455,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             scope: self
         }
         );
-    },
-    errorNotify: function(message){
-        if(undefined === message){
-            message = "An Error occurred. See browser logs for details.";
-        }
-        new Ext.ux.Notify({
-                msgWidth: 200,
-                title: 'Error',
-                msg: message
-            }).show(document);
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
         var self = this;

@@ -5,8 +5,7 @@ Ext.ns('AFINCH.ui');
  * @param values - the array of arrays containing the data to graph
  */
 AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
-    $(graphElt).addClass('generous_left_margin');
-    $(legendElt).addClass('generous_left_margin');
+    $([graphElt, legendElt]).addClass('generous_left_margin');
     
     var decileSuffix = "th % (cfs)";
     var decileLabels = ['90','80','70','60','50','40','30','20','10'].map(
