@@ -249,7 +249,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             layers: [
                 flowlinesWMSData,
                 flowlineRaster,
-                gageFeatureLayer
+                gageData
             ],
             queryVisible: true,
             output: 'object',
