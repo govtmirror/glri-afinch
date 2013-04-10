@@ -25,10 +25,10 @@
         <![endif]-->
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
-            <jsp:param name="shortName" value="GLRI AFINCH WEB" />
-            <jsp:param name="title" value="GLRI AFINCH WEB" />
+            <jsp:param name="shortName" value="GLRI AFINCH Mapper" />
+            <jsp:param name="title" value="GLRI AFINCH Mapper" />
             <jsp:param name="description" value="" />
-            <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl" />
+            <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl, Jessica Lucido" />
             <jsp:param name="keywords" value="" />
             <jsp:param name="publisher" value="Center for Integrated Data Analyltics" />
             <jsp:param name="revisedDate" value="" />
@@ -118,15 +118,15 @@
         <jsp:include page="template/USGSHeader.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
-            <jsp:param name="site-title" value="GLRI AFINCH WEB" />
+            <jsp:param name="site-title" value="GLRI AFINCH Mapper" />
         </jsp:include>
         <div class="application-body">
         </div>
         <jsp:include page="template/USGSFooter.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
-            <jsp:param name="site-url" value="" />
-            <jsp:param name="contact-info" value="glri_database" />
+            <jsp:param name="site-url" value= "<script type='text/javascript'>document.write(document.location.href);</script>" />
+            <jsp:param name="contact-info" value= "<a href='mailto:glri-database@usgs.gov?subject=GLRI AFINCH Mapper Comments' title='Contact Email'>GLRI Help</a>" />
         </jsp:include>
         <form id="download_form" style="display:none;" action="export" method="post" target="download_iframe">
             <input id="filename_value" name="filename" type="text" value=""/>
