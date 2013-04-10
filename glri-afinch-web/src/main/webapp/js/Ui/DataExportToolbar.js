@@ -40,7 +40,6 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
                 handler: function(){window.open(config.gageLink);}
             };
             items.push(externalButton);
-//            items.push('<a href="' + config.gageLink + '" target="_blank">Obtain more information on Gage #'+ config.gageId +'</a>')
             items.push(' ');
         }
         var button = {
