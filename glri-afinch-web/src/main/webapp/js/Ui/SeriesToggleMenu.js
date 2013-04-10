@@ -1,19 +1,23 @@
 Ext.ns("AFINCH.ui");
-AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
-    /**
+AFINCH.ui.SeriesToggleMenuMixin = function(){
+   var self = this;
+   /**
      * Maintain a map of series names to CheckItem objects.
      * Use series names instead of the button text because user may want to change
      * button text.
      */
-    checkedSeriesButtons: {},
-    monthlySeriesIds: ['mean_monthly_flow', 'median_monthly_flow'], //matches against programmatic identifiers, not user-facing text.
-    getSeriesTogglers: function(){
+    self.checkedSeriesButtons= {};
+    self.monthlySeriesIdSet= {     //Emulate a hash set using Javascript's builtin hash table
+        'mean_monthly_flow' : 0, //These keys match against programmatic series identifiers , not user-facing text.
+        'median_monthly_flow': 0 //The values that the keys map to are meaningless, we just want fast key lookup with the 'in' operator
+        }; 
+    self.onlyMonthlySeriesSelected = false;
+    self.getSeriesTogglers= function(){
       return this.items.items;  
-    },
-    toggleSeriesHandler: function(checkItem, checked, optionalGraph, context){
-        
-        var self = context ? context : this;
-        
+    };
+    self.toggleSeriesHandler = function(checkItem, checked, optionalGraph){
+        var lowestDecileGraphIndex = 5,
+            highestDecileGraphIndex = 14;
         //update the seriesIdToStats map
         if(checked){
             self.checkedSeriesButtons[checkItem.seriesId] = checkItem;
@@ -23,25 +27,27 @@ AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
         }
         
         var checkedSeriesIds = Object.keys(self.checkedSeriesButtons);
-        
+        var monthlySeriesIds = Object.keys(self.monthlySeriesIdSet);
         var isAMonthlySeriesId = function(id){
-            return id in self.monthlySeriesIds;
+            return id in self.monthlySeriesIdSet;
         };
-        
-        if( (   //if the set of currently checked series is equivalent to the set of monthly series
-            checkedSeriesIds.length === self.monthlySeriesIds.length
-            && Array.every(checkedSeriesIds, isAMonthlySeriesId)
-            )
-                
-            ||
-            
-            ( //or if the set of currently checked series is a subset of the set of monthly series
-            checkedSeriesIds.length < self.monthlySeriesIds.length
-            && Array.every(checkedSeriesIds, isAMonthlySeriesId)
-            )    
-           ){
-            
-            alert("only monthly series are selected");
+        if(checkedSeriesIds.length !== 0){
+            if( (   //if the set of currently checked series is equivalent to the set of monthly series
+                checkedSeriesIds.length === monthlySeriesIds.length
+                && Array.every(checkedSeriesIds, isAMonthlySeriesId)
+                )
+
+                ||
+
+                ( //or if the set of currently checked series is a subset of the set of monthly series
+                checkedSeriesIds.length < monthlySeriesIds.length
+                && Array.every(checkedSeriesIds, isAMonthlySeriesId)
+                )    
+               ){
+
+                alert("only monthly series are selected");
+                self.onlyMonthlySeriesSelected = true;
+            }
         }
         
         
@@ -56,7 +62,7 @@ AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
 
         if(checkItem.chartColumn !== undefined || checkItem.seriesId){
             if(checkItem.seriesId == 'deciles'){
-                for(var i = 5; i < 14; i++){
+                for(var i = lowestDecileGraphIndex; i < highestDecileGraphIndex; i++){
                     graph.setVisibility(i, checked);
                 }
             }
@@ -65,8 +71,8 @@ AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
             }
         }
 
-    },
-    constructor: function(config) {
+    };
+    self.constructor = function(config) {
         var self = this;
         
         //compose some CheckItem objects
@@ -136,5 +142,6 @@ AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, {
 
         AFINCH.ui.SeriesToggleMenu.superclass.constructor.call(this, config);
         LOG.info('AFINCH.ui.SeriesToggleMenu::constructor(): Construction complete.');
-    }
-});
+    };
+}
+AFINCH.ui.SeriesToggleMenu= Ext.extend(Ext.menu.Menu, new AFINCH.ui.SeriesToggleMenuMixin());
