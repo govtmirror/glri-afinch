@@ -32,13 +32,25 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             $('#data_value').val(data);
             $('#download_form').submit();
         };
+        var items = [];
+        if(config.gageId){
+            var externalButton = {
+                xtype: 'button', 
+                text: 'Obtain more information on Gage #'+ config.gageId, 
+                handler: function(){window.open(config.gageLink);}
+            };
+            items.push(externalButton);
+            items.push(' ');
+        }
         var button = {
             xtype: 'button', 
             text: 'Download Data', 
             handler: exportHandler
         };
+        items.push(button);
+        
         config = Ext.apply({
-            items : ['->', button],
+            items : items,
             defaultExportName : ''
         }, config);
 
