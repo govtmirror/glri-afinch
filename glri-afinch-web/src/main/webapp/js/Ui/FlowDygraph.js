@@ -62,9 +62,14 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
     Object.merge(allSeriesOptions, allDecileSeriesOptions);
     Object.merge(allSeriesOptions, otherSeriesOptions);
     
-    //function to customize the display of dates on the Dygraph
+    //functions to customize the display of dates on the Dygraph
+    //these will be attached as public properties of the FlowDygraph
     var dateToStringWithoutDay = function(ms){
         return new Date(ms).format('{Mon}. {yyyy}');
+    };
+    
+    var dateToStringMonthOnly = function(ms){
+        return new Date(ms).format('{Mon}.');
     };
     
     var opts = {
@@ -89,5 +94,11 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
     };
         
     Object.merge(opts, allSeriesOptions);
-    return new Dygraph(graphElt, values, opts)
+    var flowDygraph = new Dygraph(graphElt, values, opts);
+    //attach some additional properties
+    flowDygraph.afinchFormatters = {};
+    flowDygraph.afinchFormatters.dateToStringWithoutDay = dateToStringWithoutDay;
+    flowDygraph.afinchFormatters.dateToOnlyMonthString = dateToStringMonthOnly;
+    
+    return flowDygraph;
 };

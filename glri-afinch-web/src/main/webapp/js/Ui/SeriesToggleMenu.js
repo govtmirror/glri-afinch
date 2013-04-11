@@ -1,56 +1,34 @@
 Ext.ns("AFINCH.ui");
 AFINCH.ui.SeriesToggleMenuMixin = function(){
    var self = this;
-   /**
+   
+    //properties:
+    
+    //public properties:
+    /**
      * Maintain a map of series names to CheckItem objects.
      * Use series names instead of the button text because user may want to change
      * button text.
      */
-    self.checkedSeriesButtons= {};
+    self.checkedSeriesButtons= {}; 
     self.monthlySeriesIdSet= {     //Emulate a hash set using Javascript's builtin hash table
         'mean_monthly_flow' : 0, //These keys match against programmatic series identifiers , not user-facing text.
         'median_monthly_flow': 0 //The values that the keys map to are meaningless, we just want fast key lookup with the 'in' operator
         }; 
     self.onlyMonthlySeriesSelected = false;
+    
+    //private properties:
+    var oneYearInMs = 31536000000,//approximate
+        lowestDecileGraphIndex = 5,
+        highestDecileGraphIndex = 14,
+        originalDateWindow = [],//prior to zooming down to monthly stats, the min and max dates for the graph will be saved here
+        originalAxisOptions;
+    
+    //methods:    
     self.getSeriesTogglers= function(){
       return this.items.items;  
     };
     self.toggleSeriesHandler = function(checkItem, checked, optionalGraph){
-        var lowestDecileGraphIndex = 5,
-            highestDecileGraphIndex = 14;
-        //update the seriesIdToStats map
-        if(checked){
-            self.checkedSeriesButtons[checkItem.seriesId] = checkItem;
-        }
-        else{
-            delete self.checkedSeriesButtons[checkItem.seriesId];
-        }
-        
-        var checkedSeriesIds = Object.keys(self.checkedSeriesButtons);
-        var monthlySeriesIds = Object.keys(self.monthlySeriesIdSet);
-        var isAMonthlySeriesId = function(id){
-            return id in self.monthlySeriesIdSet;
-        };
-        if(checkedSeriesIds.length !== 0){
-            if( (   //if the set of currently checked series is equivalent to the set of monthly series
-                checkedSeriesIds.length === monthlySeriesIds.length
-                && Array.every(checkedSeriesIds, isAMonthlySeriesId)
-                )
-
-                ||
-
-                ( //or if the set of currently checked series is a subset of the set of monthly series
-                checkedSeriesIds.length < monthlySeriesIds.length
-                && Array.every(checkedSeriesIds, isAMonthlySeriesId)
-                )    
-               ){
-
-                alert("only monthly series are selected");
-                self.onlyMonthlySeriesSelected = true;
-            }
-        }
-        
-        
         var graph;
         if(optionalGraph){
             graph = optionalGraph;
@@ -58,6 +36,67 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
             var win = checkItem.findParentByType('dataWindow');
             graph = win.graphPanel.graph;
         } 
+        
+        //update the seriesIdToStats map
+        if(checked){
+            self.checkedSeriesButtons[checkItem.seriesId] = checkItem;
+        }
+        else{
+            delete self.checkedSeriesButtons[checkItem.seriesId];
+        }
+        //detect if exclusively monthly stat series have been selected
+        var checkedSeriesIds = Object.keys(self.checkedSeriesButtons);
+        var monthlySeriesIds = Object.keys(self.monthlySeriesIdSet);
+        var isAMonthlySeriesId = function(id){
+            return id in self.monthlySeriesIdSet;
+        };
+        if( (   //if the set of currently checked series is equivalent to the set of monthly series
+            checkedSeriesIds.length === monthlySeriesIds.length
+            && Array.every(checkedSeriesIds, isAMonthlySeriesId)
+            )
+
+            ||
+
+            ( //or if the set of currently checked series is a subset of the set of monthly series
+            checkedSeriesIds.length < monthlySeriesIds.length
+            && Array.every(checkedSeriesIds, isAMonthlySeriesId)
+            )    
+           ){
+            if(!self.onlyMonthlySeriesSelected){
+                //stash current options
+                originalDateWindow = graph.getOption('dateWindow');
+                originalAxisOptions = graph.getOption('axis');
+                //build new options and update the graph
+                var options = {};
+                
+                var lowestDate = graph.getValue(0,0); //the first date in the data set
+                var endOfYear = lowestDate + oneYearInMs;
+                options.dateWindow = [lowestDate, endOfYear];
+                
+                var axis = {
+                    x: {
+                        valueFormatter: graph.afinchFormatters.dateToOnlyMonthString,
+                        axisLabelFormatter:  graph.afinchFormatters.dateToOnlyMonthString
+                    }
+                };
+                options.axis = axis;
+                graph.updateOptions(options);
+                self.onlyMonthlySeriesSelected = true;
+            }
+        }
+        else{
+            if(self.onlyMonthlySeriesSelected){//if previously only monthly series were selected
+                //restore the former min, max date
+                graph.updateOptions({
+                    dateWindow: originalDateWindow,
+                    axis : originalAxisOptions
+                });
+                self.onlyMonthlySeriesSelected = false;
+            }
+        }
+        
+        
+
 
 
         if(checkItem.chartColumn !== undefined || checkItem.seriesId){
@@ -129,7 +168,7 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
             return Object.merge(composedCheckItem, checkItem);
         });
         
-        //now update seriesIdsCheckedStatus map
+        //now update the map
         checkItems.each(function(checkItem){
             if(checkItem.checked){
                 self.checkedSeriesButtons[checkItem.seriesId] = checkItem;
