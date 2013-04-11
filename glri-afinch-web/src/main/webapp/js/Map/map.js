@@ -446,7 +446,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //init a window that will be used as context for the callback
         var win = self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
-            title: title
+            title: title,
+            gageId: record.get('SOURCE_FEA'),
+            gageLink: record.get('FEATUREDET')
         });
  
         win.show();
@@ -473,6 +475,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         }
 
         var features = responseObject.features[0].features;
+        
         var layerFeatures = {
             'GageLoc': [],
             'NHDFlowline': []
@@ -485,27 +488,45 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 }
             });
         }
-
+        //column names
+        var reachCodeFieldName = 'REACHCODE',
+            hasGageFieldName = 'hasGage',
+            gageIdFieldName = 'SOURCE_FEA',
+            linkFieldName = 'FEATUREDET'
+        
         gageLocFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.GageLoc,
             fields: [
                 {name: 'ComID', type: 'int'},
                 {name: 'TotDASqKM', type: 'double'},
-                {name: 'REACHCODE', type: 'long'},
-                {name: 'SOURCE_FEA', type: 'long'}
+                {name: reachCodeFieldName, type: 'long'},
+                {name: gageIdFieldName, type: 'long'},
+                {name: linkFieldName, type: 'string'},
+                
             ],
             initDir: 0
         });
         nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.NHDFlowline,
             fields: [
+                {name: 'GNIS_NAME', type: 'string'},
                 {name: 'COMID', type: 'long'},
-                {name: 'GNIS_NAME', type: 'string'}
+                {name: reachCodeFieldName, type: 'long'},
+                {name: hasGageFieldName, type: 'boolean'},
+                {name: gageIdFieldName, type: 'long'},
+                
             ],
             initDir: 0
         });
-        if (gageLocFeatureStore.totalLength || nhdFlowLineFeatureStore.totalLength) {
-            var featureGrids = [];
+        if (nhdFlowLineFeatureStore.totalLength) {
+            nhdFlowLineFeatureStore.each(function(flowLineFeature){
+                var gageLocForThisFlowLine = gageLocFeatureStore.query(reachCodeFieldName, flowLineFeature.get(reachCodeFieldName)).first();
+                if(gageLocForThisFlowLine){
+                      flowLineFeature.set(gageIdFieldName, gageLocForThisFlowLine.get(gageIdFieldName));
+                      flowLineFeature.set(linkFieldName, gageLocForThisFlowLine.get(linkFieldName));
+                      flowLineFeature.set(hasGageFieldName, true);
+                }
+            });
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
                 singleSelect: true
@@ -516,27 +537,16 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     delay: 100 
                  }
              });
-            if (gageLocFeatureStore.totalLength) {
-                featureGrids.push(new gxp.grid.FeatureGrid({
-                    id: 'identify-popup-grid-gage',
-                    title: 'Gage',
-                    store: gageLocFeatureStore,
-                    region: 'center',
-                    autoHeight: true,
-                    deferRowRender: false,
-                    forceLayout: true,
-                    sm: featureSelectionModel,
-                    viewConfig: {
-                        autoFill: true,
-                        forceFit: true
-                    }
-                }));
-            }
 
             if (nhdFlowLineFeatureStore.totalLength) {
-                featureGrids.push(new gxp.grid.FeatureGrid({
+                var columnConfig ={};
+                columnConfig[reachCodeFieldName] = {hidden: true};
+                columnConfig[hasGageFieldName]= {header: 'Has Gage?', width: 75, align: 'center'};
+                columnConfig[gageIdFieldName] = {hidden: true};
+                columnConfig[linkFieldName] = {hidden: true};
+                
+                var featureGrid = new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-flowline',
-                    title: 'NHD Flowlines',
                     store: nhdFlowLineFeatureStore,
                     region: 'center',
                     autoHeight: true,
@@ -546,45 +556,39 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     viewConfig: {
                         autoFill: true,
                         forceFit: true
+                    },
+                    customRenderers: {
+                        'hasGage': function(hasGage){
+                            return hasGage ? '<div class="circle"></div>' : '&nbsp;';
+                        }
+                    },
+                    columnConfig: columnConfig
+                });
+                
+                popup = new GeoExt.Popup({
+                    id: 'identify-popup-window',
+                    anchored: false,
+                    layout: 'fit',
+                    map: CONFIG.mapPanel.map,
+                    unpinnable: true,
+                    minWidth: 200,
+                    minHeight: 100,
+                    title: 'NHD Flowlines',
+                    items: [featureGrid],
+                    listeners: {
+                        show: function() {
+                            // Remove the anchor element (setting anchored to 
+                            // false does not do this for us. *Shaking fist @ GeoExt)
+                            Ext.select('.gx-popup-anc').remove();
+                            this.syncSize();
+                            this.setHeight(featureGrid.getHeight());
+                            this.setHeight(featureGrid.getWidth());
+                        }
                     }
-                }));
+
+                });
+                popup.show();
             }
-
-            popup = new GeoExt.Popup({
-                id: 'identify-popup-window',
-                anchored: false,
-                layout: 'fit',
-                map: CONFIG.mapPanel.map,
-                unpinnable: true,
-                minWidth: 200,
-                minHeight: 100,
-                items: [
-                    new Ext.TabPanel({
-                        id: 'identify-popup-tabpanel',
-                        region: 'center',
-                        activeTab: 0,
-                        autoScroll: true,
-                        layoutOnTabChange: true,
-                        monitorResize: true,
-                        resizeTabs: true,
-                        items: featureGrids,
-                        width: 400,
-                        height: 200
-                    })
-                ],
-                listeners: {
-                    show: function() {
-                        // Remove the anchor element (setting anchored to 
-                        // false does not do this for us. *Shaking fist @ GeoExt)
-                        Ext.select('.gx-popup-anc').remove();
-                        this.syncSize();
-                        this.setHeight(this.items.first().getActiveTab().getHeight());
-                        this.setHeight(this.items.first().getActiveTab().getWidth());
-                    }
-                }
-
-            });
-            popup.show();
         }
 
     },

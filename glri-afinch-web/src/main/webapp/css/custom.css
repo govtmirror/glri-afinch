@@ -22,3 +22,11 @@
     font-weight: bold;
     text-align: right;
 }
+
+.circle:before{
+    content: ' \25CF';
+}
+.circle{
+    color: #f00;
+    font-size: 1.75em;
+}
