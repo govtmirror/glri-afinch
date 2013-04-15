@@ -53,12 +53,30 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
             delete checkedSeriesButtons[checkItem.seriesId];
         }
         //detect if exclusively monthly stat series have been selected
+        //using the following data structures and helper functions
         var checkedSeriesIds = Object.keys(checkedSeriesButtons);
         var monthlySeriesIds = Object.keys(monthlySeriesIdSet);
         var isAMonthlySeriesId = function(id){
             return id in monthlySeriesIdSet;
         };
         
+        var currentlyCheckedSeriesSetExactlyIsMonthlySeriesSet = function(){
+            return checkedSeriesIds.length === monthlySeriesIds.length
+                && checkedSeriesIds.every(isAMonthlySeriesId);
+        };
+        
+        var currentlyCheckedSeriesSetIsSubsetOfMonthlySeriesSet = function(){
+            return checkedSeriesIds.length < monthlySeriesIds.length
+                && checkedSeriesIds.every(isAMonthlySeriesId);
+        };
+        
+        var exclusivelyMonthlySeriesAreSelected = function(){
+            return currentlyCheckedSeriesSetExactlyIsMonthlySeriesSet()
+                    ||
+                    currentlyCheckedSeriesSetIsSubsetOfMonthlySeriesSet();
+        };
+        
+        //helper function to 'unyearify' the Dygraph's view
         var restoreGraphOptions = function(){//restore the former min, max date
             graph.updateOptions({
                 dateWindow: originalDateWindow,
@@ -72,19 +90,9 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
             onlyMonthlySeriesSelected = false;
         };
         
-        if(0 !== checkedSeriesIds.length){
-            if( (   //if the set of currently checked series is equivalent to the set of monthly series
-                checkedSeriesIds.length === monthlySeriesIds.length
-                && checkedSeriesIds.every(isAMonthlySeriesId)
-                )
-
-                ||
-
-                ( //or if the set of currently checked series is a subset of the set of monthly series
-                checkedSeriesIds.length < monthlySeriesIds.length
-                && checkedSeriesIds.every(isAMonthlySeriesId)
-                )    
-               ){
+        if(checkedSeriesIds.length){
+            if( exclusivelyMonthlySeriesAreSelected()){
+                //check whether last 
                 if(!onlyMonthlySeriesSelected){
                     //stash current options
                     originalDateWindow = graph.xAxisRange();
