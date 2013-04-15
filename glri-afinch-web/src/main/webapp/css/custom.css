@@ -27,19 +27,33 @@
     content: ' \25CF';
 }
 .circle{
-    color: #f00;
+    color: darkblue;
     font-size: 1.75em;
 }
-.tbar_spacer{
-    width: 400px;
+.export_button button{
+    background-color: #ededed          !important;
+    color: black                   !important;
+    border: 1px solid #848284       !important;
+    border-radius: 5px             !important;
+    padding: 5px                  !important;
+    cursor: pointer               !important;
+    height: 100%                   !important;
+    font-size: 1em                 !important;
+    font-weight: bold               !important;
 }
-.gageKVP{
-    width: 100px;
-    background-color: aliceblue;
+.gage_info_pane{
+    max-width: 600px;
+    background-color: #F0F8FF;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px
 }
-.gageKey{
+.gage_KVP{
+    margin: 2px;
+}
+.gage_key{
     font-weight: bold;
 }
-.gageValue{
-    
+.gage_value{
+    cursor: text;
 }

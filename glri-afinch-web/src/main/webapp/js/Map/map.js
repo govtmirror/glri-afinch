@@ -454,7 +454,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             dataDisplayWindow.destroy();
         }
         var reachName = record.data[self.fieldNames.reachName] || "";
-        var reachID = record.data[self.fieldNames.reachId] || "";
+        var reachID = record.data[self.fieldNames.reachComId] || "";
         var title = reachName.length ? reachName + " - " : "";
         title += reachID;
         
@@ -550,6 +550,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     });
                     //also manually attach this field:
                     flowLineFeature.set(self.fieldNames.hasGage, true);
+                    //and remove all dirty markers
+                    flowLineFeature.modified = {};
                 }
             });
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
@@ -569,6 +571,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 gageFieldsToAttachToReach.each(function(field){
                     columnConfig[field] = {hidden: true}
                 });
+                columnConfig[self.fieldNames.reachName] = {header: 'Reach Name'};
+                columnConfig[self.fieldNames.reachComId] = {header: 'Com ID'};
                 columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
                 
                 var customRenderers= {};

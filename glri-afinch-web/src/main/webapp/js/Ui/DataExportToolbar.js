@@ -2,9 +2,9 @@ Ext.ns("AFINCH.ui");
 
 AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
     makeDataDefinition: function(key, value){
-        return  '<p class="gageKVP">'+
+        return  '<p class="gage_KVP">'+
                     '<b>'+key+': </b>'+
-                    '<span class="gageValue">'+value+'</span>'+
+                    '<span class="gage_value">'+value+'</span>'+
                 '</p>';
     },
     constructor: function(config) {
@@ -40,46 +40,49 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             $('#download_form').submit();
         };
         var items = [];
-        if(config.gage){
-            var gageInfo = self.makeDataDefinition('Gage Name', config.gage.name);
-            gageInfo += self.makeDataDefinition('Gage Id', config.gage.comId);
-            gageInfo += self.makeDataDefinition('Totdasqkm', config.gage.totdasqkm);
+        var displayingGageInfo = !!config.gage.comId;
+        if(displayingGageInfo){
+            var gageInfo ='<div class="gage_info_pane">';
+            gageInfo += self.makeDataDefinition('Gage Name', config.gage.name);
+            gageInfo += self.makeDataDefinition('Gage Com ID', config.gage.comId);
+            gageInfo += self.makeDataDefinition('Total Drainage Area (Sq Km)', config.gage.totdasqkm);
             gageInfo += self.makeDataDefinition('Reach Code', config.gage.reachCode);
-//            items.push(new Ext.Panel({
-//                html: gageInfo
-//            }))
-//            items.push(gageInfo);
-//            items.push({xtype:'tbfill'});
-//            items.push(self.makeDataDefinition('Gage Name', config.gage.name));
-//            items.push(self.makeDataDefinition('Gage Id', config.gage.comId));
-//            items.push(self.makeDataDefinition('Totdasqkm', config.gage.totdasqkm));
-//            items.push(self.makeDataDefinition('Reach Code', config.gage.reachCode));
-//            items.push('<div class="tbar_spacer"></div>');
-items.push('hello');
-items.push('->');
-items.push('there')
+            gageInfo +='</div>';
+            items.push(gageInfo);
+
+            items.push({
+                xtype:'tbfill'
+            });
+            
             var externalButton = {
                 xtype: 'button', 
                 text: 'View Gage Details', 
-                handler: function(){window.open(config.gage.link);}
+                handler: function(){window.open(config.gage.link);},
+                cls: 'export_button'
             };
-//            items.push(externalButton);
-//            items.push(' ');
+            items.push(externalButton);
+            items.push(' ');
+        }else{
+            items.push({
+                xtype:'tbfill'
+            });
         }
+        
         var button = {
             xtype: 'button', 
             text: 'Download Data', 
-            handler: exportHandler
+            handler: exportHandler,
+            cls: 'export_button'
         };
-//        items.push(button);
+        items.push(button);
         
         config = Ext.apply({
             items : items,
-            defaultExportName : '',
-            layout: 'toolbar'
+            defaultExportName : ''
         }, config);
 
         AFINCH.ui.DataExportToolbar.superclass.constructor.call(this, config);
         LOG.info('AFINCH.ui.DataExportToolbar::constructor(): Construction complete.');
     }
 });
+Ext.reg('dataExportToolbar', AFINCH.ui.DataExportToolbar);
