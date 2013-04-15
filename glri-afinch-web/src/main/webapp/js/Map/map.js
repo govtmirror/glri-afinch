@@ -14,6 +14,17 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     streamOrderSlider: undefined,
     streamOrderLock: true,
     streamOrderClipValues: undefined,
+    fieldNames:{
+        reachCode : 'REACHCODE',
+        hasGage : 'hasGage',
+        gageId : 'SOURCE_FEA',
+        link : 'FEATUREDET',
+        gageName : 'STATION_NM',
+        gageTotdasqkm : 'TotDASqKM',
+        gageComId : 'ComID',
+        reachComId: 'COMID',
+        reachName: 'GNIS_NAME'
+    },
     constructor: function(config) {
         var self = this;
         LOG.debug('map.js::constructor()');
@@ -267,7 +278,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var attribPopupTimeout = 3000;
         var html = '<div class="attribution_splash"><a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
         '<img src="'+ CONFIG.mapLogoUrl +'"/></div>' + 
-        '<div class="attribution_text_link_wrapper">'+ 
+        '<div class="attribution_text_self.fieldNames.link_wrapper">'+ 
         '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+slogan +'</a></div>';
         var msgWidth = 400;
         
@@ -427,23 +438,29 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
      */
     displayDataWindow: function(record){
         var self = this;
-        //check to see if a Gage data window already exists. If so, destroy it.
+        //check to see if a data window already exists. If so, destroy it.
         var dataDisplayWindow = Ext.ComponentMgr.get('data-display-window');
         if (dataDisplayWindow) {
             LOG.debug('Removing previous data display window');
             dataDisplayWindow.destroy();
         }
-        var name = record.data.GNIS_NAME || "";
-        var gageID = record.data.COMID || "";
-        var title = name.length ? name + " - " : "";
-        title += gageID;
-
+        var reachName = record.data[self.fieldNames.reachName] || "";
+        var reachID = record.data[self.fieldNames.reachId] || "";
+        var title = reachName.length ? reachName + " - " : "";
+        title += reachID;
+        
+        var gage = {
+            comId: record.get(self.fieldNames.gageComId),
+            link: record.get(self.fieldNames.link),
+            totdasqkm: record.get(self.fieldNames.gageTotdasqkm),
+            reachCode: record.get(self.fieldNames.reachCode),
+            name: record.get(self.fieldNames.gageName)
+        };
         //init a window that will be used as context for the callback
         var win = self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
             title: title,
-            gageId: record.get('SOURCE_FEA'),
-            gageLink: record.get('FEATUREDET')
+            gage: gage
         });
  
         win.show();
@@ -483,43 +500,47 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 }
             });
         }
-        //column names
-        var reachCodeFieldName = 'REACHCODE',
-            hasGageFieldName = 'hasGage',
-            gageIdFieldName = 'SOURCE_FEA',
-            linkFieldName = 'FEATUREDET'
+        //prepare field definitions for Ext Store contructors:
+        var gageLocFields = [
+                {name: self.fieldNames.gageName, type: 'string'},
+                {name: self.fieldNames.gageComId, type: 'int'},
+                {name: self.fieldNames.gageTotdasqkm, type: 'double'},
+                {name: self.fieldNames.reachCode, type: 'long'},
+                {name: self.fieldNames.gageId, type: 'long'},
+                {name: self.fieldNames.link, type: 'string'}
+            ];
+            
+        var nhdFlowLineFields = [
+                {name: self.fieldNames.reachName, type: 'string'},
+                {name: self.fieldNames.reachComId, type: 'long'},
+                {name: self.fieldNames.hasGage, type: 'boolean'}
+            ].concat(gageLocFields);
         
         gageLocFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.GageLoc,
-            fields: [
-                {name: 'ComID', type: 'int'},
-                {name: 'TotDASqKM', type: 'double'},
-                {name: reachCodeFieldName, type: 'long'},
-                {name: gageIdFieldName, type: 'long'},
-                {name: linkFieldName, type: 'string'},
-                
-            ],
+            fields: gageLocFields,
             initDir: 0
         });
         nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.NHDFlowline,
-            fields: [
-                {name: 'GNIS_NAME', type: 'string'},
-                {name: 'COMID', type: 'long'},
-                {name: reachCodeFieldName, type: 'long'},
-                {name: hasGageFieldName, type: 'boolean'},
-                {name: gageIdFieldName, type: 'long'},
-                
-            ],
+            fields: nhdFlowLineFields,
             initDir: 0
         });
+                    
+        var gageFieldsToAttachToReach = [
+            self.fieldNames.gageTotdasqkm, self.fieldNames.gageComId, self.fieldNames.reachCode,
+            self.fieldNames.gageName, self.fieldNames.gageId, self.fieldNames.link
+        ];
+        
         if (nhdFlowLineFeatureStore.totalLength) {
             nhdFlowLineFeatureStore.each(function(flowLineFeature){
-                var gageLocForThisFlowLine = gageLocFeatureStore.query(reachCodeFieldName, flowLineFeature.get(reachCodeFieldName)).first();
+                var gageLocForThisFlowLine = gageLocFeatureStore.query(self.fieldNames.reachCode, flowLineFeature.get(self.fieldNames.reachCode)).first();
                 if(gageLocForThisFlowLine){
-                      flowLineFeature.set(gageIdFieldName, gageLocForThisFlowLine.get(gageIdFieldName));
-                      flowLineFeature.set(linkFieldName, gageLocForThisFlowLine.get(linkFieldName));
-                      flowLineFeature.set(hasGageFieldName, true);
+                    gageFieldsToAttachToReach.each(function(fieldName){
+                        flowLineFeature.set(fieldName, gageLocForThisFlowLine.get(fieldName));
+                    });
+                    //also manually attach this field:
+                    flowLineFeature.set(self.fieldNames.hasGage, true);
                 }
             });
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
@@ -535,10 +556,16 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
             if (nhdFlowLineFeatureStore.totalLength) {
                 var columnConfig ={};
-                columnConfig[reachCodeFieldName] = {hidden: true};
-                columnConfig[hasGageFieldName]= {header: 'Has Gage?', width: 75, align: 'center'};
-                columnConfig[gageIdFieldName] = {hidden: true};
-                columnConfig[linkFieldName] = {hidden: true};
+                //hide all of the gage fields
+                gageFieldsToAttachToReach.each(function(field){
+                    columnConfig[field] = {hidden: true}
+                });
+                columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
+                
+                var customRenderers= {};
+                customRenderers[self.fieldNames.hasGage] = function(hasGage){
+                    return hasGage ? '<div class="circle"></div>' : '&nbsp;';
+                };
                 
                 var featureGrid = new gxp.grid.FeatureGrid({
                     id: 'identify-popup-grid-flowline',
@@ -552,11 +579,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                         autoFill: true,
                         forceFit: true
                     },
-                    customRenderers: {
-                        'hasGage': function(hasGage){
-                            return hasGage ? '<div class="circle"></div>' : '&nbsp;';
-                        }
-                    },
+                    customRenderers: customRenderers,
                     columnConfig: columnConfig
                 });
                 

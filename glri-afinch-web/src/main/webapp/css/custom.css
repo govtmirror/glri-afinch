@@ -30,3 +30,16 @@
     color: #f00;
     font-size: 1.75em;
 }
+.tbar_spacer{
+    width: 400px;
+}
+.gageKVP{
+    width: 100px;
+    background-color: aliceblue;
+}
+.gageKey{
+    font-weight: bold;
+}
+.gageValue{
+    
+}

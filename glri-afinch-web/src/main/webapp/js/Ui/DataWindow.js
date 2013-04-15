@@ -19,7 +19,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
             title: title,
             collapsible: true,
             layout : 'hbox',
-            fbar: new AFINCH.ui.DataExportToolbar({'gageId': config.gageId, 'gageLink': config.gageLink}),
+            fbar: new AFINCH.ui.DataExportToolbar({gage: config.gage}),
             items: [self.graphPanel, self.labelPanel]
         }, config);
 
