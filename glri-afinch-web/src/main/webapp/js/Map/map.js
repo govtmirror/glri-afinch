@@ -31,6 +31,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         // ////////////////////////////////////////////// BASE LAYERS
         var zyx = '/MapServer/tile/${z}/${y}/${x}';
         mapLayers.push(new OpenLayers.Layer.XYZ(
+                "World Topo Map",
+                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map" + zyx,
+                {isBaseLayer: true, units: "m"}));
+        mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Imagery",
                 "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery" + zyx,
                 {isBaseLayer: true, units: "m"}));
@@ -40,16 +44,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 Ext.apply(EPSG900913Options, {numZoomLevels: 14})
                 ));
         mapLayers.push(new OpenLayers.Layer.XYZ(
-                "World Physical Map",
-                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map" + zyx,
-                {isBaseLayer: true, units: "m"}));
-        mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Street Map",
                 "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map" + zyx,
-                {isBaseLayer: true, units: "m"}));
-        mapLayers.push(new OpenLayers.Layer.XYZ(
-                "World Topo Map",
-                "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map" + zyx,
                 {isBaseLayer: true, units: "m"}));
         mapLayers.push(new OpenLayers.Layer.XYZ(
                 "World Terrain Base",
