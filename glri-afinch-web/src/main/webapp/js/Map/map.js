@@ -100,8 +100,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     prefix: 'POS: '
                 }),
                 new OpenLayers.Control.Attribution({
-                    template: '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
-                    '<img id="attribution" src="' + CONFIG.mapLogoUrl + '"/></a>'
+                    template: '<a target="_blank" class="no_hover_change" href="' + CONFIG.attribution.nhd.link+ '">'+
+                    '<img id="attribution" src="' + CONFIG.attribution.nhd.logo + '"/></a>'
                 }),
                 new OpenLayers.Control.ScaleLine({
                     geodesic: true
@@ -263,19 +263,28 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         this.map.addControl(this.wmsGetFeatureInfoControl);
 },
     showAttributionSplash: function(){
-        var slogan = 'Data furnished by NHDPlus';
+        var slogan = 'Data furnished by the EPA, NHDPlus, and USGS.';
         var attribPopupTimeout = 3000;
-        var html = '<div class="attribution_splash"><a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+
-        '<img src="'+ CONFIG.mapLogoUrl +'"/></div>' + 
-        '<div class="attribution_text_link_wrapper">'+ 
-        '<a target="_blank" class="no_hover_change" href="' + CONFIG.attributionUrl + '">'+slogan +'</a></div>';
-        var msgWidth = 400;
+        
+        var makeAttribEntry = function(orgName){
+            return '<a target="_blank" class="no_hover_change" href="' + CONFIG.attribution[orgName].link + '">' +
+                    '<img src="' + CONFIG.attribution[orgName].logo +'"/>' +
+                    '</a>';
+        };
+        
+        var html = '<div class="attribution_splash">';
+        ['epa', 'nhd', 'usgs'].each(function(orgName){
+           html+=makeAttribEntry(orgName); 
+        });
+        html += '</div>' + 
+        '<div class="attribution_text">'+ slogan +'</div>';
+
+        var msgWidth = 550;
         
         Ext.Msg.show({
             title: 'Loading...',
             msg: html,
-            maxWidth: msgWidth,
-            minWidth: msgWidth
+            width: msgWidth
         });
         var attribPopup = Ext.Msg.getDialog();
         var closeAttribPopup = function(){
