@@ -136,8 +136,9 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
         var baseCheckItem = {
             checkHandler: self.toggleSeriesHandler,
             checked: false,
+            hideOnClick: false,
             disabled: true
-        }
+        };
         
         //in the following composed buttons...
         //'seriesId' properties are for programmatic identification of buttons
