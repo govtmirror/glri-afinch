@@ -15,9 +15,10 @@
     color: none;
 }
 .attribution_splash img{
-    width: 30em;
+    width: 150px;
+    margin: 10px;
 }
-.attribution_text_link_wrapper{
+.attribution_text{
     font-size: 1.25em;
     font-weight: bold;
     text-align: right;
