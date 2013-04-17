@@ -6,9 +6,16 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
     headers: undefined,
     constructor: function(config) {
         var self = this;
-        
+        var destroyDygraph = function(){
+            if(self.graph && self.graph.destroy){
+                self.graph.destroy();
+            }
+        };
         config = Ext.apply({
-            width: 800
+            width: 800,
+            listeners: {
+                beforedestroy: destroyDygraph
+            }
         }, config);
 
         AFINCH.ui.StatsGraphPanel.superclass.constructor.call(this, config);
