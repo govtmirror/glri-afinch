@@ -92,8 +92,21 @@
             CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
-            CONFIG.mapLogoUrl = 'images/NHDPlus_logo.png';
-            CONFIG.attributionUrl = 'http://www.horizon-systems.com/nhdplus/';
+            CONFIG.attribution = {
+                nhd:{
+                    logo:'images/NHDPlus_logo.png',
+                    link: 'http://www.horizon-systems.com/nhdplus/'
+                },
+                usgs:{
+                    logo: 'images/c_168_USGS.gif',
+                    link: 'http://www.usgs.gov/'
+                },
+                epa: {
+                    logo: 'images/EPA_logo.png',
+                    link: 'http://www.epa.gov/'
+                }
+            };
+            CONFIG.attributionUrl = '';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
 
         </script>
