@@ -27,10 +27,6 @@ public class Pivoter {
     private final NetcdfFile ncInput;
     private final Variable oVariable;
     
-    private TreeMap<Integer, List<Float>> observationMap = new TreeMap<Integer, List<Float>>();
-    private TreeMap<Integer, String> stationMap = new TreeMap<Integer, String>();
-    private TreeMap<Integer, Integer> timeMap = new TreeMap<Integer, Integer>();
-    
     public Pivoter(NetcdfFile netCDFFile) {
         this.ncInput = netCDFFile;
         this.oVariable = netCDFFile.findVariable("record");
@@ -41,15 +37,18 @@ public class Pivoter {
         
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter("test.csv"));
-            Joiner csvJoiner = Joiner.on(',');
         
-            CheckObservationsVisitor vistor = new CheckObservationsVisitor();
-            new ObservationTraverser(oVariable).traverse(vistor);
-            for (Map.Entry<Integer, List<Float>> entry : observationMap.entrySet()) {
-                writer.write(csvJoiner.join(entry.getKey(), entry.getValue().size()));
-                writer.newLine();
-            }
+            ReadObserationsVisitor vistor = new ReadObserationsVisitor();
+            new RaggedIndexArrayStructureObservationTraverser(oVariable).traverse(vistor);
+            Map<Integer, List<Float>> observationMap = vistor.getObservationMap();
+                        
+//            writer = new BufferedWriter(new FileWriter("test.csv"));
+//            Joiner csvJoiner = Joiner.on(',');
+//            for (Map.Entry<Integer, List<Float>> entry : observationMap.entrySet()) {
+//                writer.write(csvJoiner.join(entry.getKey(), entry.getValue().size()));
+//                writer.newLine();
+//            }
+            
             System.out.println(
                     "Station Count: " + vistor.stationCount + 
                     " : TimeCountMin " + vistor.stationTimeCountMin +
@@ -58,15 +57,15 @@ public class Pivoter {
                     );
             System.out.println((System.currentTimeMillis() - start) + "ms");
             
-            generatePivotFile();
+            generatePivotFile(observationMap);
         } finally {
             if (writer != null) try { writer.close(); } catch (Exception e) {}
         }
     }
     
     
-    protected void generatePivotFile() throws IOException, InvalidRangeException {
-        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, "out.nc");
+    protected void generatePivotFile(Map<Integer, List<Float>> observationMap) throws IOException, InvalidRangeException {
+        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, "/Users/tkunicki/Data/GLRI/SOS/afinch.pivot.nc");
         
         Dimension nStationDim = ncWriter.addDimension(null, "station", 114041);
         Dimension nStationIdLenDim = ncWriter.addDimension(null, "station_id_len", 9);
@@ -128,7 +127,7 @@ public class Pivoter {
         ncWriter.close();
     }
     
-    public class CheckObservationsVisitor extends AbstractObservationVisitor {
+    public static class ReadObserationsVisitor extends AbstractObservationVisitor {
         
         private int stationIndexLast;
         private int stationCount;
@@ -138,6 +137,8 @@ public class Pivoter {
         private ArrayList<Float> stationTimeSeries = null;
         
         private int recordCount;
+        
+        private Map<Integer, List<Float>> observationMap = new TreeMap<Integer, List<Float>>();
 
         ObservationVisitor delgate = new PrimingVisitor();
         
@@ -184,6 +185,10 @@ public class Pivoter {
             stationCount++;
             stationTimeSeries = new ArrayList<Float>();
         }
+        
+        Map<Integer, List<Float>> getObservationMap() {
+            return observationMap;
+        } 
     }
     
     public static void main(String[] args) throws Exception {
