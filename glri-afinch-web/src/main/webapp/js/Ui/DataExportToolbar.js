@@ -1,7 +1,14 @@
 Ext.ns("AFINCH.ui");
 
 AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
+    makeDataDefinition: function(key, value){
+        return  '<p class="gage_KVP">'+
+                    '<b>'+key+': </b>'+
+                    '<span class="gage_value">'+value+'</span>'+
+                '</p>';
+    },
     constructor: function(config) {
+        var self = this;
         var exportHandler = function(button, event){
             
             var win = button.findParentByType('dataWindow');
@@ -33,19 +40,39 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             $('#download_form').submit();
         };
         var items = [];
-        if(config.gageId){
+        var displayingGageInfo = !!config.gage.comId;
+        if(displayingGageInfo){
+            var gageInfo ='<div class="gage_info_pane">';
+            gageInfo += self.makeDataDefinition('Gage Name', config.gage.name);
+            gageInfo += self.makeDataDefinition('Gage Com ID', config.gage.comId);
+            gageInfo += self.makeDataDefinition('Total Drainage Area (Sq Km)', config.gage.totdasqkm);
+            gageInfo += self.makeDataDefinition('Reach Code', config.gage.reachCode);
+            gageInfo +='</div>';
+            items.push(gageInfo);
+
+            items.push({
+                xtype:'tbfill'
+            });
+            
             var externalButton = {
                 xtype: 'button', 
-                text: 'Obtain more information on Gage #'+ config.gageId, 
-                handler: function(){window.open(config.gageLink);}
+                text: 'View Gage Details', 
+                handler: function(){window.open(config.gage.link);},
+                cls: 'export_button'
             };
             items.push(externalButton);
             items.push(' ');
+        }else{
+            items.push({
+                xtype:'tbfill'
+            });
         }
+        
         var button = {
             xtype: 'button', 
             text: 'Download Data', 
-            handler: exportHandler
+            handler: exportHandler,
+            cls: 'export_button'
         };
         items.push(button);
         
@@ -58,3 +85,4 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
         LOG.info('AFINCH.ui.DataExportToolbar::constructor(): Construction complete.');
     }
 });
+Ext.reg('dataExportToolbar', AFINCH.ui.DataExportToolbar);
