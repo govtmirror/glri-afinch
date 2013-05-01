@@ -1,11 +1,13 @@
 package gov.usgs.cida.glri.afinch;
 
 import com.google.common.base.Joiner;
+import gov.usgs.cida.glri.afinch.stats.Statistics1D;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -41,13 +43,6 @@ public class Pivoter {
             ReadObserationsVisitor vistor = new ReadObserationsVisitor();
             new RaggedIndexArrayStructureObservationTraverser(oVariable).traverse(vistor);
             Map<Integer, List<Float>> observationMap = vistor.getObservationMap();
-                        
-//            writer = new BufferedWriter(new FileWriter("test.csv"));
-//            Joiner csvJoiner = Joiner.on(',');
-//            for (Map.Entry<Integer, List<Float>> entry : observationMap.entrySet()) {
-//                writer.write(csvJoiner.join(entry.getKey(), entry.getValue().size()));
-//                writer.newLine();
-//            }
             
             System.out.println(
                     "Station Count: " + vistor.stationCount + 
@@ -65,7 +60,7 @@ public class Pivoter {
     
     
     protected void generatePivotFile(Map<Integer, List<Float>> observationMap) throws IOException, InvalidRangeException {
-        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, "/Users/tkunicki/Data/GLRI/SOS/afinch.pivot.nc");
+        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, "/Users/tkunicki/Data/GLRI/SOS/out.nc");
         
         Dimension nStationDim = ncWriter.addDimension(null, "station", 114041);
         Dimension nStationIdLenDim = ncWriter.addDimension(null, "station_id_len", 9);
@@ -92,6 +87,38 @@ public class Pivoter {
         nQAccConVar.addAttribute(new Attribute(CF.COORDINATES, "time lat lon"));
         nQAccConVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
         
+        // STATS!
+        Variable nQAccConMeanVar = ncWriter.addVariable(null, "QACMean", DataType.FLOAT, Arrays.asList(nStationDim));
+        nQAccConMeanVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
+        nQAccConMeanVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
+        
+        Variable nQAccConMinVar = ncWriter.addVariable(null, "QACMin", DataType.FLOAT, Arrays.asList(nStationDim));
+        nQAccConMinVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
+        nQAccConMinVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
+        
+        Variable nQAccConMaxVar = ncWriter.addVariable(null, "QACMax", DataType.FLOAT, Arrays.asList(nStationDim));
+        nQAccConMaxVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
+        nQAccConMaxVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
+        
+        Variable nQAccConCountVar = ncWriter.addVariable(null, "QACCount", DataType.FLOAT, Arrays.asList(nStationDim));
+        nQAccConCountVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
+        nQAccConCountVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
+        
+        Variable nQAccConCountMedian = ncWriter.addVariable(null, "QACMedian", DataType.FLOAT, Arrays.asList(nStationDim));
+        nQAccConCountMedian.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
+        nQAccConCountMedian.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
+        
+        Variable[] QAccConDecileUpperBound = new Variable[9];
+        for (int i = 0; i < 9; i++) {
+            QAccConDecileUpperBound[i] = ncWriter.addVariable(null, String.format("QACDecile%d", i+1), DataType.FLOAT, Arrays.asList(nStationDim));
+            QAccConDecileUpperBound[i].addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
+            QAccConDecileUpperBound[i].addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
+        }
+        
+        Variable nQaccConDecile = ncWriter.addVariable(null, "QACDecile", DataType.FLOAT, Arrays.asList(nStationDim, nTimeDim));
+        nQaccConDecile.addAttribute(new Attribute(CF.COORDINATES, "time lat lon"));
+        nQaccConDecile.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
+        
         ncWriter.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
         ncWriter.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, "timeSeries"));
         
@@ -116,12 +143,51 @@ public class Pivoter {
             int stationIndex = entry.getKey();
             List<Float> values = entry.getValue();
             int timeMissing = 708 - values.size();
+            
+            Statistics1D statistics = new Statistics1D();
             Array valueArray = Array.factory(DataType.FLOAT, new int[] { 1, 708 - timeMissing} );
             int valueArrayIndex = 0;
             for (float value : values) {
                 valueArray.setFloat(valueArrayIndex++, value);
+                statistics.accumulate(value);
             }
             ncWriter.write(nQAccConVar, new int[] { stationIndex, timeMissing }, valueArray);
+            
+            ncWriter.write(nQAccConMeanVar, new int[] { stationIndex }, Array.factory( new double[] { statistics.getMean() }));
+            ncWriter.write(nQAccConMinVar, new int[] { stationIndex }, Array.factory( new double[] { statistics.getMinimum()}));
+            ncWriter.write(nQAccConMaxVar, new int[] { stationIndex }, Array.factory( new double[] { statistics.getMaximum()}));
+            ncWriter.write(nQAccConCountVar, new int[] { stationIndex }, Array.factory( new double[] { statistics.getCount()}));
+            
+            List<Float> sorted = new ArrayList<Float>(values);
+            Collections.sort(sorted);
+            ncWriter.write(nQAccConCountMedian, new int[] { stationIndex }, Array.factory( new double[] { sorted.get(sorted.size() / 2) }));
+            float[] decileBounds = new float[11];
+            decileBounds[0] = (float)statistics.getMinimum();
+            for (int i = 0; i < 9; ++i ) {
+                decileBounds[i+1] = sorted.get(sorted.size() * (i + 1) / 10);
+                ncWriter.write(QAccConDecileUpperBound[i], new int[] { stationIndex }, Array.factory( new double[] { decileBounds[i+1] }));
+            }
+            decileBounds[10] = (float)statistics.getMaximum();
+        
+            Array decileArray = Array.factory(DataType.FLOAT, new int[] { 1, 708 - timeMissing} );
+            int decileArrayIndex = 0;
+            for (float value : values) {
+                float decile = Float.NaN;
+                if (decileBounds[0] != decileBounds[10]) {
+                    for (int i = 0; i < 10 && Float.isNaN(decile); i++) {
+                        if (value >= decileBounds[i] && value <= decileBounds[i+1]) {
+                            decile = (float)i + ((value - decileBounds[i]) / (decileBounds[i+1] - decileBounds[i]));
+                            decile /= 10f; // pseudo percentile
+                        }
+                    }
+                }
+                if (decile != decile) {
+                    decile = -1;
+                }
+                decileArray.setFloat(decileArrayIndex++, decile);
+            }
+            ncWriter.write(nQaccConDecile, new int[] { stationIndex, timeMissing }, decileArray);
+            
         }
         
         ncWriter.close();
