@@ -44,11 +44,11 @@
         <jsp:include page="js/log4javascript/log4javascript.jsp">
             <jsp:param name="relPath" value="" />
         </jsp:include>
-        <jsp:include page="js/ext/ext.jsp">
-            <jsp:param name="debug-qualifier" value="<%= development%>" />
-        </jsp:include>
         <jsp:include page="js/sugar/sugar.jsp">
             <jsp:param name="relPath" value="" />
+            <jsp:param name="debug-qualifier" value="<%= development%>" />
+        </jsp:include>
+        <jsp:include page="js/ext/ext.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="js/openlayers/openlayers.jsp">
