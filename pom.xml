@@ -65,13 +65,25 @@
             <organizationUrl>http://cida.usgs.gov</organizationUrl>
             <timezone>-6</timezone>
         </developer>
+        <developer>
+            <id>cschroed</id>
+            <name>Carl Schroedl</name>
+            <email>cschroedl@usgs.gov</email>
+            <organization>Center for Integrated Data Analytics</organization>
+            <organizationUrl>http://cida.usgs.gov</organizationUrl>
+            <timezone>-6</timezone>
+        </developer>
     </developers>
 	
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <war.dir>src/main/webapp</war.dir>
     </properties>
-	
+    <scm>
+        <url>https://github.com/USGS-CIDA/glri-afinch</url>
+        <connection>scm:git:git@github.com:USGS-CIDA/glri-afinch.git</connection>
+        <developerConnection>scm:git:git@github.com:USGS-CIDA/glri-afinch.git</developerConnection>
+    </scm>
     <distributionManagement>
         <repository>
             <id>cida-releases</id>
