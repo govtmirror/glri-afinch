@@ -8,7 +8,7 @@ beforeEach(function(){
          */
         toHaveKeys: function(keys){
             var notText = this.isNot ? " not" : "";
-           
+
             this.message = function(){
                 return "Expected object" + notText +  " to contain keys " + keys.join(', ');
             };
@@ -30,7 +30,7 @@ beforeEach(function(){
             if("undefined" === typeof this.actual.length){
                 throw new Error("you must supply an array of string keys to check");
             }
-            
+
             var notText = this.isNot ? " not" : "";
             var keysToTestFor = this.actual;
             this.message = function(){
@@ -51,27 +51,27 @@ beforeEach(function(){
 });
 
 describe('StatsStore.js', function(){
-    
+
     it('implements the memoized load function', function(){
        expect(AFINCH.data.statsStoreLoad).toBeDefined();
     });
-    
+
     it('overrides the generic Ext.data.Store functions', function(){
         var ss = new AFINCH.data.StatsStore();
         var genericStore = new Ext.data.Store();
-        
+
         var funcNames = ['constructor', 'load', 'rParse'];
         expect(funcNames).toBeDefinedIn(ss);
-        
+
         funcNames.each(function(name){
            expect(ss[name]).not.toBe(genericStore[name]);
         });
-        
+
     });
     describe('AFINCH.data.StatsStore.rParse', function(){
         var ss = new AFINCH.data.StatsStore();
         var rParse = ss.rParse;
-        
+
         /**
          * @param array of column header strings
          */
@@ -83,7 +83,7 @@ describe('StatsStore.js', function(){
             );
            return stringifiedHeaders.join(',') + '\n';
         };
-        
+
         /**
          * @param array of array of floats
          */
@@ -94,11 +94,11 @@ describe('StatsStore.js', function(){
                 },
            "");
         };
-        
+
         var verifyTableHasCorrectFields = function(table){
             expect(['title','headers','values']).toBeDefinedIn(table);
         };
-        
+
         it('should error when called with no params', function(){
             expect(rParse).toThrow();
         });
@@ -121,47 +121,112 @@ describe('StatsStore.js', function(){
            expect(table.values[0].length).toBe(1);
            expect(table.values[0][0]).toBe(0);
         });
-        
-        it('should return the right object for a single-table, 3-column, 3-row string', function(){
-           var input =
-                    'myTable\n'+
-                    '"col1","col2","col3"\n' +
-                    '0.1,0.2,0.3\n'+
-                    '0.4,0.5,0.6\n'+
-                    '0.7,0.8,0.9';
 
-           var tables = rParse(input);
-           var correctSerialization = '[{"title":"myTable","headers":["col1","col2","col3"],"values":[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]]}]';
-           expect(JSON.stringify(tables)).toBe(correctSerialization);
-           //now try with a trailing newline
-           tables = rParse(input + "\n");
-           expect(JSON.stringify(tables)).toBe(correctSerialization);
-        });
-        it('should return the right object for a 3-table, 3-column, 3-row string', function(){
-           var input =
-                    'myTable\n'+
-                    '"col1","col2","col3"\n' +
-                    '0.1,0.2,0.3\n'+
-                    '0.4,0.5,0.6\n'+
-                    '0.7,0.8,0.9\n'+
-                    'myTable2\n'+
-                    '"col4","col5","col6"\n' +
-                    '0.4,0.5,0.6\n'+
-                    '0.1,0.2,0.3\n'+
-                    '0.7,0.8,0.9\n'+
-                    'myTable3\n'+
-                    '"col7","col8","col9"\n' +
-                    '0.4,0.5,0.6\n'+
-                    '0.7,0.8,0.9\n'+
-                    '0.1,0.2,0.3\n';
+		/**
+		 * Helper function
+		 * @param {string} input - the rwps output to parse
+		 * @param {string} message - the expectation message you would write in a jasmine `it('should...' function(){})` call
+		 * @param {type} expectedSerialization - the serialized version of the parsed object
+		 * @returns {undefined}
+		 */
+		function testTable(input, message, expectedSerialization){
+           it(message, function(){
+				var tables = rParse(input);
+			   expect(JSON.stringify(tables)).toBe(expectedSerialization);
+			   //now try with a trailing newline
+			   tables = rParse(input + "\n");
+			   expect(JSON.stringify(tables)).toBe(expectedSerialization);
+		   });
+		};
 
-           var tables = rParse(input);
-           var correctSerialization = '[{"title":"myTable","headers":["col1","col2","col3"],"values":[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]]},{"title":"myTable2","headers":["col4","col5","col6"],"values":[[0.4,0.5,0.6],[0.1,0.2,0.3],[0.7,0.8,0.9]]},{"title":"myTable3","headers":["col7","col8","col9"],"values":[[0.4,0.5,0.6],[0.7,0.8,0.9],[0.1,0.2,0.3]]}]';
-           expect(JSON.stringify(tables)).toBe(correctSerialization);
-           //now try with a trailing newline
-           tables = rParse(input + "\n");
-           expect(JSON.stringify(tables)).toBe(correctSerialization);
-            
-        });
+		var smallSerialization = '[{"title":"myTable","headers":["col1","col2","col3"],"values":[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]]}]';
+
+		testTable(
+			'myTable\n'+
+			'"col1","col2","col3"\n' +
+			'0.1,0.2,0.3\n'+
+			'0.4,0.5,0.6\n'+
+			'0.7,0.8,0.9',
+
+			'should return the right object for a single-table, 3-column, 3-row string',
+			smallSerialization
+		   );
+		testTable(
+			'myTable\n'+
+			'"col1","col2","col3"\n' +
+			'"0.1",0.2,0.3\n'+
+			'"0.4",0.5,0.6\n'+
+			'0.7,\'0.8\',0.9',
+
+			'should return the right object for a single-table, 3-column, 3-row string with some quoted values',
+			smallSerialization
+		   );
+		testTable(
+			'myTable\n'+
+			'"col1","col2","col3"\n' +
+			'NA,0.2,0.3\n'+
+			'0.4,NA,NA\n'+
+			'NA,NA,NA',
+
+			'should return the right object for a single-table, 3-column, 3-row string with "NA" values',
+			'[{"title":"myTable","headers":["col1","col2","col3"],"values":[[null,0.2,0.3],[0.4,null,null],[null,null,null]]}]'
+		   );
+
+		testTable(
+			'myTable\n'+
+			'"col1","col2","col3"\n' +
+			'0.1,0.2,0.3\n'+
+			'0.4,0.5,0.6\n'+
+			'0.7,0.8,0.9\n'+
+			'myTable2\n'+
+			'"col4","col5","col6"\n' +
+			'0.4,0.5,0.6\n'+
+			'0.1,0.2,0.3\n'+
+			'0.7,0.8,0.9\n'+
+			'myTable3\n'+
+			'"col7","col8","col9"\n' +
+			'0.4,0.5,0.6\n'+
+			'0.7,0.8,0.9\n'+
+			'0.1,0.2,0.3\n',
+
+			'should return the right object for a 3-table, 3-column, 3-row string',
+
+			'[{"title":"myTable","headers":["col1","col2","col3"],"values":[[0.1,0.2,0.3],[0.4,0.5,0.6],[0.7,0.8,0.9]]},{"title":"myTable2","headers":["col4","col5","col6"],"values":[[0.4,0.5,0.6],[0.1,0.2,0.3],[0.7,0.8,0.9]]},{"title":"myTable3","headers":["col7","col8","col9"],"values":[[0.4,0.5,0.6],[0.7,0.8,0.9],[0.1,0.2,0.3]]}]'
+		   );
+
+
+		it('should throw an error if the data cannot be parsed', function(){
+			var expectedError = (AFINCH.data.RParseError());
+			expect(
+					//non-numeric values
+				function(){rParse(
+					'myTable\n'+
+					'"col1","col2","col3"\n' +
+					'"0.1a",0.2,0.3\n'+
+					'"0.4",0.5,0.6\n'+
+					'0.7,0.8,0.9'
+					);}
+				).toThrow(expectedError);
+			expect(
+					//space in table name
+				function(){rParse(
+					'my Table\n'+
+					'"col1","col2","col3"\n' +
+					'"0.1",0.2,0.3\n'+
+					'"0.4",0.5,0.6\n'+
+					'0.7,0.8,0.9'
+					);}
+				).toThrow(expectedError);
+			expect(
+					//illegal character in table name
+				function(){rParse(
+					'myTable#\n'+
+					'"col1","col2","col3"\n' +
+					'"0.1",0.2,0.3\n'+
+					'"0.4",0.5,0.6\n'+
+					'0.7,\'0.8\',0.9'
+					);}
+				).toThrow(expectedError);
+		});
     });
 });
