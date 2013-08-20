@@ -53,8 +53,6 @@ AFINCH.data.statsStoreLoad =  function(options){
 
     var wpsUrl = CONFIG.endpoint.rwpsProxy +
     'WebProcessingService';
-//@todo remove this debug-only url:
-//    wpsUrl = 'js/Data/dummyRwpsResponse.xml';
     var successCallback = function(response, options){
             if (response.responseText.toLowerCase().indexOf('exception') !== -1) {
                 var errMsg = response.responseXML.getElementsByTagName('ns\:ExceptionText')[0].textContent;
@@ -105,7 +103,6 @@ AFINCH.data.statsStoreLoad =  function(options){
             AFINCH.data.statsStoreLoad.cachedResults[stringifiedParams] = statsStores;
             callback.call(context, statsStores, true);
         };
-//debug:
     Ext.Ajax.request({
         url: wpsUrl,
         method: 'POST',
@@ -173,12 +170,6 @@ AFINCH.data.StatsStore = Ext.extend(Ext.data.Store, {
 		var parserState = STATES.TABLE_NAME_SEARCH;
 
 		var throwParserError = function(){
-////				var err = new AFINCH.data.RParseError();
-////				//append additional debug information to the exception
-//				var description = '\nLine that broke the parser:\n' +
-//					line + '\n' +
-//					'Data that was attempted to parse:\n' +
-//					data;
 			throw AFINCH.data.RParseError();
 		};
         //tables will be objects with 'title', 'headers', and 'values' properties

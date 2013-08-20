@@ -126,7 +126,7 @@ describe('StatsStore.js', function(){
 		 * Helper function
 		 * @param {string} input - the rwps output to parse
 		 * @param {string} message - the expectation message you would write in a jasmine `it('should...' function(){})` call
-		 * @param {type} expectedSerialization - the serialized version of the parsed object
+		 * @param {string} expectedSerialization - the serialized version of the parsed object
 		 * @returns {undefined}
 		 */
 		function testTable(input, message, expectedSerialization){
