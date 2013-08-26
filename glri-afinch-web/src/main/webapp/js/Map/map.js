@@ -67,7 +67,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         // ////////////////////////////////////////////// FLOWLINES
         var flowlinesData = new OpenLayers.Layer.FlowlinesData(
                 "Flowline WMS (Data)",
-                CONFIG.endpoint.geoserver + 'wms'
+                CONFIG.endpoint.geoserverProxy + 'wms'
                 );
         flowlinesData.id = 'nhd-flowlines-data-layer';
 
@@ -80,7 +80,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         // ////////////////////////////////////////////// GAGES
         var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
-            url: CONFIG.endpoint.geoserver + 'wfs',
+            url: CONFIG.endpoint.geoserverProxy + 'wfs',
             streamOrderClipValue: this.streamOrderClipValue,
             visibility: false
         });
@@ -88,7 +88,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 
         var gageData = new OpenLayers.Layer.GageData(
                 "Gage WMS (Data)",
-                CONFIG.endpoint.geoserver + 'wms'
+                CONFIG.endpoint.geoserverProxy + 'wms'
                 );
         gageData.id = 'gage-location-data';
 
@@ -177,7 +177,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //                                    }
 //                                    var filter = "StreamOrde IN ('" + needed.join("','") + "')";
 //                                    Ext.Ajax.request({
-//                                        url: CONFIG.endpoint.geoserver + 'ows',
+//                                        url: CONFIG.endpoint.geoserverProxy + 'ows',
 //                                        scope: getFeatureResponses,
 //                                        method: 'GET',
 //                                        params: {
@@ -193,7 +193,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //                                        success: function(response, opts) {
 //                                            this.streamOrder = Ext.util.JSON.decode(response.responseText);
 //                                            Ext.Ajax.request({
-//                                                url: CONFIG.endpoint.geoserver + 'ows',
+//                                                url: CONFIG.endpoint.geoserverProxy + 'ows',
 //                                                scope: this,
 //                                                method: 'GET',
 //                                                params: {
