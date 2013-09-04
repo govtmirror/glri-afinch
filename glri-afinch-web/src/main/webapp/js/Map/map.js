@@ -21,7 +21,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         link : 'FEATUREDET',
         gageName : 'STATION_NM',
         gageTotdasqkm : 'TotDASqKM',
-        gageComId : 'ComID',
         reachComId: 'COMID',
         reachName: 'GNIS_NAME'
     },
@@ -464,7 +463,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         title += reachID;
         
         var gage = {
-            comId: record.get(self.fieldNames.gageComId),
+            comId: record.get(self.fieldNames.gageId),
             link: record.get(self.fieldNames.link),
             totdasqkm: record.get(self.fieldNames.gageTotdasqkm),
             reachCode: record.get(self.fieldNames.reachCode),
@@ -517,7 +516,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //prepare field definitions for Ext Store contructors:
         var gageLocFields = [
                 {name: self.fieldNames.gageName, type: 'string'},
-                {name: self.fieldNames.gageComId, type: 'int'},
                 {name: self.fieldNames.gageTotdasqkm, type: 'double'},
                 {name: self.fieldNames.reachCode, type: 'long'},
                 {name: self.fieldNames.gageId, type: 'long'},
@@ -542,7 +540,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
                     
         var gageFieldsToAttachToReach = [
-            self.fieldNames.gageTotdasqkm, self.fieldNames.gageComId, self.fieldNames.reachCode,
+            self.fieldNames.gageTotdasqkm, self.fieldNames.reachCode,
             self.fieldNames.gageName, self.fieldNames.gageId, self.fieldNames.link
         ];
         
