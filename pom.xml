@@ -105,14 +105,6 @@
         </repository>
     </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>plugin-nexus</id>
-            <name>CIDA Plugin repo</name>
-            <url>http://internal.cida.usgs.gov/maven/content/groups/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <dependencyManagement>
         <dependencies>
             <!-- Logging -->
