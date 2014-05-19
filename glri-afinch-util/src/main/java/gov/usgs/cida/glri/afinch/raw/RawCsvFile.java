@@ -1,7 +1,7 @@
 package gov.usgs.cida.glri.afinch.raw;
 
+import au.com.bytecode.opencsv.BigBufferCSVReader;
 import au.com.bytecode.opencsv.CSVParser;
-import au.com.bytecode.opencsv.CSVReader;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
@@ -19,13 +19,10 @@ import java.util.Map;
  */
 public class RawCsvFile implements Closeable {
 	
-	//Use a large buffer so that multi-threads can work efficently
-	private static final int DEFAULT_BUFFER_SIZE = 8192 * 16;
-	
 	private String[] userDefinedHeaders;
 	private String[] allHeaders;
 	private Map<String, Integer> headerNameMap;	//map from column name to column index
-	CSVReader csvReader;
+	BigBufferCSVReader csvReader;
 	private int headerRow;	//zero based header row
 	
 	private String[] currentLine;	//The line we are on
@@ -37,7 +34,7 @@ public class RawCsvFile implements Closeable {
 		BufferedReader br = null;
 		
 		try {
-			br = new BufferedReader(new FileReader(sourceFile), DEFAULT_BUFFER_SIZE);
+			br = new BufferedReader(new FileReader(sourceFile));
 			headerRow = findHeaderRow(br, expectedHeaders);
 		} catch (Exception e) {
 			tryToClose(br);
@@ -45,10 +42,14 @@ public class RawCsvFile implements Closeable {
 		
 		if (headerRow > -1) {
 			
-			csvReader = new CSVReader(new FileReader(sourceFile), 
-					CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER,
-					CSVParser.DEFAULT_ESCAPE_CHARACTER, headerRow,
-					CSVParser.DEFAULT_STRICT_QUOTES);
+			csvReader = new BigBufferCSVReader(new FileReader(sourceFile), 
+					CSVParser.DEFAULT_SEPARATOR, 
+					CSVParser.DEFAULT_QUOTE_CHARACTER,
+					CSVParser.DEFAULT_ESCAPE_CHARACTER, 
+					headerRow,
+					CSVParser.DEFAULT_STRICT_QUOTES,
+					BigBufferCSVReader.DEFAULT_BUFFER
+			);
 			allHeaders = readNext();
 			headerNameMap = mapHeaders(allHeaders);
 		} else {

@@ -7,6 +7,7 @@
 package gov.usgs.cida.glri.afinch.raw;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
@@ -17,12 +18,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  *
  * @author eeverman
  */
-public class ReachFileWriter {
+public class ReachWriter implements Callable<ReachWriter> {
 	
 	public final static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'UTC'";
 	public final static String DEFAULT_NUMBER_FORMAT = "#.##;-#.##";
@@ -33,6 +35,7 @@ public class ReachFileWriter {
 	private final DecimalFormat numberFormat;
 	private final SimpleDateFormat dateFormat;
 	private final boolean replaceIfExists;
+	private int valueCount = 0;
 	
 	/**
 	 * Constructs a new writer that will write a file into the specified directory, which must exist.
@@ -46,7 +49,7 @@ public class ReachFileWriter {
 	 * @param replaceIfExists If true, the output file (not the directory) will be replaced if it exists.
 	 * @throws Exception 
 	 */
-	public ReachFileWriter(File directory, Reach reach, String timeStampColName, 
+	public ReachWriter(File directory, Reach reach, String timeStampColName, 
 			String dateFormatStr, String numberFormatStr, boolean replaceIfExists) throws Exception {
 		
 		if (! directory.exists() || ! directory.canWrite()) {
@@ -61,7 +64,7 @@ public class ReachFileWriter {
 		this.replaceIfExists = replaceIfExists;
 	}
 	
-	public void write() throws Exception {
+	public ReachWriter call() throws Exception {
 		if (outputFile.exists()) {
 			if (replaceIfExists) {
 				outputFile.delete();
@@ -70,7 +73,8 @@ public class ReachFileWriter {
 			}
 		}
 		
-		try (CSVWriter writer = new CSVWriter(new FileWriter(outputFile), ',', CSVWriter.NO_QUOTE_CHARACTER);) {
+		BufferedWriter fileWriter = new BufferedWriter(new FileWriter(outputFile), 1024 * 32);
+		try (CSVWriter writer = new CSVWriter(fileWriter, ',', CSVWriter.NO_QUOTE_CHARACTER);) {
 
 			
 			//Write headers
@@ -90,10 +94,13 @@ public class ReachFileWriter {
 				Map.Entry<Long, double[]> entry = i.next();
 				format(entry.getKey(), entry.getValue(), out);
 				writer.writeNext(out);
+				
+				valueCount++;
 			}
+			
+			return this;
 		}
 		
-
 	}
 	
 	/**
@@ -113,5 +120,9 @@ public class ReachFileWriter {
 		for (int i = 0; i < values.length; i++) {
 			out[i + 1] = numberFormat.format(values[i]);
 		}
+	}
+	
+	public String getDescription() {
+		return "Reach " + reach.getId().toString() + " with " + valueCount + " values";
 	}
 }
