@@ -1,6 +1,5 @@
 package gov.usgs.cida.glri.afinch.raw;
 
-import org.apache.commons.io.filefilter.AncestorDirectoryNameFileFilter;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.NavigableSet;
@@ -25,10 +24,10 @@ public class DirectoryIngestorTest {
 	
 	//@Test This is system dependant, but provides a good template for how this is done.
 	public void bigTest() throws Exception {
-		ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
+		PerReachDataset dataSet = new PerReachDataset("ComID", "QAccCon", "QAccWua");
 		File srcDir = new File("/datausgs/project_workspaces/glri-afinch-data/from clluukkoo/AFinch");
 		IOFileFilter actualFileFilter = new SuffixFileFilter(".csv");
-		IOFileFilter fileParentDirFilter = new AncestorDirectoryNameFileFilter(new NameFileFilter("Flowlines"));
+		IOFileFilter fileParentDirFilter = new ParentFolderNameFileFilter(new NameFileFilter("Flowlines"));
 		IOFileFilter completeFileFilter = FileFilterUtils.and(actualFileFilter, fileParentDirFilter);
 		IOFileFilter dirFilter = FileFilterUtils.trueFileFilter();
 		Pattern yearFromNameExtractor = Pattern.compile(".*WY(\\d\\d\\d\\d).*");
@@ -45,10 +44,10 @@ public class DirectoryIngestorTest {
 		
 		for (Long id : set) {
 			Reach r = dataSet.get(id);
-			ReachWriter w = new ReachWriter(outDir, r, "DateTime",
-					ReachWriter.DEFAULT_DATE_FORMAT,
-					ReachWriter.DEFAULT_NUMBER_FORMAT, false);
-			w.call();
+			ReachFileWriter w = new ReachFileWriter(outDir, r, "DateTime",
+					ReachFileWriter.DEFAULT_DATE_FORMAT,
+					ReachFileWriter.DEFAULT_NUMBER_FORMAT, false);
+			w.write();
 		}
 		
 		System.out.println("Write files to: " + outDir.getAbsoluteFile());

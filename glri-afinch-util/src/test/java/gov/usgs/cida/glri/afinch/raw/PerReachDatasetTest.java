@@ -14,7 +14,7 @@ public class PerReachDatasetTest {
 	
 	@Test
 	public void simpleTest() throws Exception {
-		ReachMap dataset = new ReachMap("ComID", "col1", "col2");
+		PerReachDataset dataset = new PerReachDataset("ComID", "col1", "col2");
 		
 		//All different stations at a particular time '100000'
 		dataset.put(1000L, 100000L, 1000.1d, 1000.2d);

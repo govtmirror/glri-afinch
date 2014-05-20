@@ -42,7 +42,7 @@ public class ReachFileWriterTest {
 	
 	@Test
 	public void readSomeValuesFromSample1951and1952() throws Exception {
-		ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
+		PerReachDataset dataSet = new PerReachDataset("ComID", "QAccCon", "QAccWua");
 		FileIngestor fin1951 = new FileIngestor(small1951File, dataSet, 1951);
 		FileIngestor fin1952 = new FileIngestor(small1952File, dataSet, 1952);
 		
@@ -57,8 +57,8 @@ public class ReachFileWriterTest {
 		
 		for (Long id : set) {
 			Reach r = dataSet.get(id);
-			ReachWriter w = new ReachWriter(dir, r, "DateTime", ReachWriter.DEFAULT_DATE_FORMAT, ReachWriter.DEFAULT_NUMBER_FORMAT, false);
-			w.call();
+			ReachFileWriter w = new ReachFileWriter(dir, r, "DateTime", ReachFileWriter.DEFAULT_DATE_FORMAT, ReachFileWriter.DEFAULT_NUMBER_FORMAT, false);
+			w.write();
 		}
 		
 		System.out.println("Write files to: " + dir.getAbsoluteFile());

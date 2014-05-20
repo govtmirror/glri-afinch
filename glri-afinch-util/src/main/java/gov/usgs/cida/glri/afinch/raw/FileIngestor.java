@@ -7,12 +7,11 @@ import java.util.concurrent.Callable;
  *
  * @author eeverman
  */
-public class FileIngestor implements Callable<FileIngestor> {
+public class FileIngestor implements Callable<Integer> {
 	
-	private final ReachMap dataSet;
+	private final PerReachDataset dataSet;
 	private final int waterYear;	//The nominal wateryear for this file
 	private final File sourceFile;
-	int rowCount = 0;
 	
 	/**
 	 * Create a new instance.
@@ -21,15 +20,16 @@ public class FileIngestor implements Callable<FileIngestor> {
 	 * @param dataSet The collection of all data that is being accumulated
 	 * @param waterYear 
 	 */
-	public FileIngestor(File sourceFile, ReachMap dataSet, int waterYear) {
+	public FileIngestor(File sourceFile, PerReachDataset dataSet, int waterYear) {
 		this.dataSet = dataSet;
 		this.waterYear = waterYear;
 		this.sourceFile = sourceFile;
 	}
 	
-	public FileIngestor call() throws Exception {
+	public Integer call() throws Exception {
 		
 		String[] dataHeaders = dataSet.getPerMonthDataHeaders();
+		int valueCount = 0;
 		
 		try (
 				RawCsvFile file = new RawCsvFile(sourceFile, dataSet.getExplodedHeaders());
@@ -49,22 +49,13 @@ public class FileIngestor implements Callable<FileIngestor> {
 					
 					dataSet.put(reachId, month.getCalendarTimeInMillis(waterYear), vals);
 					
+					valueCount++;
 				}
-				
-				rowCount++;
 				
 			}
 			
-			return this;
+			return valueCount;
 			
-		} catch (Exception e) {
-			System.out.println(getDescription() + " threw an excpetion:");
-			e.printStackTrace();
-			throw e;
 		}
-	}
-	
-	public String getDescription() {
-		return "Input file " + sourceFile.getAbsolutePath() + " with " + rowCount + " rows for water year " + waterYear;
 	}
 }

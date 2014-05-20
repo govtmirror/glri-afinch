@@ -9,14 +9,14 @@ import java.util.concurrent.ConcurrentSkipListMap;
  *
  * @author eeverman
  */
-public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
+public class PerReachDataset extends ConcurrentSkipListMap<Long, Reach> {
 	
 	private String reachHeader;		//name of the column containing the reach ID
 	private String[] perMonthDataHeaders;	//List of headers, in which item 0 is the reach ID and all others are data.
 	
 	private String[] explodedHeaders;	//All the headers, exploded by month
 	
-	public ReachMap(String reachHeaderName, String... perMonthDataHeaders) {
+	public PerReachDataset(String reachHeaderName, String... perMonthDataHeaders) {
 		super();
 		
 		this.reachHeader = reachHeaderName;

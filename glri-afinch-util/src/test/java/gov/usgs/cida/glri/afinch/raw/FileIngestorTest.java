@@ -39,7 +39,7 @@ public class FileIngestorTest {
 	
 	@Test
 	public void readSomeValuesFromSample1951() throws Exception {
-		ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
+		PerReachDataset dataSet = new PerReachDataset("ComID", "QAccCon", "QAccWua");
 		FileIngestor fin = new FileIngestor(small1951File, dataSet, 1951);
 		
 		fin.call();
@@ -109,7 +109,7 @@ public class FileIngestorTest {
 	
 	@Test
 	public void readSomeValuesFromSample1951and1952() throws Exception {
-		ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
+		PerReachDataset dataSet = new PerReachDataset("ComID", "QAccCon", "QAccWua");
 		FileIngestor fin1951 = new FileIngestor(small1951File, dataSet, 1951);
 		FileIngestor fin1952 = new FileIngestor(small1952File, dataSet, 1952);
 		
