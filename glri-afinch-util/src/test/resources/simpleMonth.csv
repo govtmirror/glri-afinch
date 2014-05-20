@@ -1,0 +1,24 @@
+TITLE: Giberish.....
+Regression Span: Period of Analysis, Method: OLS.  Alpha: pEnter: 0.0100, pRemove: 0.0100.
+X Variable Names:  CurrentPrecip PrecedPrecip CurrentTemper Forest HydgrpAHydgrpAD HydgrpCHydgrpCDHydgrpD meanElev minSlpe stratsed_c. 
+Month [Indicator for xVar] N  RMSE F-Stat p-value  r2
+ Oct. [ 1 1 1 1 1 1 0 1 1 ] 1348 0.2361 196.6 4.045e-220 0.5384
+ Nov. [ 1 1 1 1 1 1 0 1 1 ] 1348 0.2187 131.8 2.873e-163 0.4390
+ Dec. [ 1 1 1 1 1 1 0 1 1 ] 1348 0.1766 172.4 3.317e-200 0.5058
+ Jan. [ 1 1 1 1 1 1 0 1 1 ] 1348 0.1791 166.4 5.651e-195 0.4968
+ Feb. [ 1 1 1 1 1 1 0 1 0 ] 1349 0.1805 172.8 1.618e-182 0.4728
+ Mar. [ 1 1 1 1 1 0 1 1 0 ] 1349 0.2513 221.9 2.728e-219 0.5352
+ Apr. [ 1 1 1 1 0 1 1 1 1 ] 1348 0.4360  85.2 3.105e-114 0.3359
+ May [ 1 1 1 0 1 1 1 1 1 ] 1348 0.3299 125.1 1.291e-156 0.4260
+ June [ 1 1 1 0 0 1 1 0 1 ] 1350 0.2446 188.9 9.599e-175 0.4564
+ July [ 1 1 1 1 0 1 1 1 0 ] 1349 0.2233 233.1 4.615e-227 0.5474
+ Aug. [ 1 1 1 1 1 1 1 1 0 ] 1348 0.2124 175.2 1.537e-202 0.5097
+ Sep. [ 1 1 0 1 1 1 1 1 0 ] 1349 0.2187 208.8 6.481e-210 0.5201
+logFile: AF201308311145.log, HUC-Output Dir:  04 Great Lakes: #{0401}=1, #{0402}=1.
+SELECTED HUCs: 0401 0402 
+Analyst: Name. Rundate: 31-Aug-2013 11:55:34.
+The next line is the header line as specified by a bunch of headers that we would be expecting:
+indexCol,valOct , valNov, valDec
+r0v0, r0v1, r0v2 , r0v3  
+   r1v0, r1v1, r1v2 , r1v3  
+	99, 100.1, 100.2 , 0.3  
