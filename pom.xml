@@ -11,6 +11,7 @@
 
     <modules>
         <module>glri-afinch-web</module>
+		<module>glri-afinch-util</module>
     </modules>
 
     <url>http://cida.usgs.gov/</url>
@@ -78,6 +79,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <war.dir>src/main/webapp</war.dir>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
     </properties>
     <scm>
         <url>https://github.com/USGS-CIDA/glri-afinch</url>
@@ -253,8 +256,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
