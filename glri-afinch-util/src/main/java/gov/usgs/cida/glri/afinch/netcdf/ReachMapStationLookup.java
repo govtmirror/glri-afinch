@@ -1,13 +1,19 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.glri.afinch.netcdf;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.google.common.collect.Maps;
+import gov.usgs.cida.glri.afinch.raw.Reach;
+import gov.usgs.cida.glri.afinch.raw.ReachMap;
 import gov.usgs.cida.netcdf.dsg.Station;
 import gov.usgs.cida.watersmart.parse.StationLookup;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.stream.XMLInputFactory;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -24,50 +30,45 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class DummyStationLookup implements StationLookup {
+public class ReachMapStationLookup implements StationLookup {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DummyStationLookup.class);
-    private final LinkedHashMap<String, Station> stationLookupTable = Maps.newLinkedHashMap();
+    private static final Logger LOG = LoggerFactory.getLogger(ReachMapStationLookup.class);
+    private final LinkedHashMap<String, Station> stationLookupTable;
     
-    public DummyStationLookup(String wfsUrl, String typeName, String nameAttr) throws IOException, XMLStreamException {
-        String url = wfsUrl + "?service=WFS&version=1.1.0&request=GetFeature&typeName=" + typeName + "&outputFormat=text/xml; subtype=gml/3.2";
+    public ReachMapStationLookup(ReachMap reachMap) throws IOException, XMLStreamException {
 
-        HttpClient client = new HttpClient();
-        GetMethod get = new GetMethod();
-        URI uri = new URI(url, false);
-        get.setURI(uri);
-        int statusCode = client.executeMethod(get);
-        if (statusCode != HttpStatus.SC_OK) {
-            LOG.error("Bad request to wfs: " + wfsUrl);
-        }
-        InputStream response = get.getResponseBodyAsStream();
-
-        XMLInputFactory factory = WstxInputFactory.newFactory();
-        XMLStreamReader reader = factory.createXMLStreamReader(response);
-
+		stationLookupTable = Maps.newLinkedHashMap();
         float lat = 0f;
         float lon = 0f;
-        String stationId = null;
 
-        // TODO not doing namespacing for now, might be important at some point
         int index = 0;
-        while (reader.hasNext()) {
-            int code = reader.next();
-            if (code == START_ELEMENT
-                && reader.getName().getLocalPart().equals("member")) {
-                stationId = null;
-            }
-            else if (code == END_ELEMENT
-                     && reader.getName().getLocalPart().equals("member")
-                     && stationId != null) {
-                stationLookupTable.put(stationId, new Station(lat, lon,
-                                                              stationId, index));
-                index++;
-            }
-            else if (code == START_ELEMENT
-                     && reader.getName().getLocalPart().equals(nameAttr)) {
-                stationId = reader.getElementText();
-            }
+
+        for (Reach reach : reachMap.values()) {
+
+			stationLookupTable.put(reach.getId().toString(), new Station(lat, lon, reach.getId().toString(), index));
+			
+			index++;
+        }
+    }
+	
+    public ReachMapStationLookup(Collection<File> allFiles, Pattern idFromFilenameRegexExtractor) throws Exception {
+
+		stationLookupTable = Maps.newLinkedHashMap();
+        float lat = 0f;
+        float lon = 0f;
+
+        int index = 0;
+
+        for (File f : allFiles) {
+
+			String name = f.getName();
+			Matcher matcher = idFromFilenameRegexExtractor.matcher(name);
+			matcher.find();
+			String idStr = matcher.group(1);
+				
+			stationLookupTable.put(idStr, new Station(lat, lon, idStr, index));
+			
+			index++;
         }
     }
 

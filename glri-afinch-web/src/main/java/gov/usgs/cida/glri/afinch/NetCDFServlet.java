@@ -1,5 +1,6 @@
 package gov.usgs.cida.glri.afinch;
 
+import gov.usgs.cida.glri.afinch.netcdf.NetCDFWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;

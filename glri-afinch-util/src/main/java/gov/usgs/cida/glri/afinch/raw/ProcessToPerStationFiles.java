@@ -1,6 +1,7 @@
 package gov.usgs.cida.glri.afinch.raw;
 
 import java.io.File;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,13 @@ import org.java.util.concurrent.NotifyingBlockingThreadPoolExecutor;
  *
  * @author eeverman
  */
-public class Processor {
+public class ProcessToPerStationFiles implements Callable<Boolean> {
+	
+	private final File srcDir;
+	private final File dstDir;
+	private final Integer limitCount;
+		
+		
 	public static void main(String[] args) throws Exception {
 		String srcDirStr = args[0];
 		String destDirStr = args[1];
@@ -28,8 +35,19 @@ public class Processor {
 			limitCount = Integer.parseInt(str);
 		}
 
-		File sourceDir = new File(srcDirStr);
-		File destDir = new File(destDirStr);
+		ProcessToPerStationFiles p = new ProcessToPerStationFiles(new File(srcDirStr), new File(destDirStr), limitCount);
+		p.call();
+	}
+	
+	
+	public ProcessToPerStationFiles(File srcDir, File dstDir, Integer limitCount) {
+		this.srcDir = srcDir;
+		this.dstDir = dstDir;
+		this.limitCount = limitCount;
+	}
+	
+	@Override
+	public Boolean call() throws Exception {
 
 		ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
 		IOFileFilter actualFileFilter = new SuffixFileFilter(".csv");
@@ -39,7 +57,7 @@ public class Processor {
 		IOFileFilter dirFilter = FileFilterUtils.trueFileFilter();
 		Pattern yearFromNameExtractor = Pattern.compile(".*WY(\\d\\d\\d\\d).*");
 
-		DirectoryIngestor din = new DirectoryIngestor(sourceDir, dataSet, completeFileFilter, dirFilter, yearFromNameExtractor, limitCount);
+		DirectoryIngestor din = new DirectoryIngestor(srcDir, dataSet, completeFileFilter, dirFilter, yearFromNameExtractor, limitCount);
 		
 		int coreCount = Runtime.getRuntime().availableProcessors();
 		System.out.println("Will process with " + coreCount + " threads");
@@ -62,7 +80,7 @@ public class Processor {
 		//
 		//Write output
 		
-		ReachMapWriter writer = new ReachMapWriter(destDir, dataSet, "DateTime", 
+		ReachMapWriter writer = new ReachMapWriter(dstDir, dataSet, "DateTime", 
 			ReachWriter.DEFAULT_DATE_FORMAT, ReachWriter.DEFAULT_NUMBER_FORMAT, true);
 		
 		long startWriteTimeMs = System.currentTimeMillis();
@@ -80,7 +98,8 @@ public class Processor {
 		executor.awaitTermination(1, TimeUnit.SECONDS);
 		
 		System.out.println("All Done!");
-
+		
+		return true;
 	}
 	
 	public static NotifyingBlockingThreadPoolExecutor newFixedThreadPool(int nThreads) {
@@ -127,4 +146,5 @@ public class Processor {
 		};
 			
 	}
+
 }

@@ -1,8 +1,9 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.glri.afinch.netcdf;
 
 import gov.usgs.cida.netcdf.dsg.RecordType;
 import gov.usgs.cida.watersmart.parse.StationLookup;
 import gov.usgs.cida.watersmart.parse.file.SYEParser;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class AFINCHMonthlyParser extends SYEParser {
+public class AFINCHMonthlyParser extends SYEParser implements Closeable {
     
     private static final Logger LOG = LoggerFactory.getLogger(AFINCHMonthlyParser.class);
     
@@ -95,4 +96,9 @@ public class AFINCHMonthlyParser extends SYEParser {
         RecordType recordType = new RecordType("months since " + baseDate.toString());
         return recordType;
     }
+	
+	@Override
+	public void close() throws IOException {
+		if (this.reader != null) reader.close();
+	}
 }

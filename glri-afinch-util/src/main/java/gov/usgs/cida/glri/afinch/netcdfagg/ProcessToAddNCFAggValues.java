@@ -1,8 +1,11 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.glri.afinch.netcdfagg;
 
 import com.google.common.base.Joiner;
+import gov.usgs.cida.glri.afinch.AfinchFileProcessor;
+import gov.usgs.cida.glri.afinch.SimpleCLIOptions;
 import gov.usgs.cida.glri.afinch.stats.Statistics1D;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +14,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.commons.cli.CommandLine;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -24,47 +30,108 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 
-public class Pivoter {
+/**
+ * Notes from Eric Everman 5/21/2014 (Originally writen by Tom K., but there are no docs).
+ * 
+ * It looks like this utility reads in a nc file and creates a new nc file with
+ * aggregate stats.  Tom's version had hard-coded file locations, so I'll
+ * make those configurable.
+ * 
+ */
+public class ProcessToAddNCFAggValues {
 
+	private static Logger log = LoggerFactory.getLogger(ProcessToAddNCFAggValues.class);
+	
+	//User specified
+	private final File inputFile;			//File that will be read
+	private final File outputFile;		//File to be writen
+	
+	
+	//State
     private final NetcdfFile ncInput;
     private final Variable oVariable;
+	private final int stationIdLength;	//Max number of characters in the station ID.
     
-    public Pivoter(NetcdfFile netCDFFile) {
-        this.ncInput = netCDFFile;
-        this.oVariable = netCDFFile.findVariable("record");
+    public ProcessToAddNCFAggValues(File inputFile, File outputFile) throws Exception {
+		
+		this.inputFile = inputFile;
+		this.outputFile = outputFile;
+		
+		this.ncInput = NetcdfFile.open(inputFile.getAbsolutePath());
+        this.oVariable = ncInput.findVariable("record");
+		this.stationIdLength = ncInput.findDimension("station_id_len").getLength();	//9
+
+		//
+		//Ref
+		System.out.println("Station count: " + ncInput.findDimension("station").getLength());	//91168
+		
+		ncInput.findDimension("station").getLength();	//91168
+		for (Variable v : ncInput.getVariables()) {
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("var name: " + v.getShortName());
+			System.out.println("     element size: " + v.getElementSize());
+			System.out.println("     Attributes: ");
+			printAttributes(v.getAttributes());
+			
+		}
+		
+		for (Dimension d : ncInput.getDimensions()) {
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("dim name: " + d.getShortName());
+			System.out.println("     len: " + d.getLength());
+			System.out.println("     group: " + d.getGroup().getShortName());
+			System.out.println("     group attribs: -------------------------------");
+			printAttributes(d.getGroup().getAttributes());
+		}
+		
+		
+		
     }
+	
+	private static void printAttributes(List<Attribute> attribs) {
+		for (Attribute a : attribs) {
+			System.out.println("         name: " + a.getShortName() + " length: " + a.getLength());
+			if (a.isString()) {
+				System.out.println("         str val: " + a.getStringValue());
+			} else if (a.isArray()) {
+				System.out.println("         Its an array!");
+			} else {
+				System.out.println("         str val: " + a.getNumericValue());
+			}
+
+		}
+	}
     
     public void pivot() throws IOException, InvalidRangeException {
         long start = System.currentTimeMillis();
         
-        BufferedWriter writer = null;
-        try {
         
-            ReadObserationsVisitor vistor = new ReadObserationsVisitor();
-            new RaggedIndexArrayStructureObservationTraverser(oVariable).traverse(vistor);
-            Map<Integer, List<Float>> observationMap = vistor.getObservationMap();
-            
-            System.out.println(
-                    "Station Count: " + vistor.stationCount + 
-                    " : TimeCountMin " + vistor.stationTimeCountMin +
-                    " : TimeCountMax " + vistor.stationTimeCountMax +
-                    " : RecordCount " + vistor.recordCount
-                    );
-            System.out.println((System.currentTimeMillis() - start) + "ms");
-            
-            generatePivotFile(observationMap);
-        } finally {
-            if (writer != null) try { writer.close(); } catch (Exception e) {}
-        }
+		ReadObserationsVisitor vistor = new ReadObserationsVisitor();
+		new RaggedIndexArrayStructureObservationTraverser(oVariable).traverse(vistor);
+		Map<Integer, List<Float>> observationMap = vistor.getObservationMap();
+
+		System.out.println(
+				"Station Count: " + vistor.stationCount + 
+				" : TimeCountMin " + vistor.stationTimeCountMin +
+				" : TimeCountMax " + vistor.stationTimeCountMax +
+				" : RecordCount " + vistor.recordCount
+				);
+		System.out.println("Read and pivoted the input file in " + (System.currentTimeMillis() - start) + "ms");
+		start = System.currentTimeMillis();
+
+		generatePivotFile(observationMap, vistor.stationCount, stationIdLength, vistor.stationTimeCountMax);
+		System.out.println("Wrote output file in " + (System.currentTimeMillis() - start) + "ms");
     }
     
     
-    protected void generatePivotFile(Map<Integer, List<Float>> observationMap) throws IOException, InvalidRangeException {
-        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, "/Users/tkunicki/Data/GLRI/SOS/out.nc");
+    protected void generatePivotFile(Map<Integer, List<Float>> observationMap,
+			int stationCount, int StationIdLength, int timeStepCount) throws IOException, InvalidRangeException {
+		
+        NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outputFile.getAbsolutePath());
         
-        Dimension nStationDim = ncWriter.addDimension(null, "station", 114041);
-        Dimension nStationIdLenDim = ncWriter.addDimension(null, "station_id_len", 9);
-        Dimension nTimeDim = ncWriter.addDimension(null, "time", 708);
+        Dimension nStationDim = ncWriter.addDimension(null, "station", stationCount);
+        Dimension nStationIdLenDim = ncWriter.addDimension(null, "station_id_len", StationIdLength);
+        Dimension nTimeDim = ncWriter.addDimension(null, "time", timeStepCount);
         
         Variable nStationIdVar = ncWriter.addVariable(null, "station_id", DataType.CHAR, Arrays.asList(nStationDim, nStationIdLenDim));
         nStationIdVar.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_ID));
@@ -130,10 +197,10 @@ public class Pivoter {
         ncWriter.write(nLonVar, ncInput.findVariable("lat").read());
         ncWriter.write(nLatVar, ncInput.findVariable("lon").read());
         
-        Array nTimeArray = Array.factory(DataType.INT, new int[] { 708 } );
+        Array nTimeArray = Array.factory(DataType.INT, new int[] { timeStepCount } );
         DateTime baseDateTime = DateTime.parse("1950-10-01T00:00:00.000Z");
         DateTime currentDateTime = baseDateTime;
-        for (int tIndex = 0; tIndex < 708; ++tIndex) {
+        for (int tIndex = 0; tIndex < timeStepCount; ++tIndex) {
             nTimeArray.setInt(tIndex, Days.daysBetween(baseDateTime, currentDateTime).getDays());
             currentDateTime = currentDateTime.plusMonths(1);
         }
@@ -142,10 +209,10 @@ public class Pivoter {
         for (Map.Entry<Integer, List<Float>> entry : observationMap.entrySet()) {
             int stationIndex = entry.getKey();
             List<Float> values = entry.getValue();
-            int timeMissing = 708 - values.size();
+            int timeMissing = timeStepCount - values.size();
             
             Statistics1D statistics = new Statistics1D();
-            Array valueArray = Array.factory(DataType.FLOAT, new int[] { 1, 708 - timeMissing} );
+            Array valueArray = Array.factory(DataType.FLOAT, new int[] { 1, timeStepCount - timeMissing} );
             int valueArrayIndex = 0;
             for (float value : values) {
                 valueArray.setFloat(valueArrayIndex++, value);
@@ -169,7 +236,7 @@ public class Pivoter {
             }
             decileBounds[10] = (float)statistics.getMaximum();
         
-            Array decileArray = Array.factory(DataType.FLOAT, new int[] { 1, 708 - timeMissing} );
+            Array decileArray = Array.factory(DataType.FLOAT, new int[] { 1, timeStepCount - timeMissing} );
             int decileArrayIndex = 0;
             for (float value : values) {
                 float decile = Float.NaN;
@@ -256,19 +323,26 @@ public class Pivoter {
             return observationMap;
         } 
     }
-    
-    public static void main(String[] args) throws Exception {
 
-        NetcdfFile nc = null;
-        try {
-            nc = NetcdfFile.open("/Users/tkunicki/Data/GLRI/SOS/afinch.nc");
+	public static void main(String[] args) throws Exception {
+		SimpleCLIOptions options = new SimpleCLIOptions(AfinchFileProcessor.class);
+		options.addOption(new SimpleCLIOptions.SoftRequiredOption("srcFile", "sourceFile", true, "The NetCDF file to read from"));
+		options.addOption(new SimpleCLIOptions.SoftRequiredOption("destFile", "destinationFile", true, "The soon-to-be-created NetCDF file to write to"));
+		
+		options.parse(args);
+		
+		if (!options.isHelpRequest()) {
+			//Continue on
+			
+			CommandLine cl = options.getCommandLine();
+			options.printEffectiveOptions(true);
 
-            new Pivoter(nc).pivot();
-            
-        } finally {
-            if (nc != null) {
-                nc.close();
-            }
-        }
-    }
+			ProcessToAddNCFAggValues pivoter = new ProcessToAddNCFAggValues(
+				new File(cl.getOptionValue("srcFile")),
+				new File(cl.getOptionValue("destFile"))
+			);
+			
+			pivoter.pivot();
+		}
+	}
 }
