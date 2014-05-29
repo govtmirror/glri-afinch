@@ -26,7 +26,7 @@ public class AFINCHMonthlyParser extends SYEParser implements Closeable {
     private static final Pattern headerLinePattern = Pattern.compile("^DateTime((?:,\\w+)+)$");
     private static final Pattern headerVariablePattern = Pattern.compile(",(\\w+)");
     
-    private static final Pattern stationIdPattern = Pattern.compile("^(?:[^/]*/)*(\\d+)\\.txt$");
+    private static final Pattern stationIdPattern = Pattern.compile("^(?:[^/]*/)*(\\d+)\\.csv$");
     
     private static final Pattern dataLinePattern = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}UTC)((?:,[^,]+)+)$");
     private static final Pattern dataValuePattern = Pattern.compile(",([^,]+)");

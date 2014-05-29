@@ -34,7 +34,7 @@ public class DirectoryIngestorTest {
 		Pattern yearFromNameExtractor = Pattern.compile(".*WY(\\d\\d\\d\\d).*");
 		
 		DirectoryIngestor din = new DirectoryIngestor(srcDir, dataSet, completeFileFilter, dirFilter, yearFromNameExtractor, 4);
-		din.ingest();
+		din.process();
 		
 		
 		//

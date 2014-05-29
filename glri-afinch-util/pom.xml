@@ -37,47 +37,6 @@
 
 						</configuration>
 					</execution>
-					<execution>
-						<id>Build_Executable</id>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<finalName>IngesterExecutable</finalName>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<!-- Create additional jar -->
-							<shadedClassifierName>IngestAllRawFiles</shadedClassifierName>
-							<!-- add to name -->
-							
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>gov.usgs.cida.glri.afinch.raw.Processor</mainClass>
-								</transformer>
-							</transformers>
-
-						</configuration>
-					</execution>
-					<execution>
-						<id>Build_ProcessToAddNCFAggValues</id>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<finalName>ProcessToAddNCFAggValues</finalName>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<!-- Create additional jar -->
-							<shadedClassifierName>ProcessToAddNCFAggValues</shadedClassifierName>
-							
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>gov.usgs.cida.glri.afinch.netcdfagg.ProcessToAddNCFAggValues</mainClass>
-								</transformer>
-							</transformers>
-
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 		</plugins>
@@ -136,7 +95,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>1.6.4</version>
+			<version>1.7.7</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
@@ -149,9 +108,9 @@
 			<version>2.4</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.7.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

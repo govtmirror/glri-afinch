@@ -1,6 +1,5 @@
 package gov.usgs.cida.glri.afinch.netcdf;
 
-import com.ctc.wstx.stax.WstxInputFactory;
 import com.google.common.collect.Maps;
 import gov.usgs.cida.glri.afinch.raw.Reach;
 import gov.usgs.cida.glri.afinch.raw.ReachMap;
@@ -8,21 +7,11 @@ import gov.usgs.cida.netcdf.dsg.Station;
 import gov.usgs.cida.watersmart.parse.StationLookup;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.xml.stream.XMLInputFactory;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +19,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class ReachMapStationLookup implements StationLookup {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ReachMapStationLookup.class);
+public class AFINCHReachLookup implements StationLookup {
+    private static final Logger log = LoggerFactory.getLogger(AFINCHReachLookup.class);
+	
     private final LinkedHashMap<String, Station> stationLookupTable;
     
-    public ReachMapStationLookup(ReachMap reachMap) throws IOException, XMLStreamException {
+    public AFINCHReachLookup(ReachMap reachMap) throws IOException, XMLStreamException {
 
 		stationLookupTable = Maps.newLinkedHashMap();
         float lat = 0f;
@@ -51,7 +40,7 @@ public class ReachMapStationLookup implements StationLookup {
         }
     }
 	
-    public ReachMapStationLookup(Collection<File> allFiles, Pattern idFromFilenameRegexExtractor) throws Exception {
+    public AFINCHReachLookup(Collection<File> allFiles, Pattern idFromFilenameRegexExtractor) throws Exception {
 
 		stationLookupTable = Maps.newLinkedHashMap();
         float lat = 0f;
@@ -105,10 +94,10 @@ public class ReachMapStationLookup implements StationLookup {
         Station station = stationLookupTable.get(stationName);
         if (null != station) {
             return station;
-        }
-        // sometimes leading zero may be dropped
-        station = stationLookupTable.get("0" + stationName);
-        return station;
+        } else {
+			log.error("Unable to find reach {} among the source file names - what gives?", stationName);
+			return null;
+		}
     }
     
 }

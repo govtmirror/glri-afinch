@@ -44,12 +44,12 @@ public class Reach {
 		if (values.length != headers.length) {
 			throw new Exception("Found " + values.length + " values, but " + headers.length + " values were expected.");
 		}
+		double[] existing = entries.putIfAbsent(timeStamp, values);
 		
-		if (entries.containsKey(timeStamp)) {
+		if (existing != null) {
 			throw new Exception("The station " + id + " already has an entry for the time " + timeStamp);
 		}
 		
-		entries.put(timeStamp, values);
 	}
 	
 	/**

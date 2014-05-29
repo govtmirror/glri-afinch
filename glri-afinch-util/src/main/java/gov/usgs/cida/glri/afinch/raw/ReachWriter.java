@@ -56,7 +56,7 @@ public class ReachWriter implements Callable<ReachWriter> {
 			throw new Exception("The output directory '" + directory.getAbsolutePath() + "' does not exist or cannot be written to.");
 		}
 		
-		outputFile = new File(directory,  reach.getId().toString() + ".txt");
+		outputFile = new File(directory,  reach.getId().toString() + ".csv");
 		this.reach = reach;
 		this.timeStampColName = timeStampColName;
 		this.dateFormat = new SimpleDateFormat(dateFormatStr);

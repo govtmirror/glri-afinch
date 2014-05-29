@@ -1,7 +1,6 @@
 package gov.usgs.cida.glri.afinch.netcdf;
 
 import com.google.common.collect.Maps;
-import gov.usgs.cida.glri.afinch.raw.ReachMap;
 import gov.usgs.cida.netcdf.dsg.Observation;
 import gov.usgs.cida.netcdf.dsg.RecordType;
 import gov.usgs.cida.netcdf.dsg.Station;
@@ -16,13 +15,25 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Major update to enable pipelining the import of the NetCDF files with two other
+ * processes.
+ * 
  * @author Jordan Walker <jiwalker@usgs.gov>
+ * @author Eric Everman <eeverman@usgs.gov>
  */
-public class ReachFilesToNetCDF {
+public class ProcessToNetCDF {
+	private static Logger log = LoggerFactory.getLogger(ProcessToNetCDF.class);
 	
+	private final static Integer REPORT_INTERVAL = 4000;
+	
+	private final File inputDirectory;
+	private final File outputNCDFFile;
+	private final Integer limitCount;
+			
 	public static void main(String[] args) throws Exception {
 		String srcDirStr = args[0];
 		String destDirStr = args[1];
@@ -36,11 +47,19 @@ public class ReachFilesToNetCDF {
 		File sourceDir = new File(srcDirStr);
 		File destDir = new File(destDirStr);
 		
-		System.out.println("Importing reach files from '" + sourceDir.getAbsolutePath() + "' to '" + destDir.getAbsolutePath() + "'");
-		runSet(sourceDir, destDir, limitCount);
+		log.info("Importing reach files from '{}' to '{}'", sourceDir.getAbsolutePath(), destDir.getAbsolutePath());
+		
+		ProcessToNetCDF p = new ProcessToNetCDF(sourceDir, destDir, limitCount);
+		p.process();
 	}
 	
-	public static void runSet(File inputDirectory, File outputNCDFFile, Integer limitCount) throws Exception {
+	public ProcessToNetCDF(File inputDirectory, File outputNCDFFile, Integer limitCount) {
+		this.inputDirectory = inputDirectory;
+		this.outputNCDFFile = outputNCDFFile;
+		this.limitCount = limitCount;
+	}
+	
+	public Boolean process() throws Exception {
 
         Map<String, String> globalAttrs = Maps.newLinkedHashMap();
         globalAttrs.put("title", "AFINCH Monthly Flow");
@@ -56,15 +75,18 @@ public class ReachFilesToNetCDF {
 
         
 		StationTimeSeriesNetCDFFile netCdfOut = null;
-		IOFileFilter fileFilter = new RegexFileFilter("\\d+\\.txt");
+		IOFileFilter fileFilter = new RegexFileFilter("\\d+\\.csv");
 		Collection<File> allFiles = FileUtils.listFiles(inputDirectory, fileFilter, FileFilterUtils.trueFileFilter());
 		
-		System.out.println("Found " + allFiles.size() + " reach files to process.");
-		int processedFileCount = 0;
-		StationLookup lookup = new ReachMapStationLookup(allFiles, Pattern.compile("(\\d+).txt"));
+		log.info("Importing files from {} to {} and converting to NetCDF.", inputDirectory.getAbsolutePath(), outputNCDFFile.getAbsolutePath());
+		log.info("Found {} reach files to process in the source diretory", allFiles.size());
 		
+		int processedFileCount = 0;
+		StationLookup lookup = new AFINCHReachLookup(allFiles, Pattern.compile("(\\d+).csv"));
+		
+		
+		//Get just the first file and read it for the metadata
 		if (allFiles.size() > 0) {
-			//Get just the first one for the metadata
 			File file = allFiles.iterator().next();
 			
 			try (InputStream inputStream = new FileInputStream(file);) {
@@ -72,21 +94,34 @@ public class ReachFilesToNetCDF {
 			}
 		}
 		
-		
-        for (File file : allFiles) {
+		//Start over and proccess all files for the data
+		try {
+			for (File file : allFiles) {
 
-			if (limitCount == null || processedFileCount < limitCount) {
-				System.out.println("Pulling file " + (processedFileCount + 1) + " of " + allFiles.size() + " into NetCDF.");
-				
-				try (InputStream inputStream = new FileInputStream(file);) {
-					runOneFile(netCdfOut, inputStream, file.getName(), lookup);
+				if (limitCount == null || processedFileCount < limitCount) {
+
+					if ( (float)(processedFileCount / REPORT_INTERVAL) == (((float)processedFileCount / (float)REPORT_INTERVAL))) {
+						log.debug("Pulling file {} of {} into NetCDF.", (processedFileCount + 1), allFiles.size());
+					}
+
+
+					try (InputStream inputStream = new FileInputStream(file);) {
+						runOneFile(netCdfOut, inputStream, file.getName(), lookup);
+					}
+					processedFileCount++;
+				} else if (limitCount != null && processedFileCount >= limitCount) {
+					log.info("Stopping file processing b/c specified limit of {} files was reached", limitCount);
+					break;
 				}
-				processedFileCount++;
-			} else {
-				break;
-			}
 
-        }
+			}
+		} finally {
+			netCdfOut.close();
+		}
+		
+		
+		log.info("Completed converting {} files to NetCDF", processedFileCount);
+		return true;
 
 	}
 	
@@ -116,6 +151,7 @@ public class ReachFilesToNetCDF {
 	 * 
 	 * @param netCDFOutputFile
 	 * @param sampleSourceIputStream
+	 * @param fileName
 	 * @param lookerUpper
 	 * @param globalAttrs
 	 * @return
@@ -127,7 +163,7 @@ public class ReachFilesToNetCDF {
 		Collection<Station> stations = lookerUpper.getStations();
 		Station[] stationArray = stations.toArray(new Station[stations.size()]);
 		
-		System.out.println("Creating a new netcdf file.  Max station length is: " + Station.findMaxStationLength(stationArray));
+		log.info("Creating a new netcdf file with max station length of {} characters ", Station.findMaxStationLength(stationArray));
 		
 		try (AFINCHMonthlyParser dsgParse = new AFINCHMonthlyParser(sampleSourceIputStream, fileName, lookerUpper);) {
 

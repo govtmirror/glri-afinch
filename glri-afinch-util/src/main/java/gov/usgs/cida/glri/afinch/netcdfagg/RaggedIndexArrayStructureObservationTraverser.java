@@ -22,6 +22,9 @@ public class RaggedIndexArrayStructureObservationTraverser implements Observatio
         ArrayStructure array;
         final int oStep = 1 << 20;
         final int oTotal = observationVariable.getShape(0);
+		
+		System.out.println("Starting visitor with oTotal: " + oTotal);
+		
         visitor.start(oTotal);
         for (int oIndex = 0; oIndex < oTotal; oIndex += oStep) {
             int oCount = oIndex + oStep > oTotal ? oTotal - oIndex : oStep;
