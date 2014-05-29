@@ -69,7 +69,11 @@ public class FileIngestor implements Callable<FileIngestor> {
 						vals[i] = file.getAsDoubleByMonth(dataHeaders[i], month);
 					}
 					
-					dataSet.put(reachId, month.getCalendarTimeInMillis(waterYear), vals);
+					try {
+						dataSet.put(reachId, month.getCalendarTimeInMillis(waterYear), vals);
+					} catch (Exception e) {
+						log.error(getDescription() + " threw an excpetion.  Onward...", e);
+					}
 					
 				}
 				

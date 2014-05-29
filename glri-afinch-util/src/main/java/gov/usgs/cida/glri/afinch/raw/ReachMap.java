@@ -1,8 +1,12 @@
 package gov.usgs.cida.glri.afinch.raw;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -16,11 +20,15 @@ public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
 	
 	private String[] explodedHeaders;	//All the headers, exploded by month
 	
+	private final ConcurrentSkipListSet<Long> reachErrors;	//Reach IDs which had duplicate entries (useful for debuging source dataset)
+	
 	public ReachMap(String reachHeaderName, String... perMonthDataHeaders) {
 		super();
 		
 		this.reachHeader = reachHeaderName;
 		this.perMonthDataHeaders = perMonthDataHeaders;
+		
+		reachErrors = new ConcurrentSkipListSet<Long>();
 	}
 	
 	public String getReachHeaderName() {
@@ -47,6 +55,10 @@ public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
 		return explodedHeaders;
 	}
 	
+	public Collection<Long> getReachesWithErrors() {
+		return Collections.unmodifiableCollection(reachErrors);
+	}
+	
 	/**
 	 * Add a new data value, creating a station if needed
 	 * @param reachId
@@ -66,6 +78,11 @@ public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
 			if (existingReach != null) reach = existingReach;
 		}
 		
-		reach.put(timestamp, values);
+		try {
+			reach.put(timestamp, values);
+		} catch (Exception e) {
+			reachErrors.add(reachId);
+			throw e;
+		}
 	}
 }

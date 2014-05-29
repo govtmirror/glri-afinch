@@ -70,7 +70,6 @@ public class DirectoryIngestor {
 				try {
 
 					int year = Integer.parseInt(yearStr);
-					//System.out.println("Processing input file " + current + " of " + allFiles.size() + " (" + f.getAbsolutePath() + ") as year " + year);
 					FileIngestor fi = new FileIngestor(f, dataSet, year);
 					executor.submit(fi);
 
