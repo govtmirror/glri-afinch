@@ -17,7 +17,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Complete pipeline processing for reading raw AFINCH files and generating
+ * a NetCDF file with base and aggregate values.
+ * 
+ * Typical arguments for running flowline values:
+ * <ul>
+ * <li>-srcDir [Directory containing all AFINCH source files]</li>
+ * <li>-dstDir [Any output directory (will be overwritten)]</li>
+ * <li>-idCol ComID</li>
+ * <li>-dataCols QAccCon</li>
+ * <li>-</li>
+ * <li>-</li>
+ * <li>-</li>
+ * </ul>
+ * 
  * @author eeverman
  */
 public class AfinchFileProcessor {
@@ -39,8 +52,8 @@ public class AfinchFileProcessor {
 		options.addOption(new SoftRequiredOption("srcDir", "sourceDirectory", true, "The source directory to process from"));
 		options.addOption(new SoftRequiredOption("dstDir", "destinationDirectory", true, "The directory where all output will be written to"));
 		options.addOption(new Option("limit", "limitInputFiles", true, "Limit the number of imput files processed.  All files run if option is not specified."));
-		options.addOption(new Option("idCol", "idColumnName", true, "Name of the id column in the raw files"));
-		options.addOption(new Option("dataCol", "dataColumnName", true, "Name of one or more data columns.  This parameter can be repeated to create multiple values."));
+		options.addOption(new SoftRequiredOption("idCol", "idColumnName", true, "Name of the id column in the raw files"));
+		options.addOption(new SoftRequiredOption("dataCols", "dataColumnNames", true, "Name of one or more data columns.  This parameter can be repeated to create multiple values."));
 
 		options.parse(args);
 		
@@ -51,6 +64,11 @@ public class AfinchFileProcessor {
 			options.printEffectiveOptions(true);
 			
 			
+			if (! options.isSoftRequiredOptionsSet()) {
+				log.error("Stopping processing b/c not all required parameters are set");
+				return;
+			}
+			
 			
 			
 			String limitStr = cl.getOptionValue("limit");
@@ -59,6 +77,9 @@ public class AfinchFileProcessor {
 				limitCount = Integer.parseInt(limitStr);
 			}
 			
+			//Source column names
+			String idCol = cl.getOptionValue("idCol");
+			String[] dataCols = cl.getOptionValues("dataCols");
 					
 					
 			File srcDirFile = new File(cl.getOptionValue("srcDir"));
@@ -99,7 +120,7 @@ public class AfinchFileProcessor {
 			IOFileFilter filter = FileFilterUtils.and(fileFilter, parentDirFilter);
 			
 			
-			ProcessToPerStationFiles processToPerStationFiles = new ProcessToPerStationFiles(srcDirFile, dstDirRaw, limitCount, filter, "ComID", "QAccCon");
+			ProcessToPerStationFiles processToPerStationFiles = new ProcessToPerStationFiles(srcDirFile, dstDirRaw, limitCount, filter, idCol, dataCols);
 			
 			
 			Boolean result = processToPerStationFiles.process();

@@ -1,6 +1,8 @@
 package gov.usgs.cida.glri.afinch.raw;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
@@ -72,14 +74,10 @@ public class ProcessToPerStationFiles {
 		//ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
 		
 		ReachMap dataSet = new ReachMap(idColumnName, dataSeriesNames);
-		IOFileFilter actualFileFilter = new SuffixFileFilter(".csv");
-		IOFileFilter fileParentDirFilter = new AncestorDirectoryNameFileFilter(new NameFileFilter("Flowlines"));
-		IOFileFilter hucNamesParentDirFilter = new AncestorDirectoryNameFileFilter(new RegexFileFilter("HR\\d\\d\\d\\d_.*"), 2);
-		IOFileFilter completeFileFilter = FileFilterUtils.and(actualFileFilter, fileParentDirFilter, hucNamesParentDirFilter);
 		IOFileFilter dirFilter = FileFilterUtils.trueFileFilter();
 		Pattern yearFromNameExtractor = Pattern.compile(".*WY(\\d\\d\\d\\d).*");
 
-		DirectoryIngestor din = new DirectoryIngestor(srcDir, dataSet, completeFileFilter, dirFilter, yearFromNameExtractor, limitCount);
+		DirectoryIngestor din = new DirectoryIngestor(srcDir, dataSet, fileFilter, dirFilter, yearFromNameExtractor, limitCount);
 		
 		int coreCount = Runtime.getRuntime().availableProcessors();
 		
@@ -99,6 +97,18 @@ public class ProcessToPerStationFiles {
 		
 		long endIngestTimeMs = System.currentTimeMillis();
 		log.debug("Read in all files in {} seconds", (Long)((endIngestTimeMs - startIngestTimeMs) / 1000));
+		
+		Collection<Long> reachesWithErrors = dataSet.getReachesWithErrors();
+		if (reachesWithErrors.size() > 0) {
+			//Some reaches must have duplicate entries for time.
+			
+			log.error("Some reaches cause errors, likely due to duplicate reach/time combinations.  List of reach IDs follows:");
+			for (Long id : reachesWithErrors) {
+				log.error("   reach id: " + id.toString());
+			}
+			
+			return false;
+		}
 
 
 		//
