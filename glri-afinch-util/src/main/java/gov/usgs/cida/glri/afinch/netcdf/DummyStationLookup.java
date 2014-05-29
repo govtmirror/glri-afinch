@@ -1,4 +1,4 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.glri.afinch.netcdf;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.google.common.collect.Maps;

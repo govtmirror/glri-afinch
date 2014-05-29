@@ -9,12 +9,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author eeverman
  */
 public class DirectoryIngestor {
+	private static Logger log = LoggerFactory.getLogger(DirectoryIngestor.class);
 
 	private final ReachMap dataSet;
 	private final File sourceDir;
@@ -36,20 +39,24 @@ public class DirectoryIngestor {
 	}
 
 	
-	
-	public void ingest() throws Exception {
+	/**
+	 * Simple version that creates its own ExecutorService.
+	 * @throws Exception 
+	 */
+	public void process() throws Exception {
 		ExecutorService executor = Executors.newFixedThreadPool(1);
-		ingest(executor);
+		process(executor);
 		executor.shutdown();
 		executor.awaitTermination(8, TimeUnit.HOURS);
 	}
 	
-	public void ingest(ExecutorService executor) throws Exception {
+	public void process(ExecutorService executor) throws Exception {
 
 		Collection<File> allFiles = FileUtils.listFiles(sourceDir, fileFilter, dirFilter);
 
-		System.out.println("Found " + allFiles.size() + " files to process.");
+		log.info("Found {} files to process.", allFiles.size());
 		int current = 1;
+		int errors = 0;
 
 		for (File f : allFiles) {
 
@@ -69,13 +76,19 @@ public class DirectoryIngestor {
 
 				} catch (Exception e) {
 					//Go on
-					System.out.println("!! FAILED TO SUBMIT INPUT FILE: " + f.getAbsolutePath() + "   Stacktrace follows:");
-					e.printStackTrace(System.out);
+					log.error("!! FAILED TO SUBMIT INPUT FILE: " + f.getAbsolutePath(), e);
+					errors++;
 				}
 				current++;
 
+			} else if (limitNumberOfFilesProcessed != null && current >= limitNumberOfFilesProcessed) {
+				log.info("Stopping directory processing b/c specified limit of {} files was reached", limitNumberOfFilesProcessed);
+				break;
 			}
+			
 		}
+		
+		log.info("Completed processing the raw {} source files with {} errors.", current, errors);
 	}
 
 }

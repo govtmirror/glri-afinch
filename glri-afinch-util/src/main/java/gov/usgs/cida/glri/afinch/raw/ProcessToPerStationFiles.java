@@ -12,12 +12,27 @@ import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.java.util.concurrent.NotifyingBlockingThreadPoolExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author eeverman
  */
-public class Processor {
+public class ProcessToPerStationFiles {
+	private static Logger log = LoggerFactory.getLogger(ProcessToPerStationFiles.class);
+	
+	private final File srcDir;
+	private final File dstDir;
+	private final Integer limitCount;
+	
+	/** Filter applied to each file to determine inclusion in the process */
+	private final IOFileFilter fileFilter;
+	
+	private final String idColumnName;
+	private final String[] dataSeriesNames;	//Data series are expanded to be per month, seriesA --> seriesAOct, seriesANov...
+		
+		
 	public static void main(String[] args) throws Exception {
 		String srcDirStr = args[0];
 		String destDirStr = args[1];
@@ -28,10 +43,35 @@ public class Processor {
 			limitCount = Integer.parseInt(str);
 		}
 
-		File sourceDir = new File(srcDirStr);
-		File destDir = new File(destDirStr);
+		ProcessToPerStationFiles p = new ProcessToPerStationFiles(new File(srcDirStr), new File(destDirStr), limitCount, null, "ComID", "QAccCon");
+		p.process();
+	}
+	
+	
+	public ProcessToPerStationFiles(File srcDir, File dstDir, Integer limitCount, IOFileFilter fileFilter, String idColumnName, String... dataSeriesNames) {
+		this.srcDir = srcDir;
+		this.dstDir = dstDir;
+		this.limitCount = limitCount;
+		this.idColumnName = idColumnName;
+		this.dataSeriesNames = dataSeriesNames;
+		
+		if (fileFilter != null) {
+			this.fileFilter = fileFilter;
+		} else {
+			//create a default filter
+			IOFileFilter actualFileFilter = new SuffixFileFilter(".csv");
+			IOFileFilter fileParentDirFilter = new AncestorDirectoryNameFileFilter(new NameFileFilter("Flowlines"));
+			//IOFileFilter hucNamesParentDirFilter = new AncestorDirectoryNameFileFilter(new RegexFileFilter("HR\\d\\d\\d\\d_.*"), 2);
+			this.fileFilter = FileFilterUtils.and(actualFileFilter, fileParentDirFilter);
+		}
+		
+	}
+	
+	public Boolean process() throws Exception {
 
-		ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
+		//ReachMap dataSet = new ReachMap("ComID", "QAccCon", "QAccWua");
+		
+		ReachMap dataSet = new ReachMap(idColumnName, dataSeriesNames);
 		IOFileFilter actualFileFilter = new SuffixFileFilter(".csv");
 		IOFileFilter fileParentDirFilter = new AncestorDirectoryNameFileFilter(new NameFileFilter("Flowlines"));
 		IOFileFilter hucNamesParentDirFilter = new AncestorDirectoryNameFileFilter(new RegexFileFilter("HR\\d\\d\\d\\d_.*"), 2);
@@ -39,10 +79,12 @@ public class Processor {
 		IOFileFilter dirFilter = FileFilterUtils.trueFileFilter();
 		Pattern yearFromNameExtractor = Pattern.compile(".*WY(\\d\\d\\d\\d).*");
 
-		DirectoryIngestor din = new DirectoryIngestor(sourceDir, dataSet, completeFileFilter, dirFilter, yearFromNameExtractor, limitCount);
+		DirectoryIngestor din = new DirectoryIngestor(srcDir, dataSet, completeFileFilter, dirFilter, yearFromNameExtractor, limitCount);
 		
 		int coreCount = Runtime.getRuntime().availableProcessors();
-		System.out.println("Will process with " + coreCount + " threads");
+		
+		log.info("Will process with {} threads", coreCount);
+		
 		NotifyingBlockingThreadPoolExecutor executor = newFixedThreadPool(coreCount);
 		
 		
@@ -50,19 +92,19 @@ public class Processor {
 		long startIngestTimeMs = startAllTimeMs;
 		
 		//Blocks until all tasks are at least submitted
-		din.ingest(executor);
+		din.process(executor);
 		
 		//Blocks waiting for all tasks to be completed
 		executor.await();
 		
 		long endIngestTimeMs = System.currentTimeMillis();
-		System.out.println("Read in all files in " + ((endIngestTimeMs - startIngestTimeMs) / 60) + " seconds");
+		log.debug("Read in all files in {} seconds", (Long)((endIngestTimeMs - startIngestTimeMs) / 1000));
 
 
 		//
 		//Write output
 		
-		ReachMapWriter writer = new ReachMapWriter(destDir, dataSet, "DateTime", 
+		ReachMapWriter writer = new ReachMapWriter(dstDir, dataSet, "DateTime", 
 			ReachWriter.DEFAULT_DATE_FORMAT, ReachWriter.DEFAULT_NUMBER_FORMAT, true);
 		
 		long startWriteTimeMs = System.currentTimeMillis();
@@ -73,14 +115,15 @@ public class Processor {
 		executor.await();
 		long endWriteTimeMs = System.currentTimeMillis();
 		
-		System.out.println("Wrote in all files in " + ((endWriteTimeMs - startWriteTimeMs) / 60) + " seconds");
+		log.info("Wrote {} output files in {} seconds to {}", dataSet.size(), (Long)((endWriteTimeMs - startWriteTimeMs) / 1000), dstDir.getAbsolutePath());
 		
 		
 		executor.shutdown();
 		executor.awaitTermination(1, TimeUnit.SECONDS);
 		
-		System.out.println("All Done!");
-
+		log.info("Process Complete.");
+		
+		return true;
 	}
 	
 	public static NotifyingBlockingThreadPoolExecutor newFixedThreadPool(int nThreads) {
@@ -107,19 +150,18 @@ public class Processor {
 						
 						if (ro instanceof FileIngestor) {
 							if ((double) (completeCount / READ_NOTICE_COUNT) == (((double) completeCount)) / (double)(READ_NOTICE_COUNT)) {
-								System.out.println("Completed input file " + this.getCompletedTaskCount() + " of " + this.getTaskCount());
+								log.debug("Completed input file {} of {}", this.getCompletedTaskCount(), this.getTaskCount());
 							}
 						} else if (ro instanceof ReachWriter) {
 							if ((double) (completeCount / WRITE_NOTICE_COUNT) == (((double) completeCount)) / (double)(WRITE_NOTICE_COUNT)) {
-								System.out.println("Completed writing file " + this.getCompletedTaskCount() + " of " + this.getTaskCount());
+								log.debug("Completed writing file {} of {}", this.getCompletedTaskCount(), this.getTaskCount());
 							}
 						} else {
-							System.out.println("!! UNEXPECTED COMPLETED TASK of: " + ro.getClass().getCanonicalName());
+							log.error("!! UNEXPECTED COMPLETED TASK of: " + ro.getClass().getCanonicalName());
 						}
 							
 					} catch (Exception ex) {
-						System.out.println("!! UNEXPECTED UNCOMPLETED TASK   Stacktrace follows:");
-						ex.printStackTrace(System.out);
+						log.error("!! UNEXPECTED UNCOMPLETED TASK", ex);
 					}
 				}
 				
@@ -127,4 +169,5 @@ public class Processor {
 		};
 			
 	}
+
 }

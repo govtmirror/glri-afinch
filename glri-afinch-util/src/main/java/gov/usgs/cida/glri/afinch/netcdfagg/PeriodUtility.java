@@ -1,4 +1,4 @@
-package gov.usgs.cida.glri.afinch;
+package gov.usgs.cida.glri.afinch.netcdfagg;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;

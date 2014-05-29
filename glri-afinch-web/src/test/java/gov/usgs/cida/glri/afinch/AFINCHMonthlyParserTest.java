@@ -1,6 +1,8 @@
 
 package gov.usgs.cida.glri.afinch;
 
+import gov.usgs.cida.glri.afinch.netcdf.DummyStationLookup;
+import gov.usgs.cida.glri.afinch.netcdf.AFINCHMonthlyParser;
 import gov.usgs.cida.netcdf.dsg.Observation;
 import gov.usgs.cida.watersmart.parse.StationLookup;
 import java.io.File;
