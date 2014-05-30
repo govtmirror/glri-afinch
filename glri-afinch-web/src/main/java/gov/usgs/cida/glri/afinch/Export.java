@@ -13,7 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import sun.misc.BASE64Decoder;
 
 /**
- *
+ * EE:  This looks like it just re-encodes the posted data to push it back to
+ * the client as a downloadable file.
  * @author isuftin
  */
 public class Export extends HttpServlet {
