@@ -215,22 +215,22 @@
                         <!-- </testing> libs -->
                         
                         <!-- <dependencies of code being tested> -->
-                            <include>target/glri-afinch-web/js/log4javascript/log4javascript_uncompressed.js</include>
+                            <include>target/glri-afinch/js/log4javascript/log4javascript_uncompressed.js</include>
                             <include>src/test/javascript/setupLOG.js</include>
-                            <include>target/glri-afinch-web/js/ext/adapter/ext/ext-base.js</include>
-                            <include>target/glri-afinch-web/js/ext/ext-all.js</include>
-                            <include>target/glri-afinch-web/js/geoext/lib/overrides/override-ext-ajax.js</include>
-                            <include>target/glri-afinch-web/js/sugar/sugar.js</include>
-                            <include>target/glri-afinch-web/js/openlayers/OpenLayers.js</include>
+                            <include>target/glri-afinch/js/ext/adapter/ext/ext-base.js</include>
+                            <include>target/glri-afinch/js/ext/ext-all.js</include>
+                            <include>target/glri-afinch/js/geoext/lib/overrides/override-ext-ajax.js</include>
+                            <include>target/glri-afinch/js/sugar/sugar.js</include>
+                            <include>target/glri-afinch/js/openlayers/OpenLayers.js</include>
                             <!-- skipped some openlayers extensions: raster and flowlines -->
-                            <include>target/glri-afinch-web/js/geoext/GeoExt.js</include>
+                            <include>target/glri-afinch/js/geoext/GeoExt.js</include>
 
                         <!-- </dependencies of code being tested> -->
 
                         <!-- <actual code being tested -->
-                            <include>target/glri-afinch-web/js/Util/Util.js</include>
-                            <include>target/glri-afinch-web/js/Data/ParseSosResponse.js</include>
-                            <include>target/glri-afinch-web/js/Data/StatsStore.js</include>
+                            <include>target/glri-afinch/js/Util/Util.js</include>
+                            <include>target/glri-afinch/js/Data/ParseSosResponse.js</include>
+                            <include>target/glri-afinch/js/Data/StatsStore.js</include>
                         <!-- </actual code being tested -->
 
                     </sourceIncludes>

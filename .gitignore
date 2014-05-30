@@ -1,3 +1,4 @@
 /*/target/
 /*/src/main/webapp/META-INF/
 */nbactions.xml
+!/glri-afinch-web/src/main/webapp/META-INF/
