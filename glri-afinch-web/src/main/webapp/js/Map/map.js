@@ -480,7 +480,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         win.center();
         win.toFront();
         
-        self.sosUrlWithoutBase = 'out.nc?service=SOS&request=GetObservation&Version=1.0.0&offering=' + record.data.COMID +'&observedProperty=QAccCon'
+        self.sosUrlWithoutBase = CONFIG.endpoint.thredds_filename + '?service=SOS&request=GetObservation&Version=1.0.0&offering=' + record.data.COMID +'&observedProperty=QAccCon'
         Ext.Ajax.request({
             url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
             success: self.sosCallback,

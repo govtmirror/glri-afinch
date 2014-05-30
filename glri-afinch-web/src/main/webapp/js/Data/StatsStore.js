@@ -106,7 +106,7 @@ AFINCH.data.statsStoreLoad =  function(options){
     Ext.Ajax.request({
         url: wpsUrl,
         method: 'POST',
-        params: wpsRequestData,
+        xmlData: wpsRequestData,
         success: successCallback,
         failure: function(response, options){
             LOG.error(response);
