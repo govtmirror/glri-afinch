@@ -31,10 +31,9 @@ public class AFINCHMonthlyParserTest {
     private static File sampleFile = null;
     
     @BeforeClass
-    public static void setupClass() throws IOException {
+    public static void setupClass() throws Exception {
         sampleFile = new File(AFINCHMonthlyParserTest.class.getClassLoader()
-                .getResource("9862573.csv")
-                .getFile());
+                .getResource("9862573.csv").toURI());
     }
 
     @Test
