@@ -59,14 +59,9 @@ public class RawCsvFileTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		String fileName = RawCsvFileTest.class.getClassLoader().getResource(COMPLEX_SOURCE_FILE_PATH).getFile();
-		complexFile = new File(fileName);
-		
-		fileName = RawCsvFileTest.class.getClassLoader().getResource(SIMPLE_SOURCE_FILE_PATH).getFile();
-		simpleFile = new File(fileName);
-		
-		fileName = RawCsvFileTest.class.getClassLoader().getResource(SIMPLE_MONTH_SOURCE_FILE_PATH).getFile();
-		simpleMonthFile = new File(fileName);
+		complexFile = new File(RawCsvFileTest.class.getClassLoader().getResource(COMPLEX_SOURCE_FILE_PATH).toURI());
+		simpleFile = new File(RawCsvFileTest.class.getClassLoader().getResource(SIMPLE_SOURCE_FILE_PATH).toURI());
+		simpleMonthFile = new File(RawCsvFileTest.class.getClassLoader().getResource(SIMPLE_MONTH_SOURCE_FILE_PATH).toURI());
 	}
 	
 	@After

@@ -26,10 +26,8 @@ public class FileIngestorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		String fileName = FileIngestorTest.class.getClassLoader().getResource(SMALL_1951_PATH).getFile();
-		small1951File = new File(fileName);
-		fileName = FileIngestorTest.class.getClassLoader().getResource(SMALL_1952_PATH).getFile();
-		small1952File = new File(fileName);
+		small1951File = new File(FileIngestorTest.class.getClassLoader().getResource(SMALL_1951_PATH).toURI());
+		small1952File = new File(FileIngestorTest.class.getClassLoader().getResource(SMALL_1952_PATH).toURI());
 	}
 	
 	@After
