@@ -1,21 +1,23 @@
 
-package gov.usgs.cida.glri.afinch;
 
-import gov.usgs.cida.glri.afinch.netcdf.DummyStationLookup;
+
 import gov.usgs.cida.glri.afinch.netcdf.AFINCHMonthlyParser;
+import gov.usgs.cida.glri.afinch.netcdf.AFINCHReachLookup;
+import gov.usgs.cida.glri.afinch.netcdf.DummyStationLookup;
 import gov.usgs.cida.netcdf.dsg.Observation;
 import gov.usgs.cida.watersmart.parse.StationLookup;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.IOUtils;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -31,20 +33,20 @@ public class AFINCHMonthlyParserTest {
     @BeforeClass
     public static void setupClass() throws IOException {
         sampleFile = new File(AFINCHMonthlyParserTest.class.getClassLoader()
-                .getResource("gov/usgs/cida/glri/afinch/9862573.txt")
+                .getResource("9862573.csv")
                 .getFile());
     }
 
-    // takes too long
     @Test
-    @Ignore
-    public void testParse() throws IOException, XMLStreamException {
+    public void testParse() throws IOException, XMLStreamException, Exception {
         InputStream is = new FileInputStream(sampleFile);
-        StationLookup lookup = new DummyStationLookup(
-                "http://internal.cida.usgs.gov/lkm-geoserver/glri/ows",
-                "glri:nhd-flowline",
-                "COMID");
-        AFINCHMonthlyParser parser = new AFINCHMonthlyParser(is, sampleFile.getName(), lookup);
+		
+		ArrayList<File> files = new ArrayList<File>();
+		files.add(sampleFile);
+		
+		AFINCHReachLookup lu = new AFINCHReachLookup(files, Pattern.compile("(\\d+).csv"));
+
+        AFINCHMonthlyParser parser = new AFINCHMonthlyParser(is, sampleFile.getName(), lu);
         parser.parse();
         int index = 0;
         float value = 0f;
@@ -55,8 +57,8 @@ public class AFINCHMonthlyParserTest {
                 index++;
             }
         }
-        assertThat(index, is(707));
-        assertThat(value, is(1.25f));
+        assertEquals(708, index);
+        assertEquals(.324f, value, .0001f);
         IOUtils.closeQuietly(is);
     }
     
