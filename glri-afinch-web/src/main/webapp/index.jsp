@@ -148,11 +148,13 @@
         </jsp:include>
         <div class="application-body">
         </div>
-        <jsp:include page="template/USGSFooter.jsp">
+        <jsp:include page="custom_template/USGSFooter.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
             <jsp:param name="site-url" value= "<script type='text/javascript'>document.write(document.location.href);</script>" />
             <jsp:param name="contact-info" value= "<a href='mailto:glri-database@usgs.gov?subject=GLRI AFINCH Mapper Comments' title='Contact Email'>GLRI Help</a>" />
+			<jsp:param name="revisedDate" value="${timestamp}" />
+			<jsp:param name="buildVersion" value="${project.version}" />
         </jsp:include>
         <form id="download_form" style="display:none;" action="export" method="post" target="download_iframe">
             <input id="filename_value" name="filename" type="text" value=""/>
