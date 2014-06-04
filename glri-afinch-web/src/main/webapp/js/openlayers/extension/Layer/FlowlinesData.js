@@ -10,11 +10,14 @@
  */
 OpenLayers.Layer.FlowlinesData = OpenLayers.Class(OpenLayers.Layer.WMS, {
     CLASS_NAME: "OpenLayers.Layer.FlowlinesData",
+	
+
+	
     initialize: function(name, url, params, options) {
         params = params || {};
         options = options || {};
-        params.layers = 'glri:NHDFlowline';
-        params.styles = 'FlowlineStreamOrder';
+        params.layers = CONFIG.maplayers.flowline.layerName;
+        params.styles = CONFIG.maplayers.flowline.layerStyle;
         params.format = "image/png";
         params.tiled = true;
         options.isBaseLayer = false;

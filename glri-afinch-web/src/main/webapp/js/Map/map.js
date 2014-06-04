@@ -3,7 +3,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
     map: undefined,
     currentZoom: 0,
-    nhdFlowlineLayername: 'glri:NHDFlowline',
+    nhdFlowlineLayername: CONFIG.maplayers.flowline.layerName + ":" + CONFIG.maplayers.flowline.layerName,
     gageStyleName: "GageLocStreamOrder",
     wmsGetFeatureInfoControl: undefined,
     WGS84_GOOGLE_MERCATOR: new OpenLayers.Projection("EPSG:900913"),
@@ -144,7 +144,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     var tableLength = panel.streamOrderClipValues.length;
 
                     for (var cInd = 0; cInd < tableLength; cInd++) {
-                        panel.streamOrderClipValues[cInd] = Math.ceil((tableLength - cInd) * (clipCount / tableLength));
+                        panel.streamOrderClipValues[cInd] = Math.ceil((tableLength - cInd) * (clipCount / tableLength) - 1);
                     }
 
                     panel.map.events.register(
@@ -508,9 +508,22 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         var gageLocFeatureStore, nhdFlowLineFeatureStore;
         if (features.length) {
             features.each(function(feature) {
-                if (feature.data['StreamOrde'] >= self.streamOrderClipValue) {
-                    layerFeatures[feature.gml.featureType].push(feature);
-                }
+				
+				if (feature.gml.featureType == CONFIG.maplayers.flowline.layerName) {
+					if (feature.data[CONFIG.maplayers.flowline.streamOrderAttribName] >= self.streamOrderClipValue) {
+						layerFeatures['NHDFlowline'].push(feature);
+					}
+					
+				} else if (feature.gml.featureType == CONFIG.maplayers.gage.layerName) {
+					
+					if (feature.data[CONFIG.maplayers.gage.streamOrderAttribName] >= self.streamOrderClipValue) {
+						layerFeatures['GageLoc'].push(feature);
+					}
+					
+				} else {
+					LOG.error("Unrecognized feature type: " + feature.gml.featureType);
+				}
+					
             });
         }
         //prepare field definitions for Ext Store contructors:

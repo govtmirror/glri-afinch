@@ -72,7 +72,10 @@
             var AFINCH = Object.extended();
             CONFIG.endpoint = Object.extended();
             CONFIG.mapPanel = Object.extended();
-
+			CONFIG.maplayers = Object.extended();
+			CONFIG.maplayers.flowline = Object.extended();
+			CONFIG.maplayers.gage = Object.extended();
+	
             CONFIG.development = <%= development%>;
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
@@ -109,7 +112,16 @@
             };
             CONFIG.attributionUrl = '';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
-
+			
+			//Map layer config
+			CONFIG.maplayers.flowline.layerPrefix = 'glri';	//old val: 'glri:NHDFlowline';
+			CONFIG.maplayers.flowline.layerName = 'NHDFlowlinev21';	//old val: 'glri:NHDFlowline';
+			CONFIG.maplayers.flowline.layerStyle = 'FlowlineStrmOrder';	//old val: 'FlowlineStreamOrder'
+			CONFIG.maplayers.flowline.streamOrderAttribName = 'StrmOrder';	//old val: 'StreamOrde' - used to determine display at zoom levels
+			CONFIG.maplayers.gage.layerPrefix = 'glri';	//old val: glri:GageLoc
+			CONFIG.maplayers.gage.layerName = 'GageLoc';	//old val: glri:GageLoc
+			CONFIG.maplayers.gage.layerStyle = 'GageLocStreamOrder';	//old val: 'FlowlineStreamOrder'
+			CONFIG.maplayers.gage.streamOrderAttribName = 'StreamOrde';	//varies by layer...
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
