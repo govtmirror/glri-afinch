@@ -54,11 +54,19 @@ public class AFINCHReachLookup implements StationLookup {
 			Matcher matcher = idFromFilenameRegexExtractor.matcher(name);
 			matcher.find();
 			String idStr = matcher.group(1);
-				
+			
+			if (stationLookupTable.containsKey(idStr)) {
+				throw new Exception("This shouldn't happen:  The station id '" + 
+						idStr + "' extracted from the file name '" + name + 
+						"' matches a station ID already in the stationLookupTable.");
+			}
+			
 			stationLookupTable.put(idStr, new Station(lat, lon, idStr, index));
 			
 			index++;
         }
+		
+		log.debug("Created a station ID lookup based on file names with " + index + " unique entries.");
     }
 
     @Override

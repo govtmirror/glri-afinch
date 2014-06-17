@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.usgs.cida.glri.afinch.raw;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -21,13 +15,15 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
- *
+ * Note that this class writes 'NaN' for values that parse to NaN (only).
+ * Parsing that creates errors will throw an error.
+ * 
  * @author eeverman
  */
 public class ReachWriter implements Callable<ReachWriter> {
 	
 	public final static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'UTC'";
-	public final static String DEFAULT_NUMBER_FORMAT = "#.##;-#.##";
+	public final static String DEFAULT_NUMBER_FORMAT = "#.###;-#.###";
 	
 	private final File outputFile;
 	private final Reach reach;
@@ -118,7 +114,13 @@ public class ReachWriter implements Callable<ReachWriter> {
 		out[0] = dateFormat.format(d);
 		
 		for (int i = 0; i < values.length; i++) {
-			out[i + 1] = numberFormat.format(values[i]);
+			
+			if (Double.isNaN(values[i])) {
+				out[i + 1] = "NaN";
+			} else {
+				out[i + 1] = numberFormat.format(values[i]);
+			}
+			
 		}
 	}
 	

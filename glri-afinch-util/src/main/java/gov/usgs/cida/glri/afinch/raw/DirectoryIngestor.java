@@ -60,7 +60,7 @@ public class DirectoryIngestor {
 
 		for (File f : allFiles) {
 
-			if (limitNumberOfFilesProcessed == null || current < limitNumberOfFilesProcessed) {
+			if (limitNumberOfFilesProcessed == null || current <= limitNumberOfFilesProcessed) {
 
 				String name = f.getName();
 				Matcher matcher = regexYearExtractor.matcher(name);
@@ -87,7 +87,7 @@ public class DirectoryIngestor {
 			
 		}
 		
-		log.info("Completed processing the raw {} source files with {} errors.", current, errors);
+		log.info("Completed processing the raw {} source files with {} errors unrecoverable errors (other continuable errors may have occured).", current, errors);
 	}
 
 }

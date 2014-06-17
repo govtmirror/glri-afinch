@@ -16,9 +16,11 @@ public class FileIngestorTest {
 	
 	final String SMALL_1951_PATH = "smallSample1951.csv";
 	final String SMALL_1952_PATH = "smallSample1952.csv";
+	final String NAN_1951_PATH = "smallSampleWithNaN1951.csv";	//First value is 'NaN'
 	
 	File small1951File;
 	File small1952File;
+	File nan1951File;
 	
 	public FileIngestorTest() {
 	}
@@ -28,6 +30,7 @@ public class FileIngestorTest {
 	public void setUp() throws Exception {
 		small1951File = new File(FileIngestorTest.class.getClassLoader().getResource(SMALL_1951_PATH).toURI());
 		small1952File = new File(FileIngestorTest.class.getClassLoader().getResource(SMALL_1952_PATH).toURI());
+		nan1951File = new File(FileIngestorTest.class.getClassLoader().getResource(NAN_1951_PATH).toURI());
 	}
 	
 	@After
@@ -248,5 +251,33 @@ public class FileIngestorTest {
 		assertFalse(di.hasNext());	//all done
 	}
 	
+
+	@Test
+	public void readSomeValuesFromSmallSampleWithNaN1951() throws Exception {
+		ReachMap dataSet = new ReachMap("ComID", "QAccCon");
+		FileIngestor fin = new FileIngestor(nan1951File, dataSet, 1951);
+		
+		fin.call();
+		
+		Reach r1754888 = dataSet.get(1754888L);
+		
+		
+		assertEquals(3, dataSet.size());
+		
+		//
+		//First reach
+		
+		//headers
+		assertEquals(1754888L, r1754888.getId().longValue());
+		assertEquals("QAccCon", r1754888.getHeaders()[0]);
+		assertEquals(1, r1754888.getHeaders().length);
+		
+		Iterator<Map.Entry<Long, double[]>> di = r1754888.iterator();
+
+		//First entry (in sorted order)
+		Map.Entry<Long, double[]> entry = di.next();
+		assertEquals(new Long(WaterMonth.OCT.getCalendarTimeInMillis(1951)), entry.getKey());
+		assertTrue(Double.isNaN(entry.getValue()[0]));
+	}
 	
 }
