@@ -33,46 +33,17 @@ public class ProcessToNetCDF {
 	private final File inputDirectory;
 	private final File outputNCDFFile;
 	private final Integer limitCount;
+	private final Map<String, String> fileProps;
 			
-	public static void main(String[] args) throws Exception {
-		String srcDirStr = args[0];
-		String destDirStr = args[1];
-		Integer limitCount = null;
-
-		if (args.length > 2) {
-			String str = args[2];
-			limitCount = Integer.parseInt(str);
-		}
-		
-		File sourceDir = new File(srcDirStr);
-		File destDir = new File(destDirStr);
-		
-		log.info("Importing reach files from '{}' to '{}'", sourceDir.getAbsolutePath(), destDir.getAbsolutePath());
-		
-		ProcessToNetCDF p = new ProcessToNetCDF(sourceDir, destDir, limitCount);
-		p.process();
-	}
 	
-	public ProcessToNetCDF(File inputDirectory, File outputNCDFFile, Integer limitCount) {
+	public ProcessToNetCDF(File inputDirectory, File outputNCDFFile, Map<String, String> fileProperties, Integer limitCount) {
 		this.inputDirectory = inputDirectory;
 		this.outputNCDFFile = outputNCDFFile;
+		this.fileProps = fileProperties;
 		this.limitCount = limitCount;
 	}
 	
 	public Boolean process() throws Exception {
-
-        Map<String, String> globalAttrs = Maps.newLinkedHashMap();
-        globalAttrs.put("title", "AFINCH Monthly Flow");
-        globalAttrs.put("summary", "Modeled flow for NHD reaches");
-        globalAttrs.put("naming_authority", "gov.usgs.cida");
-        globalAttrs.put("cdm_data_type", "Station");
-        globalAttrs.put("date_created", (new Date()).toString());
-        globalAttrs.put("creator_name", "Howard W Reeves");
-        globalAttrs.put("creator_email", "hwreeves@usgs.gov");
-        globalAttrs.put("project", "Great Lakes Restoration Initiative");
-        globalAttrs.put("processing_level", "Model Results");
-        globalAttrs.put("standard_name_vocabulary", RecordType.CF_VER);
-
         
 		StationTimeSeriesNetCDFFile netCdfOut = null;
 		IOFileFilter fileFilter = new RegexFileFilter("\\d+\\.csv");
@@ -90,7 +61,7 @@ public class ProcessToNetCDF {
 			File file = allFiles.iterator().next();
 			
 			try (InputStream inputStream = new FileInputStream(file);) {
-				netCdfOut =  createNetCDF(outputNCDFFile, inputStream, file.getName(), lookup, globalAttrs);
+				netCdfOut =  createNetCDF(outputNCDFFile, inputStream, file.getName(), lookup, fileProps);
 			}
 		}
 		
@@ -98,7 +69,7 @@ public class ProcessToNetCDF {
 		try {
 			for (File file : allFiles) {
 
-				if (limitCount == null || processedFileCount < limitCount) {
+				if (limitCount == null || processedFileCount <= limitCount) {
 
 					if ( (float)(processedFileCount / REPORT_INTERVAL) == (((float)processedFileCount / (float)REPORT_INTERVAL))) {
 						log.debug("Pulling file {} of {} into NetCDF.", (processedFileCount + 1), allFiles.size());
@@ -134,14 +105,21 @@ public class ProcessToNetCDF {
 			RecordType meta = dsgParse.parse();
 
 
+			int obsCount = 0;
+			
 			while (dsgParse.hasNext()) {
 				Observation ob = dsgParse.next();
 				if (null != ob) {
 					nc.putObservation(ob);
+					obsCount++;
 				} else {
 					break;
 				}
-			}	
+			}
+			
+			if (obsCount == 0) {
+				log.warn("Found a station file with no observations: {}", filename);
+			}
 		}
 	}
 	

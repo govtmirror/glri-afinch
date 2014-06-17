@@ -51,6 +51,10 @@ public class FileIngestor implements Callable<FileIngestor> {
 	
 	public FileIngestor call() throws Exception {
 		
+		String filePath = sourceFile.getCanonicalPath();
+		
+		log.trace("Will process raw file '{}'", filePath);
+		
 		String[] dataHeaders = dataSet.getPerMonthDataHeaders();
 		
 		try (
@@ -69,12 +73,8 @@ public class FileIngestor implements Callable<FileIngestor> {
 						vals[i] = file.getAsDoubleByMonth(dataHeaders[i], month);
 					}
 					
-					try {
-						dataSet.put(reachId, month.getCalendarTimeInMillis(waterYear), vals);
-					} catch (Exception e) {
-						log.error(getDescription() + " threw an excpetion.  Onward...", e);
-					}
-					
+					dataSet.put(reachId, month.getCalendarTimeInMillis(waterYear), filePath, vals);
+
 				}
 				
 				rowCount++;

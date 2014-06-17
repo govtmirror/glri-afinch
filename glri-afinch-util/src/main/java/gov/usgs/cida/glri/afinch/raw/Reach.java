@@ -9,10 +9,14 @@ import java.util.concurrent.ConcurrentSkipListMap;
 /**
  * One reach w/ all of its timestamped data.
  * 
+ * NOTE:  The Comparable interface assumes that the IDs Globally unique.
+ * Don't go making sets of Reaches with the same set of IDs and try to stick
+ * them in the same collection or compare them.  Just sayin.
+ * 
  * When constructed, the 
  * @author eeverman
  */
-public class Reach {
+public class Reach implements Comparable<Reach> {
 	
 	private final Long id;
 	private final String[] headers;
@@ -38,18 +42,16 @@ public class Reach {
 	 * 
 	 * @param timeStamp
 	 * @param values
-	 * @throws Exception 
+	 * @throws Exception if the number of values do not match the value headers
+	 * @return true if the values were added, false if the values would be a duplication
 	 */
-	public void put(long timeStamp, double... values) throws Exception {
+	public boolean put(long timeStamp, double... values) throws Exception {
 		if (values.length != headers.length) {
 			throw new Exception("Found " + values.length + " values, but " + headers.length + " values were expected.");
 		}
 		double[] existing = entries.putIfAbsent(timeStamp, values);
 		
-		if (existing != null) {
-			throw new Exception("The station " + id + " already has an entry for the time " + timeStamp);
-		}
-		
+		return (existing == null);
 	}
 	
 	/**
@@ -75,6 +77,11 @@ public class Reach {
 	 */
 	public String[] getHeaders() {
 		return Arrays.copyOf(headers, headers.length);
+	}
+
+	@Override
+	public int compareTo(Reach o) {
+		return id.compareTo(o.getId());
 	}
 
 }

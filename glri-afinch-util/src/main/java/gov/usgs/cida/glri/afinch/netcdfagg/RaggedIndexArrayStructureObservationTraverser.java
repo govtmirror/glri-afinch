@@ -12,9 +12,16 @@ import ucar.nc2.Variable;
  */
 public class RaggedIndexArrayStructureObservationTraverser implements ObservationTraverser {
     private final Variable observationVariable;
+	private final String observedValueName;
 
-    public RaggedIndexArrayStructureObservationTraverser(Variable observationVariable) {
+	/**
+	 * 
+	 * @param observationVariable The 'top level' variable that contains all observed data.
+	 * @param observedValueName The specific name of the variable within the observed variable to build stats for.
+	 */
+    public RaggedIndexArrayStructureObservationTraverser(Variable observationVariable, String observedValueName) {
         this.observationVariable = observationVariable;
+		this.observedValueName = observedValueName;
     }
 
     @Override
@@ -31,7 +38,7 @@ public class RaggedIndexArrayStructureObservationTraverser implements Observatio
             array = (ArrayStructure) observationVariable.read(new int[]{oIndex}, new int[]{oCount});
             StructureMembers.Member mTime = array.findMember("time");
             StructureMembers.Member mIndex = array.findMember("index");
-            StructureMembers.Member mValue = array.findMember("QAccCon");
+            StructureMembers.Member mValue = array.findMember(observedValueName);
             for (int aIndex = 0; aIndex < array.getSize(); aIndex++) {
                 visitor.observation(array.getScalarInt(aIndex, mIndex), array.getScalarInt(aIndex, mTime), array.getScalarFloat(aIndex, mValue));
             }

@@ -39,35 +39,51 @@ import ucar.nc2.constants.CF;
 public class ProcessToAddNCFAggValues {
 
 	private static Logger log = LoggerFactory.getLogger(ProcessToAddNCFAggValues.class);
+	
+	public final static String OBSERVATION_STRUCT_NAME = "record"; // NetCDF-Java reqiures this to be record (last tested release was 4.2.26)
 
+	public final static String MEAN_SUFFIX = "Mean";
+	public final static String MIN_SUFFIX = "Min";
+	public final static String MAX_SUFFIX = "Max";
+	public final static String COUNT_SUFFIX = "Count";
+	public final static String MEDIAN_SUFFIX = "Median";
+	public final static String DECILE_SUFFIX = "Decile";
+							
+	
 	private final File inputFile;			//File that will be read
-	private final File outputFile;		//File to be writen
+	private final File outputFile;			//File to be writen
+	private final String observedValueName;			//NetCdf variable name to collect stats on (eg QAccCon)
+	private final String observerdValueAbbrName;	//Prefix to use for newly created stats (eg QAC to prefix QACMean)
 
-	public static void main(String[] args) throws Exception {
-		SimpleCLIOptions options = new SimpleCLIOptions(AfinchFileProcessor.class);
-		options.addOption(new SimpleCLIOptions.SoftRequiredOption("srcFile", "sourceFile", true, "The NetCDF file to read from"));
-		options.addOption(new SimpleCLIOptions.SoftRequiredOption("dstFile", "destinationFile", true, "The soon-to-be-created NetCDF file to write to"));
+//	public static void main(String[] args) throws Exception {
+//		SimpleCLIOptions options = new SimpleCLIOptions(AfinchFileProcessor.class);
+//		options.addOption(new SimpleCLIOptions.SoftRequiredOption("srcFile", "sourceFile", true, "The NetCDF file to read from"));
+//		options.addOption(new SimpleCLIOptions.SoftRequiredOption("dstFile", "destinationFile", true, "The soon-to-be-created NetCDF file to write to"));
+//
+//		options.parse(args);
+//
+//		if (!options.isHelpRequest()) {
+//			//Continue on
+//
+//			CommandLine cl = options.getCommandLine();
+//			options.printEffectiveOptions(true);
+//
+//			ProcessToAddNCFAggValues pivoter = new ProcessToAddNCFAggValues(
+//					new File(cl.getOptionValue("srcFile")),
+//					new File(cl.getOptionValue("dstFile"))
+//			);
+//
+//			pivoter.process();
+//		}
+//	}
 
-		options.parse(args);
-
-		if (!options.isHelpRequest()) {
-			//Continue on
-
-			CommandLine cl = options.getCommandLine();
-			options.printEffectiveOptions(true);
-
-			ProcessToAddNCFAggValues pivoter = new ProcessToAddNCFAggValues(
-					new File(cl.getOptionValue("srcFile")),
-					new File(cl.getOptionValue("dstFile"))
-			);
-
-			pivoter.process();
-		}
-	}
-
-	public ProcessToAddNCFAggValues(File inputFile, File outputFile) throws Exception {
+	public ProcessToAddNCFAggValues(File inputFile, File outputFile,
+			String observedValueName, String observerdValueAbbrName) throws Exception {
+		
 		this.inputFile = inputFile;
 		this.outputFile = outputFile;
+		this.observedValueName = observedValueName;
+		this.observerdValueAbbrName = observerdValueAbbrName;
 	}
 
 	public boolean process() throws IOException, InvalidRangeException {
@@ -78,22 +94,23 @@ public class ProcessToAddNCFAggValues {
 		try {
 			
 			ncInput = NetcdfFile.open(inputFile.getAbsolutePath());
-			Variable oVariable = ncInput.findVariable("record");
+			Variable oVariable = ncInput.findVariable(OBSERVATION_STRUCT_NAME);
 			int stationIdLength = ncInput.findDimension("station_id_len").getLength();	//9
+//			if (stationIdLength < 9) stationIdLength = 9;
 
 			//
 			//Ref
 			log.debug("Will read from NetCDF file {}, process aggregate values and write to {}.", inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
 			log.debug("Station count: " + ncInput.findDimension("station").getLength());	//91168
-			if (log.isDebugEnabled()) {
+//			if (log.isDebugEnabled()) {
 				printFileInfo(ncInput);
-			}
+//			}
 
 			ReadObserationsVisitor vistor = new ReadObserationsVisitor();
-			new RaggedIndexArrayStructureObservationTraverser(oVariable).traverse(vistor);
+			new RaggedIndexArrayStructureObservationTraverser(oVariable, observedValueName).traverse(vistor);
 			Map<Integer, List<Float>> observationMap = vistor.getObservationMap();
 
-			log.info("Visitor Report:");
+			log.info("= = Visitor Report = =");
 			log.info(
 					"Station Count: " + vistor.stationCount
 					+ " : TimeCountMin " + vistor.stationTimeCountMin
@@ -154,39 +171,39 @@ public class ProcessToAddNCFAggValues {
 			nLonVar.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
 			nLonVar.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
 
-			Variable nQAccConVar = ncWriter.addVariable(null, "QAccCon", DataType.FLOAT, Arrays.asList(nStationDim, nTimeDim));
+			Variable nQAccConVar = ncWriter.addVariable(null, observedValueName, DataType.FLOAT, Arrays.asList(nStationDim, nTimeDim));
 			nQAccConVar.addAttribute(new Attribute(CF.COORDINATES, "time lat lon"));
 			nQAccConVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 
 			// STATS!
-			Variable nQAccConMeanVar = ncWriter.addVariable(null, "QACMean", DataType.FLOAT, Arrays.asList(nStationDim));
+			Variable nQAccConMeanVar = ncWriter.addVariable(null, observerdValueAbbrName + MEAN_SUFFIX, DataType.FLOAT, Arrays.asList(nStationDim));
 			nQAccConMeanVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
 			nQAccConMeanVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 
-			Variable nQAccConMinVar = ncWriter.addVariable(null, "QACMin", DataType.FLOAT, Arrays.asList(nStationDim));
+			Variable nQAccConMinVar = ncWriter.addVariable(null, observerdValueAbbrName + MIN_SUFFIX, DataType.FLOAT, Arrays.asList(nStationDim));
 			nQAccConMinVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
 			nQAccConMinVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 
-			Variable nQAccConMaxVar = ncWriter.addVariable(null, "QACMax", DataType.FLOAT, Arrays.asList(nStationDim));
+			Variable nQAccConMaxVar = ncWriter.addVariable(null, observerdValueAbbrName + MAX_SUFFIX, DataType.FLOAT, Arrays.asList(nStationDim));
 			nQAccConMaxVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
 			nQAccConMaxVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 
-			Variable nQAccConCountVar = ncWriter.addVariable(null, "QACCount", DataType.FLOAT, Arrays.asList(nStationDim));
+			Variable nQAccConCountVar = ncWriter.addVariable(null, observerdValueAbbrName + COUNT_SUFFIX, DataType.FLOAT, Arrays.asList(nStationDim));
 			nQAccConCountVar.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
 			nQAccConCountVar.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 
-			Variable nQAccConCountMedian = ncWriter.addVariable(null, "QACMedian", DataType.FLOAT, Arrays.asList(nStationDim));
+			Variable nQAccConCountMedian = ncWriter.addVariable(null, observerdValueAbbrName + MEDIAN_SUFFIX, DataType.FLOAT, Arrays.asList(nStationDim));
 			nQAccConCountMedian.addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
 			nQAccConCountMedian.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 
 			Variable[] QAccConDecileUpperBound = new Variable[9];
 			for (int i = 0; i < 9; i++) {
-				QAccConDecileUpperBound[i] = ncWriter.addVariable(null, String.format("QACDecile%d", i + 1), DataType.FLOAT, Arrays.asList(nStationDim));
+				QAccConDecileUpperBound[i] = ncWriter.addVariable(null, String.format(observerdValueAbbrName + DECILE_SUFFIX + "%d", i + 1), DataType.FLOAT, Arrays.asList(nStationDim));
 				QAccConDecileUpperBound[i].addAttribute(new Attribute(CF.COORDINATES, "lat lon"));
 				QAccConDecileUpperBound[i].addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 			}
 
-			Variable nQaccConDecile = ncWriter.addVariable(null, "QACDecile", DataType.FLOAT, Arrays.asList(nStationDim, nTimeDim));
+			Variable nQaccConDecile = ncWriter.addVariable(null, observerdValueAbbrName + DECILE_SUFFIX, DataType.FLOAT, Arrays.asList(nStationDim, nTimeDim));
 			nQaccConDecile.addAttribute(new Attribute(CF.COORDINATES, "time lat lon"));
 			nQaccConDecile.addAttribute(new Attribute(CDM.FILL_VALUE, Float.valueOf(-1f)));
 

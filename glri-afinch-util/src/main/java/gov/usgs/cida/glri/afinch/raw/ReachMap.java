@@ -1,9 +1,12 @@
 package gov.usgs.cida.glri.afinch.raw;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,7 +23,11 @@ public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
 	
 	private String[] explodedHeaders;	//All the headers, exploded by month
 	
-	private final ConcurrentSkipListSet<Long> reachErrors;	//Reach IDs which had duplicate entries (useful for debuging source dataset)
+	public static final String DEFAULT_NULL_FILE_NAME = "Unknown Source File";
+	
+	private final ConcurrentSkipListMap<Reach, Set<String>> reachErrors;			//Reaches w/ values counts that don't match the file headers
+	private final ConcurrentSkipListMap<Reach, Set<String>> duplicateReaches;	//marked w/ the file they came from 
+	private final ConcurrentSkipListMap<Reach, Set<String>> containNanReaches;	//marked w/ the file they came from 
 	
 	public ReachMap(String reachHeaderName, String... perMonthDataHeaders) {
 		super();
@@ -28,7 +35,9 @@ public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
 		this.reachHeader = reachHeaderName;
 		this.perMonthDataHeaders = perMonthDataHeaders;
 		
-		reachErrors = new ConcurrentSkipListSet<Long>();
+		reachErrors = new ConcurrentSkipListMap<Reach, Set<String>>();
+		duplicateReaches = new ConcurrentSkipListMap<Reach, Set<String>>();
+		containNanReaches = new ConcurrentSkipListMap<Reach, Set<String>>();
 	}
 	
 	public String getReachHeaderName() {
@@ -55,17 +64,28 @@ public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
 		return explodedHeaders;
 	}
 	
-	public Collection<Long> getReachesWithErrors() {
-		return Collections.unmodifiableCollection(reachErrors);
+	public ConcurrentSkipListMap<Reach, Set<String>> getReachesWithErrors() {
+		return reachErrors;
+	}
+	
+	public ConcurrentSkipListMap<Reach, Set<String>> getReachesWithDupliates() {
+		return duplicateReaches;
+	}
+	
+	public ConcurrentSkipListMap<Reach, Set<String>> getReachesWithNaNs() {
+		return containNanReaches;
 	}
 	
 	/**
 	 * Add a new data value, creating a station if needed
 	 * @param reachId
 	 * @param timestamp
+	 * @param sourceFile Source file name - used for logging duplicate reaches and bad values.
 	 * @param values 
 	 */
-	public void put(Long reachId, Long timestamp, double... values) throws Exception {
+	public void put(Long reachId, Long timestamp, String sourceFile, double... values) {
+		
+		if (sourceFile == null) sourceFile = DEFAULT_NULL_FILE_NAME;
 		
 		Reach reach = this.get(reachId);
 		
@@ -79,10 +99,34 @@ public class ReachMap extends ConcurrentSkipListMap<Long, Reach> {
 		}
 		
 		try {
-			reach.put(timestamp, values);
+			if (reach.put(timestamp, values)) {
+			
+				//Added OK - check for NaN and Infinite values
+				
+				for (double v : values) {
+					if (Double.isNaN(v) || Double.isInfinite(v)) {
+						addError(containNanReaches, reach, sourceFile);
+						break;
+					}
+				}
+				
+				
+			} else {
+				addError(duplicateReaches, reach, sourceFile);
+			}
 		} catch (Exception e) {
-			reachErrors.add(reachId);
-			throw e;
+			addError(reachErrors, reach, sourceFile);
 		}
+	}
+	
+	protected void addError(ConcurrentSkipListMap<Reach, Set<String>> errors, Reach reach, String sourceFile) {
+		Set<String> files = new ConcurrentSkipListSet<String>();
+		files.add(sourceFile);
+		files = errors.putIfAbsent(reach, files);
+		if (files != null) {
+			//The put method found an already existing entry, so add to that entry instead
+			files.add(sourceFile);
+		}
+		
 	}
 }

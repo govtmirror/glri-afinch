@@ -21,15 +21,15 @@ import org.slf4j.LoggerFactory;
  */
 public class AFINCHMonthlyParser extends SYEParser implements Closeable {
     
-    private static final Logger LOG = LoggerFactory.getLogger(AFINCHMonthlyParser.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(AFINCHMonthlyParser.class);
     
-    private static final Pattern headerLinePattern = Pattern.compile("^DateTime((?:,\\w+)+)$");
-    private static final Pattern headerVariablePattern = Pattern.compile(",(\\w+)");
+    protected static final Pattern headerLinePattern = Pattern.compile("^DateTime((?:,\\w+)+)$");
+    protected static final Pattern headerVariablePattern = Pattern.compile(",(\\w+)");
     
-    private static final Pattern stationIdPattern = Pattern.compile("^(?:[^/]*/)*(\\d+)\\.csv$");
+    protected static final Pattern stationIdPattern = Pattern.compile("^(?:[^/]*/)*(\\d+)\\.csv$");
     
-    private static final Pattern dataLinePattern = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}UTC)((?:,[^,]+)+)$");
-    private static final Pattern dataValuePattern = Pattern.compile(",([^,]+)");
+    protected static final Pattern dataLinePattern = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}UTC)((?:,[^,]+)+)$");
+    protected static final Pattern dataValuePattern = Pattern.compile(",([^,]+)");
 
     //public static final DateTimeFormatter inputDateFormatter = ISODateTimeFormat.dateTimeParser();
     public static final DateTimeFormatter inputDateFormatter = new DateTimeFormatterBuilder()
