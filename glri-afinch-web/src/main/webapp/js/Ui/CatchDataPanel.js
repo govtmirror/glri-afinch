@@ -1,26 +1,45 @@
 Ext.ns("AFINCH.ui");
 
-AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
-    initialData: undefined,
-    graph: undefined,
-    headers: undefined,
+AFINCH.ui.CatchDataPanel = Ext.extend(Ext.Panel, {
+
     constructor: function(config) {
         var self = this;
-        var destroyDygraph = function(){
-            if(self.graph && self.graph.destroy){
-                self.graph.destroy();
-            }
-        };
+		
+		//attach the contained components so that they can be easily referenced later
+        self.graphPanel = new AFINCH.ui.StatsGraphPanel();
+		self.toggleBar = new AFINCH.ui.SeriesToggleToolbar({graphPanel: self.graphPanel});
+        self.labelPanel = new AFINCH.ui.StatsLabelPanel();
+        
         config = Ext.apply({
-            width: 800,
-            listeners: {
-                beforedestroy: destroyDygraph
-            }
+            tbar: self.toggleBar,
+            title: "Catchment Yield Data",
+            layout : 'hbox',
+            items: [self.graphPanel, self.labelPanel],
+			record: config.record,
+			toggleBar: self.toggleBar,
+			graphPanel: self.graphPanel,
+			labelPanel: self.labelPanel
         }, config);
 
-        AFINCH.ui.StatsGraphPanel.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.StatsGraphPanel::constructor(): Construction complete.');
+        AFINCH.ui.CatchDataPanel.superclass.constructor.call(this, config);
+        LOG.info('AFINCH.ui.CatchDataPanel::constructor(): Construction complete.');
     },
+	
+	doInitLoad: function() {
+		//establish scope
+		var self = this;
+
+		self.sosUrlWithoutBase = CONFIG.endpoint.catch_thredds_filename + 
+				'?service=SOS&request=GetObservation&Version=1.0.0&offering=' +
+				self.record.data[CONFIG.metadata.catch_id_prop] +
+				'&observedProperty=' + CONFIG.metadata.catch_observed_prop;
+
+		Ext.Ajax.request({
+			url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
+			success: self.sosCallback,
+			scope: self
+		});
+	},
 	
 	
 	/**
@@ -48,8 +67,8 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
 			var numFieldsToLoadLater = 13;
 			var values = AFINCH.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
 
-			self.graph = AFINCH.ui.FlowDygraph(
-				self.getEl().dom, 
+			self.graphPanel.graph = AFINCH.ui.FlowDygraph(
+				self.graphPanel.getEl().dom,  
 				self.labelPanel.getEl().dom,
 				values);
 
@@ -73,14 +92,14 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
 			self.doLayout();
 		}
 	},
-	   
-	   /**
-		*@param statsStores - array of StatStores
-		*@param success - whether or not the request was successful
-		*/
+	     
+	/**
+	 *@param statsStores - array of StatStores
+	 *@param success - whether or not the request was successful
+	 */
 	statsCallback: function(statsStores, success) {
 		var self = this;
-		var win = self;
+		var win = self.findParentByType('dataWindow');
 
 		if(win.isVisible()){//else, if the user has already closed the window, skip everything
 			if(!success || !statsStores){
@@ -99,7 +118,7 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
 			});
 			statsStores = tempStores;
 
-			var data = win.graphPanel.data.values;
+			var data = self.graphPanel.data.values;
 
 			var decileValues = [];//this will be appended onto the end of every row of the new data
 			statsStores.deciles.each(function(record){
@@ -151,23 +170,23 @@ AFINCH.ui.StatsGraphPanel = Ext.extend(Ext.Panel, {
 				return row;
 			});
 
-			var headers = win.graphPanel.data.headers;
+			var headers = self.graphPanel.data.headers;
 
-			win.graphPanel.graph.updateOptions({
+			self.graphPanel.graph.updateOptions({
 			   labels: headers,
 			   file: data
 			});
 
 			//now enable the series toggle buttons
-			var tbar = win.getTopToolbar()
+			var tbar = self.getTopToolbar()
 			var checkedItems = tbar.getSeriesTogglers();
 			checkedItems.each(function(checkedItem){
 				checkedItem.enable();
 				checkedItem.fireEvent('checkchange', checkedItem, 
-										checkedItem.initialConfig.checked, 
-										win.graphPanel.graph,
-										tbar.menu
-									);
+						checkedItem.initialConfig.checked, 
+						self.graphPanel.graph,
+						tbar.menu
+					);
 			});
 		}
     }

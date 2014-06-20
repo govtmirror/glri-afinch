@@ -1,6 +1,7 @@
 Ext.ns("AFINCH.ui");
 AFINCH.ui.SeriesToggleMenuMixin = function(){
    var self = this;
+   self.graphPanel = undefined;
    
     //private properties:
     
@@ -30,8 +31,7 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
         if(optionalGraph){
             graph = optionalGraph;
         }else{
-            var win = checkItem.findParentByType('dataWindow');
-            graph = win.graphPanel.graph;
+            graph = checkItem.graphPanel.graph;
         } 
         
         if(checkItem.chartColumn !== undefined || checkItem.seriesId){
@@ -131,13 +131,16 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
     };
     self.constructor = function(config) {
         var self = this;
+		
+		self.graphPanel = config.graphPanel;
         
         //compose some CheckItem objects
         var baseCheckItem = {
             checkHandler: self.toggleSeriesHandler,
             checked: false,
             hideOnClick: false,
-            disabled: true
+            disabled: true,
+			graphPanel: config.graphPanel
         };
         
         //in the following composed buttons...
@@ -195,7 +198,8 @@ AFINCH.ui.SeriesToggleMenuMixin = function(){
         });
         
         config = Ext.apply({
-            items : checkItems
+            items : checkItems,
+			graphPanel: config.graphPanel
         }, config);
 
         AFINCH.ui.SeriesToggleMenu.superclass.constructor.call(this, config);

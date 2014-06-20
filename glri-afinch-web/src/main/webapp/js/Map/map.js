@@ -22,7 +22,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         gageName : 'STATION_NM',
         gageTotdasqkm : 'TotDASqKM',
         reachComId: 'COMID',
-        reachName: 'GNIS_NAME'
+        reachName: 'GNIS_NAME',
+		catchGridCode: "GRIDCODE", /* Catchment gridcode, similar to reachComId, but not compatable */
+		catchFeatureId: "FEATUREID", /* Catchment attrib that relate catchments to reachComId (or a sink ID if no reach) */
+		catchAreaSqKM: "AreaSqKM" /* Catchment area */
     },
     constructor: function(config) {
         var self = this;
@@ -38,6 +41,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             buffer: 3,
             transitionEffect: 'resize'
         };
+
         // ////////////////////////////////////////////// BASE LAYERS
         var zyx = '/MapServer/tile/${z}/${y}/${x}';
         mapLayers.push(new OpenLayers.Layer.XYZ(
@@ -69,6 +73,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 CONFIG.endpoint.geoserver + 'wms'
                 );
         flowlinesData.id = 'nhd-flowlines-data-layer';
+		
 
         var flowlineRaster = new OpenLayers.Layer.FlowlinesRaster({
             name: "NHD Flowlines",
@@ -90,7 +95,15 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 CONFIG.endpoint.geoserver + 'wms'
                 );
         gageData.id = 'gage-location-data';
-
+		
+		// ////////////////////////////////////////////// CATCHMENTS
+        var catchMean = new OpenLayers.Layer.CatchMean(
+                "Catchment WMS (Mean Data)",
+                CONFIG.endpoint.geoserver + 'wms'
+                );
+        catchMean.id = 'nhd-catch-mean-data-layer';
+		
+		mapLayers.push(catchMean);
         mapLayers.push(flowlinesData);
         mapLayers.push(gageData);
         mapLayers.push(flowlineRaster);
@@ -252,17 +265,18 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
             title: 'gage-identify-control',
             hover: false,
             autoActivate: true,
+			maxFeatures: 200,
             layers: [
+				catchMean,
                 flowlinesData,
-                flowlineRaster,
                 gageData
             ],
-            queryVisible: true,
+            queryVisible: false,
             output: 'object',
             drillDown: true,
             infoFormat: 'application/vnd.ogc.gml',
             vendorParams: {
-                radius: 5
+                radius: 5,
             }
         });
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
@@ -298,152 +312,6 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         }
         setTimeout(closeAttribPopup, attribPopupTimeout);
     },
-    /**
-     *@param statsStores - array of StatStores
-     *@param success - whether or not the request was successful
-     */
-    statsCallback : function(statsStores, success) {
-            var self = this;
-            var win = self.dataWindow;
-            if(win.isVisible()){//else, if the user has already closed the window, skip everything
-                if(!success || !statsStores){
-                    new Ext.ux.Notify({
-                        msgWidth: 200,
-                        title: 'Error',
-                        msg: "Error retrieving data from server. See browser logs for details."
-                    }).show(document);
-                    return;
-                }
-
-                //put stores into a title-to-store map for convenient access later
-                var tempStores = {};
-                statsStores.each(function(store){
-                   tempStores[store.title] = store; 
-                });
-                statsStores = tempStores;
-
-                var data = win.graphPanel.data.values;
-
-                var decileValues = [];//this will be appended onto the end of every row of the new data
-                statsStores.deciles.each(function(record){
-                   decileValues.push(record.get('q'));
-                });
-
-                /**
-                 * Declare some constants to be used in the table update:
-                 * 
-                 * - Variables with 'Index' in the name are indexing columns in the 
-                 * array of arrays that we will pass to Dygraphs
-                 * 
-                 * - Variables with 'ColumnName' in the name refer to field names in the StatStores
-                 * 
-                 */
-
-                var dateIndex = 0,
-                    annualMeanIndex = 2,
-                    annualMedianIndex = 3,
-                    monthlyMeanIndex = 4,
-                    monthlyMedianIndex = 5,
-                    lowestDecileIndex = 6,
-                    highestDecileIndex = 15,
-                    yearColumnName = 'Year', //these are the column names returned by the RWPS call
-                    monthColumnName = 'Month',
-                    meanFlowColumnName = 'meanq',
-                    medianFlowColumnName = 'medianq';
-
-                data = data.map(function(row){
-                    var month = row[dateIndex].getMonth();
-                    //native javascript months are 0-indexed
-                    //but the RWPS process feeds the stats store a 1-based month index.
-                    //so...
-                    var extStoreMonth = month+1;
-                    var isJanuary = 0 === month;
-                    if(isJanuary){
-                        //add the annual stats
-                        var year = row[dateIndex].getFullYear();
-                        row[annualMeanIndex] = statsStores.mean_annual_flow.query(yearColumnName, year).first().get(meanFlowColumnName);
-                        row[annualMedianIndex] = statsStores.median_annual_flow.query(yearColumnName, year).first().get(medianFlowColumnName);
-                    }
-                    //use the ext-adjusted storeMonth in the statsStores queries
-                    row[monthlyMeanIndex] = statsStores.mean_monthly_flow.query(monthColumnName, extStoreMonth).first().get(meanFlowColumnName);
-                    row[monthlyMedianIndex] = statsStores.median_monthly_flow.query(monthColumnName, extStoreMonth).first().get(medianFlowColumnName);
-                    //append the deciles to the end of the row
-                    for(var i = lowestDecileIndex; i < highestDecileIndex; i++){
-                        row[i] = decileValues[i-lowestDecileIndex];
-                    }
-                    return row;
-                });
-
-                var headers = win.graphPanel.data.headers;
-
-                win.graphPanel.graph.updateOptions({
-                   labels: headers,
-                   file: data
-                });
-
-                //now enable the series toggle buttons
-                var tbar = win.getTopToolbar()
-                var checkedItems = tbar.getSeriesTogglers();
-                checkedItems.each(function(checkedItem){
-                    checkedItem.enable();
-                    checkedItem.fireEvent('checkchange', checkedItem, 
-                                            checkedItem.initialConfig.checked, 
-                                            win.graphPanel.graph,
-                                            tbar.menu
-                                        );
-                });
-            }
-        },
-    /**
-     * @param ajax - response
-     * @param options - the options that initiated the Ajax request
-     * @scope the window in which the data will be visualized
-     */
-    sosCallback : function(response, options){
-        //establish scope
-        var self = this;
-        var win = self.dataWindow;
-        if(!response.responseXML){  //since IE doesn't always populate this
-                                    //property, parse the text if necessary
-            response.responseXML = $.parseXML(response.responseText);
-        }
-        if(response.responseText.toLowerCase().indexOf('exception') !== -1){
-            AFINCH.ui.errorNotify("Error retrieving data from server. See browser logs for details.");
-            LOG.error(response.responseText);
-        }
-        else{
-            var responseTxt = $(response.responseXML).find('swe\\:values').text();
-            if (0 === responseTxt.length){
-                responseTxt = $(response.responseXML).find('values').text();
-            }
-            var numFieldsToLoadLater = 13;
-            var values = AFINCH.data.parseSosResponse(responseTxt, numFieldsToLoadLater);
-
-            win.graphPanel.graph = AFINCH.ui.FlowDygraph(
-                win.graphPanel.getEl().dom, 
-                win.labelPanel.getEl().dom,
-                values);
-
-            //attach the info to the graphPanel for easy access during data export
-            win.graphPanel.data={
-                values : values,
-                headers: win.graphPanel.graph.getLabels()
-            };
-            //kick off the next ajax call...
-            var rParams = {
-                sosEndpointUrl: CONFIG.endpoint.thredds + self.sosUrlWithoutBase
-            };
-
-            var tempStatsStore = new AFINCH.data.StatsStore();
-
-            tempStatsStore.load({
-                params: rParams,
-                scope: self,
-                callback: self.statsCallback
-            });        
-            win.doLayout();
-        }
-    },
 
     /**
      * @param record - a reach's record.
@@ -472,6 +340,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         //init a window that will be used as context for the callback
         var win = self.dataWindow = new AFINCH.ui.DataWindow({
             id: 'data-display-window',
+			record: record,
             title: title,
             gage: gage
         });
@@ -480,13 +349,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         win.center();
         win.toFront();
         
-        self.sosUrlWithoutBase = CONFIG.endpoint.thredds_filename + '?service=SOS&request=GetObservation&Version=1.0.0&offering=' + record.data.COMID +'&observedProperty=QAccCon'
-        Ext.Ajax.request({
-            url: CONFIG.endpoint.threddsProxy + self.sosUrlWithoutBase,
-            success: self.sosCallback,
-            scope: self
-        }
-        );
+		win.doInitLoad();
     },
     wmsGetFeatureInfoHandler: function(responseObject) {
         var self = this;
@@ -503,7 +366,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         
         var layerFeatures = {
             'GageLoc': [],
-            'NHDFlowline': []
+            'NHDFlowline': [],
+			'Catch': []
         };
         var gageLocFeatureStore, nhdFlowLineFeatureStore;
         if (features.length) {
@@ -519,6 +383,10 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 					if (feature.data[CONFIG.maplayers.gage.streamOrderAttribName] >= self.streamOrderClipValue) {
 						layerFeatures['GageLoc'].push(feature);
 					}
+					
+				} else if (feature.gml.featureType == CONFIG.maplayers.catchMean.layerName) {
+					
+					layerFeatures['Catch'].push(feature);
 					
 				} else {
 					LOG.error("Unrecognized feature type: " + feature.gml.featureType);
@@ -539,7 +407,15 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 {name: self.fieldNames.reachName, type: 'string'},
                 {name: self.fieldNames.reachComId, type: 'long'},
                 {name: self.fieldNames.hasGage, type: 'boolean'}
-            ].concat(gageLocFields);
+            ];
+				
+		var nhdCatchFields = [
+			{name: self.fieldNames.catchGridCode, type: 'long'},
+			{name: self.fieldNames.catchFeatureId, type: 'long'},
+			{name: self.fieldNames.catchAreaSqKM, type: 'double'}
+		];
+		
+		var allFields = [].concat(gageLocFields).concat(nhdFlowLineFields).concat(nhdCatchFields);
         
         gageLocFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.GageLoc,
@@ -548,7 +424,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         nhdFlowLineFeatureStore = new GeoExt.data.FeatureStore({
             features: layerFeatures.NHDFlowline,
-            fields: nhdFlowLineFields,
+            fields: allFields,
+            initDir: 0
+        });
+        nhdCatchFeatureStore = new GeoExt.data.FeatureStore({
+            features: layerFeatures.Catch,
+            fields: nhdCatchFields,
             initDir: 0
         });
                     
@@ -558,6 +439,8 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         ];
         
         if (nhdFlowLineFeatureStore.totalLength) {
+			
+			//Add gage and catchment features
             nhdFlowLineFeatureStore.each(function(flowLineFeature){
                 var gageLocForThisFlowLine = gageLocFeatureStore.query(self.fieldNames.reachCode, flowLineFeature.get(self.fieldNames.reachCode)).first();
                 if(gageLocForThisFlowLine){
@@ -569,7 +452,19 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     //and remove all dirty markers
                     flowLineFeature.modified = {};
                 }
+				
+                var catchForThisFlowLine = nhdCatchFeatureStore.query(self.fieldNames.catchFeatureId, flowLineFeature.get(self.fieldNames.reachComId)).first();
+                if(catchForThisFlowLine){
+                    nhdCatchFields.each(function(field){
+                        flowLineFeature.set(field.name, catchForThisFlowLine.get(field.name));
+                    });
+                    //and remove all dirty markers
+                    flowLineFeature.modified = {};
+                }
             });
+			
+
+			
             var featureSelectionModel = new GeoExt.grid.FeatureSelectionModel({
                 layerFromStore: true,
                 singleSelect: true
@@ -589,6 +484,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 });
                 columnConfig[self.fieldNames.reachName] = {header: 'Reach Name'};
                 columnConfig[self.fieldNames.reachComId] = {header: 'Com ID'};
+				columnConfig[self.fieldNames.GRIDCODE] = {header: 'Grid Code'};
                 columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
                 
                 var customRenderers= {};

@@ -25,5 +25,6 @@ AFINCH.ui.DataDisplayPanel = Ext.extend(Ext.Panel, {
 
         AFINCH.ui.DataDisplayPanel.superclass.constructor.call(this, config);
         LOG.info('AFINCH.ui.DataDisplayPanel::constructor(): Construction complete.');
+		
     }
 });

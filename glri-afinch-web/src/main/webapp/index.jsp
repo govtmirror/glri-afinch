@@ -55,7 +55,7 @@
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="js/openlayers/raster.jsp" />
-        <jsp:include page="js/openlayers/flowlines.jsp" />
+        <jsp:include page="js/openlayers/script_imports.jsp" />
         <jsp:include page="js/geoext/geoext.jsp" >
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
@@ -71,9 +71,11 @@
             var CONFIG = Object.extended();
             var AFINCH = Object.extended();
             CONFIG.endpoint = Object.extended();
+			CONFIG.metadata = new Object();
             CONFIG.mapPanel = Object.extended();
 			CONFIG.maplayers = Object.extended();
 			CONFIG.maplayers.flowline = Object.extended();
+			CONFIG.maplayers.catchMean = Object.extended();
 			CONFIG.maplayers.gage = Object.extended();
 	
             CONFIG.development = <%= development%>;
@@ -93,9 +95,17 @@
             CONFIG.endpoint.rwps = '<%= props.getProperty("afinch.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
             CONFIG.endpoint.rwpsProxy = 'rwps/';
             CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
-			CONFIG.endpoint.thredds_filename = '<%= props.getProperty("afinch.endpoint.thredds_filename", "out.nc")%>';
+			CONFIG.endpoint.reach_thredds_filename = '<%= props.getProperty("afinch.endpoint.reach_thredds_filename", "afinch_reach.nc")%>';
+			CONFIG.endpoint.catch_thredds_filename = '<%= props.getProperty("afinch.endpoint.catch_thredds_filename", "afinch_catch.nc")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
+			
+			//General Metadata
+			CONFIG.metadata.reach_observed_prop = "QAccCon";
+			CONFIG.metadata.reach_id_prop = "COMID";
+			CONFIG.metadata.catch_observed_prop = "yieldCatchCon";
+			CONFIG.metadata.catch_id_prop = "GRIDCODE";
+			
             CONFIG.attribution = {
                 nhd:{
                     logo:'images/NHDPlus_logo.png',
@@ -118,6 +128,9 @@
 			CONFIG.maplayers.flowline.layerName = 'NHDFlowlinev21';	//old val: 'glri:NHDFlowline';
 			CONFIG.maplayers.flowline.layerStyle = 'FlowlineStrmOrder';	//old val: 'FlowlineStreamOrder'
 			CONFIG.maplayers.flowline.streamOrderAttribName = 'StrmOrder';	//old val: 'StreamOrde' - used to determine display at zoom levels
+			CONFIG.maplayers.catchMean.layerPrefix = 'glri';
+			CONFIG.maplayers.catchMean.layerName = 'afinch_catch';
+			CONFIG.maplayers.catchMean.layerStyle = 'afinch_catch_YCCMean';
 			CONFIG.maplayers.gage.layerPrefix = 'glri';	//old val: glri:GageLoc
 			CONFIG.maplayers.gage.layerName = 'GageLoc';	//old val: glri:GageLoc
 			CONFIG.maplayers.gage.layerStyle = 'GageLocStreamOrder';	//old val: 'FlowlineStreamOrder'
@@ -133,6 +146,8 @@
         <script type="text/javascript" src="js/Ui/SeriesToggleToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleMenu.js"></script>
         <script type="text/javascript" src="js/Ui/DataWindow.js"></script>
+		<script type="text/javascript" src="js/Ui/CatchDataPanel.js"></script>
+		<script type="text/javascript" src="js/Ui/ReachDataPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
         <script type="text/javascript" src="js/Ui/FlowDygraph.js"></script>
