@@ -1,6 +1,10 @@
 Ext.ns("AFINCH.ui");
 
 AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
+	
+	reachPanel: undefined,
+	catchPanel: undefined,
+	
     makeDataDefinition: function(key, value){
         return  '<p class="gage_KVP">'+
                     '<b>'+key+': </b>'+
@@ -9,11 +13,17 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
     },
     constructor: function(config) {
         var self = this;
+		
+		self.reachPanel = config.reachPanel;
+		self.catchPanel = config.catchPanel;
+		
         var exportHandler = function(button, event){
-            
-            var win = button.findParentByType('dataWindow');
-            var values = win.graphPanel.data.values;
-            var headers = win.graphPanel.data.headers;
+			
+            var panel = button.associatedPanel;
+			var filename = button.downloadName;
+			
+            var values = panel.graphData.values;
+            var headers = panel.graphData.headers;
             var allData = [];
             allData.push(headers);
             values.each(function(dataRow){
@@ -27,10 +37,7 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             allData.each(function(row){
                 csv += row.join(',') + '\n'
             });
-            var filename = win.title.length > 0 ? win.title : CONFIG.defaultExportFilename;
-            filename = filename.replace(/ /g, '_');
-            filename += '.csv';
-            filename = escape(filename);
+
             var type = escape('text/csv');
             var data = escape(csv);
             
@@ -39,6 +46,7 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             $('#data_value').val(data);
             $('#download_form').submit();
         };
+		
         var items = [];
         var displayingGageInfo = !!config.gage.comId;
         if(displayingGageInfo){
@@ -49,10 +57,6 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             gageInfo += self.makeDataDefinition('Reach Code', config.gage.reachCode);
             gageInfo +='</div>';
             items.push(gageInfo);
-
-            items.push({
-                xtype:'tbfill'
-            });
             
             var externalButton = {
                 xtype: 'button', 
@@ -62,19 +66,29 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             };
             items.push(externalButton);
             items.push(' ');
-        }else{
-            items.push({
-                xtype:'tbfill'
-            });
         }
+		
+		items.push({ xtype:'tbfill' });
         
-        var button = {
+        var rButton = {
             xtype: 'button', 
-            text: 'Download Data', 
+            text: 'Download Reach Data', 
             handler: exportHandler,
-            cls: 'export_button'
+            cls: 'export_button',
+			associatedPanel: self.reachPanel,
+			downloadName: 'Reach_Flow_Data.csv'
         };
-        items.push(button);
+        items.push(rButton);
+		
+        var cButton = {
+            xtype: 'button', 
+            text: 'Download Catch Data', 
+            handler: exportHandler,
+            cls: 'export_button',
+			associatedPanel: self.catchPanel,
+			downloadName: 'Catchment_Yield_Data.csv'
+        };
+        items.push(cButton);
         
         config = Ext.apply({
             items : items,

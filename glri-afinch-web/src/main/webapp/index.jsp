@@ -68,15 +68,16 @@
         </jsp:include>
         <script type="text/javascript">
             OpenLayers.ProxyHost = null;
-            var CONFIG = Object.extended();
-            var AFINCH = Object.extended();
-            CONFIG.endpoint = Object.extended();
+            var CONFIG = new Object();
+            var AFINCH = new Object();
+            CONFIG.endpoint = new Object();
 			CONFIG.metadata = new Object();
-            CONFIG.mapPanel = Object.extended();
-			CONFIG.maplayers = Object.extended();
-			CONFIG.maplayers.flowline = Object.extended();
-			CONFIG.maplayers.catchMean = Object.extended();
-			CONFIG.maplayers.gage = Object.extended();
+			CONFIG.userpref = new Object();
+            CONFIG.mapPanel = new Object();
+			CONFIG.maplayers = new Object();
+			CONFIG.maplayers.flowline = new Object();
+			CONFIG.maplayers.catchMean = new Object();
+			CONFIG.maplayers.gage = new Object();
 	
             CONFIG.development = <%= development%>;
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
@@ -105,6 +106,9 @@
 			CONFIG.metadata.reach_id_prop = "COMID";
 			CONFIG.metadata.catch_observed_prop = "yieldCatchCon";
 			CONFIG.metadata.catch_id_prop = "GRIDCODE";
+			
+			//User Preferences
+			CONFIG.userpref.graphTab = 0;	//open to first tab, but open new windows using the last
 			
             CONFIG.attribution = {
                 nhd:{
@@ -146,8 +150,6 @@
         <script type="text/javascript" src="js/Ui/SeriesToggleToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleMenu.js"></script>
         <script type="text/javascript" src="js/Ui/DataWindow.js"></script>
-		<script type="text/javascript" src="js/Ui/CatchDataPanel.js"></script>
-		<script type="text/javascript" src="js/Ui/ReachDataPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGridPanel.js"></script>
         <script type="text/javascript" src="js/Ui/StatsGraphPanel.js"></script>
         <script type="text/javascript" src="js/Ui/FlowDygraph.js"></script>

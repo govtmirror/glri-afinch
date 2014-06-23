@@ -4,24 +4,23 @@ Ext.ns('AFINCH.ui');
  * @param legendElt - a DOM Node in which to render the legend
  * @param values - the array of arrays containing the data to graph
  */
-AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
+AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values, legendParamName, yAxixParamName, unit){
     $([graphElt, legendElt]).addClass('generous_left_margin');
-    
-    var decileSuffix = "th % (cfs)";
+	
+    var decileSuffix = "th % " + unit;
     var decileLabels = ['90','80','70','60','50','40','30','20','10'].map(
         function(prefix){
             return prefix + decileSuffix;
         });
-        
-    var mainLabelSuffix = " (cfs)";
-    var mainLabels = 
-    [
-    'Monthly Flow',//initial field
+    
+    var mainLabelSuffix = " " + unit;
+    var mainLabels = [
+    "Monthly " + legendParamName,	//initial field
     //subsequently-loaded fields:
-    'Mean Annual Flow',
-    'Median Annual Flow',
-    'Mean Monthly Flow',
-    'Median Monthly Flow'
+    'Mean Annual ' + legendParamName,
+    'Median Annual ' + legendParamName,
+    'Mean Monthly ' + legendParamName,
+    'Median Monthly ' + legendParamName
     ].map(function(prefix){
         return prefix + mainLabelSuffix;
     });
@@ -80,7 +79,7 @@ AFINCH.ui.FlowDygraph = function(graphElt, legendElt, values){
         connectSeparatedPoints: true,
         showRangeSelector: true,
         highlightCircleSize: 0,
-        ylabel: 'Discharge (CFS)',
+        ylabel: yAxixParamName + ' ' + unit,
         xlabel: 'Date',
         labelsDiv: legendElt,
         labelsSeparateLines: true,

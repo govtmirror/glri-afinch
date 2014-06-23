@@ -11,24 +11,52 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
         var width = config.width || 1000;
         var height = config.height || 500;
         
-		self.reachPanel = new AFINCH.ui.ReachDataPanel({ record: config.record, gage: config.gage });
-		self.catchPanel = new AFINCH.ui.CatchDataPanel({ record: config.record });
+		self.reachPanel = new AFINCH.ui.DataDisplayPanel({
+			title: "Reach Flow Data",
+			record: config.record,
+			thredds_filename: CONFIG.endpoint.reach_thredds_filename,
+			id_prop: CONFIG.metadata.reach_id_prop,
+			observed_prop: CONFIG.metadata.reach_observed_prop,
+			legendParamName: "Flow",
+			yAxixParamName: "Discharge",
+			unit: "(cfs)"
+		});
+		self.catchPanel = new AFINCH.ui.DataDisplayPanel({
+			title: "Catch Yield Data",
+			record: config.record,
+			thredds_filename: CONFIG.endpoint.catch_thredds_filename,
+			id_prop: CONFIG.metadata.catch_id_prop,
+			observed_prop: CONFIG.metadata.catch_observed_prop,
+			legendParamName: "Yield",
+			yAxixParamName: "Yield",
+			unit: "(cf/sqkm?)"
+		});
 		
         
         config = Ext.apply({
             width: width,
             height: height,
             tbar: self.toggleBar,
+			bbar: new AFINCH.ui.DataExportToolbar({
+				gage: config.gage,
+				reachPanel: self.reachPanel,
+				catchPanel: self.catchPanel
+			}),
             title: title,
             collapsible: true,
             layout : 'fit',
             items: [
 				new Ext.TabPanel({
-					activeTab: 1,
+					activeTab: CONFIG.userpref.graphTab,
 					deferredRender:false,	/* Need rendering so dom can be accessed for graph */
 					items:[
 						self.reachPanel, self.catchPanel
-					]
+					],
+					listeners: {
+						tabchange: function(panel, tab) {
+							CONFIG.userpref.graphTab = panel.items.indexOf(tab);
+						}
+					}
 				})
 			],
 			record: config.record,
