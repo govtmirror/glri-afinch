@@ -22,7 +22,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
 			unit: "(cfs)"
 		});
 		self.catchPanel = new AFINCH.ui.DataDisplayPanel({
-			title: "Catch Yield Data",
+			title: "Catchment Yield Data (Constrained)",
 			record: config.record,
 			thredds_filename: CONFIG.endpoint.catch_thredds_filename,
 			id_prop: CONFIG.metadata.catch_id_prop,
