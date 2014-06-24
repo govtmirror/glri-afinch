@@ -98,7 +98,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 		
 		// ////////////////////////////////////////////// CATCHMENTS
         var catchMean = new OpenLayers.Layer.CatchMean(
-                "Catchment WMS (Mean Data)",
+                "Catchment Mean Yield (Constrained)",
                 CONFIG.endpoint.geoserver + 'wms'
                 );
         catchMean.id = 'nhd-catch-mean-data-layer';
@@ -108,6 +108,12 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         mapLayers.push(gageData);
         mapLayers.push(flowlineRaster);
         mapLayers.push(gageFeatureLayer);
+		
+		this.layerSwitcher = new OpenLayers.Control.CustomLayerSwitcher({
+			roundedCorner: true,
+			ascending: true,
+			useLegendGraphics: true
+		});
 
         // MAP
         this.map = new OpenLayers.Map({
@@ -125,31 +131,35 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 new OpenLayers.Control.ScaleLine({
                     geodesic: true
                 }),
-                new OpenLayers.Control.LayerSwitcher({
-                    roundedCorner: true
-                }),
+                this.layerSwitcher,
                 new OpenLayers.Control.Zoom()
             ],
             isValidZoomLevel: function(zoomLevel) {
                 return zoomLevel && zoomLevel >= this.getZoomForExtent(this.restrictedExtent) && zoomLevel < this.getNumZoomLevels();
             }
         });
+		
+		this.layerSwitcher.setMap(this.map);
+		
+				
+		var layers = new GeoExt.data.LayerStore({
+			initDir: GeoExt.data.LayerStore.STORE_TO_MAP,
+			map: this.map,
+			layers: mapLayers
+		});
+					
         config = Ext.apply({
             id: 'map-panel',
             region: 'center',
             map: this.map,
             prettyStateKeys: true,
-            layers: new GeoExt.data.LayerStore({
-                initDir: GeoExt.data.LayerStore.STORE_TO_MAP,
-                map: this.map,
-                layers: mapLayers
-            }),
+            layers: layers,
             border: false,
             listeners: {
                 added: function(panel, owner, idx) {
 
                     // Turn layer switcher on by default
-                    CONFIG.mapPanel.map.getControlsByClass('OpenLayers.Control.LayerSwitcher')[0].maximizeControl();
+                    CONFIG.mapPanel.map.getControlsByClass('OpenLayers.Control.CustomLayerSwitcher')[0].maximizeControl();
 
                     var clipCount = 7;
                     var zoomLevels = CONFIG.mapPanel.map.getNumZoomLevels();
@@ -281,6 +291,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
         });
         this.wmsGetFeatureInfoControl.events.register("getfeatureinfo", this, this.wmsGetFeatureInfoHandler);
         this.map.addControl(this.wmsGetFeatureInfoControl);
+//		this.map.addControl(this.legend);
 },
     showAttributionSplash: function(){
         var slogan = 'Data furnished by the EPA, NHDPlus, and USGS.';
