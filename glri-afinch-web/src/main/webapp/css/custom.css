@@ -58,3 +58,20 @@
 .gage_value{
     cursor: text;
 }
+
+/* Custom layer switcher */
+.layer-switcher-opacity-container {
+	display: block; float: right;
+}
+.layer-switcher-opacity-label {
+	padding: 0 .5em;
+}
+
+.olControlCustomLayerSwitcher .base-layers,
+.olControlCustomLayerSwitcher .data-layers {
+	border: solid 1px black; margin: .1em;
+}
+
+.olControlCustomLayerSwitcher .base-layers h3,
+.olControlCustomLayerSwitcher .data-layers h3 { font-size: 1.5em; }
+
