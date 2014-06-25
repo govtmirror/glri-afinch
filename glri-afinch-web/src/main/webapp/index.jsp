@@ -129,11 +129,11 @@
 			
 			//Map layer config
 			CONFIG.maplayers.flowline.layerPrefix = 'glri';	//old val: 'glri:NHDFlowline';
-			CONFIG.maplayers.flowline.layerName = 'NHDFlowlinev21';	//old val: 'glri:NHDFlowline';
+			CONFIG.maplayers.flowline.layerName = 'nhd_v2_1_flowline_w_streamorder';	//old val: 'glri:NHDFlowline';
 			CONFIG.maplayers.flowline.layerStyle = 'FlowlineStrmOrder';	//old val: 'FlowlineStreamOrder'
 			CONFIG.maplayers.flowline.streamOrderAttribName = 'StrmOrder';	//old val: 'StreamOrde' - used to determine display at zoom levels
 			CONFIG.maplayers.catchMean.layerPrefix = 'glri';
-			CONFIG.maplayers.catchMean.layerName = 'afinch_catch';
+			CONFIG.maplayers.catchMean.layerName = 'nhd_v2_1_catch_w_afinch_data';
 			CONFIG.maplayers.catchMean.layerStyle = 'afinch_catch_YCCMean';
 			CONFIG.maplayers.gage.layerPrefix = 'glri';	//old val: glri:GageLoc
 			CONFIG.maplayers.gage.layerName = 'GageLoc';	//old val: glri:GageLoc
