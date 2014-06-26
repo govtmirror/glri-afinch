@@ -45,7 +45,7 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
         options.protocol = new OpenLayers.Protocol.WFS({
             url: options.url,
             featureType: "GageLoc",
-            featureNS: "http://cida.usgs.gov/glri"
+            featureNS: CONFIG.endpoint.geoserverProjectNamespace
         });
         newArguments.push(name, options);
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, newArguments);

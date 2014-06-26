@@ -28,7 +28,7 @@ OpenLayers.Layer.GageData = OpenLayers.Class(OpenLayers.Layer.WMS, {
     initialize: function(name, url, params, options) {
         params = params || {};
         options = options || {};
-        params.layers = CONFIG.maplayers.gage.layerPrefix + ":" + CONFIG.maplayers.gage.layerName;
+        params.layers = CONFIG.maplayers.gage.layerName;
         params.styles = CONFIG.maplayers.gage.layerStyle;
         params.format = "image/png";
         params.tiled = true;
