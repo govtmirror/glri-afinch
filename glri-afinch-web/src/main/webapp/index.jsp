@@ -83,8 +83,11 @@
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
 
-            CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/")%>';
+			CONFIG.endpoint.geoserverProjectPrefix = "glri-afinch";	//Not needed in layer names if used in url as below
+            CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/glri-afinch/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
+			CONFIG.endpoint.geoserverProjectNamespace = "http://cida.usgs.gov/glri-afinch";
+			
 
             //IE always taints the canvas with cross-origin images, even if their
             //cross origin keywords are set to prevent tainting.
@@ -128,14 +131,11 @@
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
 			
 			//Map layer config
-			CONFIG.maplayers.flowline.layerPrefix = 'glri';	//old val: 'glri:NHDFlowline';
 			CONFIG.maplayers.flowline.layerName = 'nhd_v2_1_flowline_w_streamorder';	//old val: 'glri:NHDFlowline';
-			CONFIG.maplayers.flowline.layerStyle = 'FlowlineStrmOrder';	//old val: 'FlowlineStreamOrder'
+			CONFIG.maplayers.flowline.layerStyle = 'FlowlineStreamOrder';	//old val: 'FlowlineStreamOrder'
 			CONFIG.maplayers.flowline.streamOrderAttribName = 'StrmOrder';	//old val: 'StreamOrde' - used to determine display at zoom levels
-			CONFIG.maplayers.catchMean.layerPrefix = 'glri';
 			CONFIG.maplayers.catchMean.layerName = 'nhd_v2_1_catch_w_afinch_data';
 			CONFIG.maplayers.catchMean.layerStyle = 'afinch_catch_YCCMean';
-			CONFIG.maplayers.gage.layerPrefix = 'glri';	//old val: glri:GageLoc
 			CONFIG.maplayers.gage.layerName = 'GageLoc';	//old val: glri:GageLoc
 			CONFIG.maplayers.gage.layerStyle = 'GageLocStreamOrder';	//old val: 'FlowlineStreamOrder'
 			CONFIG.maplayers.gage.streamOrderAttribName = 'StreamOrde';	//varies by layer...
