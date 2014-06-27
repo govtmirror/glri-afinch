@@ -197,12 +197,13 @@
 					<div id="legend-footer-template">
 						<h3>This is unpublished data!</h3>
 						<p>
-							The data presented here is pending review and publication.
-							Therefore it is currently considered
-							<em>unsuitable</em> for any purpose.
-							<a href="http://cida.usgs.gov/glri/projects/accountability/watershed_modeling.html" target="_blank" title="Information about the dataset shown on this map">This data model</a>
-							was created as part of the
-							<a href="http://cida.usgs.gov/glri/" target="_blank" title="Information about GLRI">Great Lakes Restoration Initiative (GLRI)</a>.
+							The water yield and streamflow estimates displayed on this site have not received
+							USGS approval and as such are provisional and subject to revision.
+							For questions or more information, please contact us at
+							<a 
+								href="&#109;&#097;&#105;&#108;&#116;&#111;:&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;">
+								&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;	
+							</a>
 						</p>
 					</div>
 				</div>
