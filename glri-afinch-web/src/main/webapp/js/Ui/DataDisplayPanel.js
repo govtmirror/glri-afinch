@@ -6,18 +6,19 @@ AFINCH.ui.DataDisplayPanel = Ext.extend(Ext.Panel, {
         var self = this;
 		
 		//attach the contained components so that they can be easily referenced later
-		var graphPanel = new AFINCH.ui.StatsGraphPanel();
-		var toggleBar = new AFINCH.ui.SeriesToggleToolbar({
-			graphPanel: graphPanel,
+		self.graphPanel = new AFINCH.ui.StatsGraphPanel();
+		self.toggleBar = new AFINCH.ui.SeriesToggleToolbar({
+			graphPanel: self.graphPanel,
 			paramName: config.legendParamName
 		});
-        var labelPanel = new AFINCH.ui.StatsLabelPanel();
+        self.labelPanel = new AFINCH.ui.StatsLabelPanel();
         
         config = Ext.apply({
 			
 			/* Expected Params */
 			record: config.record, 
 			thredds_filename: config.thredds_filename,	/* Filename of the thredds NetCDF file */
+			export_filename: config.export_filename,	/* file name to use when data is exported */
 			id_prop: config.id_prop,			/* ID prop in the thredds file */
 			observed_prop: config.observed_prop,		/* main property in the thredds file */
 			legendParamName: config.legendParamName,
@@ -25,9 +26,9 @@ AFINCH.ui.DataDisplayPanel = Ext.extend(Ext.Panel, {
 			unit: config.unit,
 			
 			/* Quick access subcomponents */
-			toggleBar: toggleBar,
-			graphPanel: graphPanel,
-			labelPanel: labelPanel,
+			toggleBar: self.toggleBar,
+			graphPanel: self.graphPanel,
+			labelPanel: self.labelPanel,
 			
 			/* Status Flags */
 			active: false,			/* True when the tab is active. */
@@ -38,10 +39,13 @@ AFINCH.ui.DataDisplayPanel = Ext.extend(Ext.Panel, {
 				headers: undefined
 			},
 			
-            tbar: toggleBar,
+            tbar: self.toggleBar,
+			bbar: new AFINCH.ui.DataExportToolbar({
+				associatedPanel: self
+			}),
             title: config.title,
             layout : 'hbox',
-            items: [graphPanel, labelPanel],
+            items: [self.graphPanel, self.labelPanel],
 			listeners: {
                 activate: function(panel) { panel.doActivate(); },
 				deactivate: function(panel) { panel.doDeactivate(); }

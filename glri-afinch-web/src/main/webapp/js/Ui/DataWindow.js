@@ -12,21 +12,23 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
         var height = config.height || 500;
         
 		self.reachPanel = new AFINCH.ui.DataDisplayPanel({
-			title: "Reach Flow Data",
+			title: CONFIG.metadata.reach_con.display_name,
 			record: config.record,
-			thredds_filename: CONFIG.endpoint.reach_thredds_filename,
-			id_prop: CONFIG.metadata.reach_id_prop,
-			observed_prop: CONFIG.metadata.reach_observed_prop,
+			thredds_filename: CONFIG.metadata.reach_con.thredds_filename,
+			export_filename: CONFIG.metadata.reach_con.export_filename,
+			id_prop: CONFIG.metadata.reach_con.id_prop,
+			observed_prop: CONFIG.metadata.reach_con.observed_prop,
 			legendParamName: "Flow",
 			yAxixParamName: "Discharge",
 			unit: "(cfs)"
 		});
 		self.catchPanel = new AFINCH.ui.DataDisplayPanel({
-			title: "Catchment Yield Data (Constrained)",
+			title: CONFIG.metadata.catch_con.display_name,
 			record: config.record,
-			thredds_filename: CONFIG.endpoint.catch_thredds_filename,
-			id_prop: CONFIG.metadata.catch_id_prop,
-			observed_prop: CONFIG.metadata.catch_observed_prop,
+			thredds_filename: CONFIG.metadata.catch_con.thredds_filename,
+			export_filename: CONFIG.metadata.catch_con.export_filename,
+			id_prop: CONFIG.metadata.catch_con.id_prop,
+			observed_prop: CONFIG.metadata.catch_con.observed_prop,
 			legendParamName: "Yield",
 			yAxixParamName: "Yield",
 			unit: "(inches)"
@@ -37,7 +39,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
             width: width,
             height: height,
             tbar: self.toggleBar,
-			bbar: new AFINCH.ui.DataExportToolbar({
+			bbar: new AFINCH.ui.GageToolbar({
 				gage: config.gage,
 				reachPanel: self.reachPanel,
 				catchPanel: self.catchPanel

@@ -99,35 +99,29 @@
             CONFIG.endpoint.rwps = '<%= props.getProperty("afinch.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
             CONFIG.endpoint.rwpsProxy = 'rwps/';
             CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
-			CONFIG.endpoint.reach_thredds_filename = '<%= props.getProperty("afinch.endpoint.reach_thredds_filename", "afinch_reach.nc")%>';
-			CONFIG.endpoint.catch_thredds_filename = '<%= props.getProperty("afinch.endpoint.catch_thredds_filename", "afinch_catch.nc")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
 			
 			//General Metadata
-			CONFIG.metadata.reach_observed_prop = "QAccCon";
-			CONFIG.metadata.reach_id_prop = "COMID";
-			CONFIG.metadata.catch_observed_prop = "yieldCatchCon";
-			CONFIG.metadata.catch_id_prop = "GRIDCODE";
+			CONFIG.metadata.reach_con = new Object();
+			CONFIG.metadata.reach_est = new Object();
+			CONFIG.metadata.catch_con = new Object();
+			CONFIG.metadata.catch_est = new Object();
+			
+			CONFIG.metadata.reach_con.observed_prop = "QAccCon";
+			CONFIG.metadata.reach_con.id_prop = "COMID";
+			CONFIG.metadata.reach_con.thredds_filename = '<%= props.getProperty("afinch.endpoint.reach_thredds_filename", "afinch_reach.nc")%>';
+			CONFIG.metadata.reach_con.export_filename = 'reach_flow_data_constrained.csv';
+			CONFIG.metadata.reach_con.display_name = "Reach Flow Data (Constrained)";
+			CONFIG.metadata.catch_con.observed_prop = "yieldCatchCon";
+			CONFIG.metadata.catch_con.id_prop = "GRIDCODE";
+			CONFIG.metadata.catch_con.thredds_filename = '<%= props.getProperty("afinch.endpoint.catch_thredds_filename", "afinch_catch.nc")%>';
+			CONFIG.metadata.catch_con.display_name = "Catchment Yield Data (Constrained)";
+			CONFIG.metadata.catch_con.export_filename = 'catchment_yeild_data_constrained.csv';
 			
 			//User Preferences
 			CONFIG.userpref.graphTab = 0;	//open to first tab, but open new windows using the last
 			
-            CONFIG.attribution = {
-                nhd:{
-                    logo:'images/NHDPlus_logo.png',
-                    link: 'http://www.horizon-systems.com/nhdplus/'
-                },
-                usgs:{
-                    logo: 'images/c_168_USGS.gif',
-                    link: 'http://www.usgs.gov/'
-                },
-                epa: {
-                    logo: 'images/EPA_logo.png',
-                    link: 'http://www.epa.gov/'
-                }
-            };
-            CONFIG.attributionUrl = '';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
 			
 			//Map layer config
@@ -147,6 +141,7 @@
         <script type="text/javascript" src="js/Data/ParseSosResponse.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
         <script type="text/javascript" src="js/Ui/ErrorNotify.js"></script>
+		<script type="text/javascript" src="js/Ui/GageToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/DataExportToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleToolbar.js"></script>
         <script type="text/javascript" src="js/Ui/SeriesToggleMenu.js"></script>

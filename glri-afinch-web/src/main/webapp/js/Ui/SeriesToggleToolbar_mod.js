@@ -1,13 +1,20 @@
 Ext.ns("AFINCH.ui");
-
-AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
+AFINCH.ui.SeriesToggleToolbar= Ext.extend(Ext.Toolbar, {
 	
-	associatedPanel: undefined,
+    getSeriesTogglers: function(){
+        return this.menu.getSeriesTogglers();
+    },
 	
     constructor: function(config) {
         var self = this;
 		
 		self.associatedPanel = config.associatedPanel;
+		
+        self.menu = new AFINCH.ui.SeriesToggleMenu({
+			associatedPanel: config.associatedPanel.graphPanel,
+			paramName: config.paramName
+		});
+		
 		
         var exportHandler = function(button, event){
 			
@@ -39,10 +46,10 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
             $('#download_form').submit();
         };
 		
-        var items = [];
+		var items = [];
 		
+		items.push(self.menu);
 		items.push({ xtype:'tbfill' });
-        
         var exportButton = {
             xtype: 'button', 
             text: 'Download Displayed Data', 
@@ -53,15 +60,13 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
         };
         items.push(exportButton);
 		
-
-        
         config = Ext.apply({
-            items : items,
-            defaultExportName : ''
+            items: items,
+			associatedPanel: config.associatedPanel,
+			paramName: config.paramName
         }, config);
 
-        AFINCH.ui.DataExportToolbar.superclass.constructor.call(this, config);
-        LOG.info('AFINCH.ui.DataExportToolbar::constructor(): Construction complete.');
+        AFINCH.ui.SeriesToggleToolbar.superclass.constructor.call(this, config);
+        LOG.info('AFINCH.ui.SeriesToggleToolbar::constructor(): Construction complete.');
     }
 });
-Ext.reg('DataExportToolbar', AFINCH.ui.DataExportToolbar);
