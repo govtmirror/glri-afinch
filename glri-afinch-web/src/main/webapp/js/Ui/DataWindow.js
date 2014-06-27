@@ -29,7 +29,7 @@ AFINCH.ui.DataWindow = Ext.extend(Ext.Window, {
 			observed_prop: CONFIG.metadata.catch_observed_prop,
 			legendParamName: "Yield",
 			yAxixParamName: "Yield",
-			unit: "(cf/sqkm?)"
+			unit: "(inches)"
 		});
 		
         

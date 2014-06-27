@@ -90,6 +90,9 @@ OpenLayers.Control.CustomLayerSwitcher =
      * {Boolean} 
      */
     ascending: true,
+	
+	/** Event handlers */
+	handlers: {},
  
     /**
      * Constructor: OpenLayers.Control.LayerSwitcher
@@ -299,8 +302,8 @@ OpenLayers.Control.CustomLayerSwitcher =
                                           : layer.getVisibility();   			
     			
     			var layerWrapper = document.createElement("div");
-    			layerWrapper.style.margin = "8px 0px 8px 4px";
-    			layerWrapper.id = "layer_" + layer.id;    			
+    			layerWrapper.id = "layer_" + layer.id; 
+				layerWrapper.className = "layer-switcher-layer-wrap";
    			
                 // create input element
                 var inputElem = document.createElement("input");
@@ -317,26 +320,17 @@ OpenLayers.Control.CustomLayerSwitcher =
 
                 // create the label span
                 var labelSpan = document.createElement("span");
-                if (!baseLayer && !layer.inRange) {
-                    labelSpan.style.color = "gray";
-                }
+				labelSpan.className = "layer-label";
                 
                 if(layer.queryable) {
                 	labelSpan.style.cursor = "pointer";
                 }
                 labelSpan.innerHTML = layer.name;
-                labelSpan.style.display = "block";
-                labelSpan.style.width = "210px";
-                labelSpan.style.padding = "0px 6px 2px 4px";
-                labelSpan.style.verticalAlign = (baseLayer) ? "bottom" : "baseline";     
-				
+    
 				var abstractSpan = document.createElement("span");
                 abstractSpan.id = "abstract_" + layer.id;
 				abstractSpan.innerHTML = layer.description;
 				abstractSpan.style.display = "none";
-				abstractSpan.style.fontWeight = "normal";
-				abstractSpan.style.padding = "0px 6px 2px 5px";
-				abstractSpan.style.fontSize = "11px";
 				
 				var abstractToolbarSpan = document.createElement("span");
 				abstractToolbarSpan.style.display = "block";
@@ -383,21 +377,11 @@ OpenLayers.Control.CustomLayerSwitcher =
                 // create the title div
                 var titleDiv = document.createElement("div");
                 titleDiv.id = "title_" + layer.id;
+				titleDiv.className = "layer-title-wrap";
                                 
-                if(this.activeLayer == layer.id)
-                {
-                    titleDiv.style.backgroundColor = "#999";
-                    titleDiv.style.border = "solid 1px #999";
+                if(this.activeLayer == layer.id) {
+                    titleDiv.className = "layer-title-wrap active";
                 }
-                else
-                {
-                    titleDiv.style.backgroundColor = "#e1e1e1";
-                    titleDiv.style.border = "solid 1px #e1e1e1";
-                }
-                
-                titleDiv.style.width = "220px";
-                titleDiv.style.padding = "2px";               	     
-                titleDiv.style.position = "relative";
                 
                 // create the layer operation panel
                 var buttonSpan = document.createElement("span");
@@ -571,9 +555,8 @@ OpenLayers.Control.CustomLayerSwitcher =
 //					buttonSpan.appendChild(upButton);	//doesn't work
 //					buttonSpan.appendChild(downButton);	//doesn't work
 //					buttonSpan.appendChild(removeButton);
+					buttonSpan.appendChild(opacityContainer);
 				}
-
-				buttonSpan.appendChild(opacityContainer);
                 
 				if(layer.description) {
 					titleDiv.appendChild(abstractButton);
@@ -901,20 +884,64 @@ OpenLayers.Control.CustomLayerSwitcher =
         this.div.style.position = "absolute";
         this.div.style.top = "0px";
         this.div.style.right = "0px";
-        this.div.style.left = "";
-        this.div.style.fontFamily = "sans-serif";
-        this.div.style.fontWeight = "bold";
-        this.div.style.fontSize = "13px";   
-        this.div.style.color = "#333";   
+        this.div.style.left = ""; 
         this.div.style.backgroundColor = this.activeColor; 
         this.div.style.height = "100%";
+		
+		this.handlers.drag = new OpenLayers.Handler.Drag(
+			this, {}, {
+			documentDrag: false,
+			map: this.map
+		});
     
-        OpenLayers.Event.observe(this.div, "mouseup", 
-            OpenLayers.Function.bindAsEventListener(this.mouseUp, this));
-        OpenLayers.Event.observe(this.div, "click",
-                      this.ignoreEvent);
-        OpenLayers.Event.observe(this.div, "mousedown",
-            OpenLayers.Function.bindAsEventListener(this.mouseDown, this));
+		// Cancel or catch events 
+		OpenLayers.Event.observe(this.div, 'click', OpenLayers.Function.bind(function (ctrl, evt) {
+			OpenLayers.Event.stop(evt ? evt : window.event, true);
+		}, this, this.div));
+		OpenLayers.Event.observe(this.div, 'dblclick', OpenLayers.Function.bind(function (ctrl, evt) {
+			OpenLayers.Event.stop(evt ? evt : window.event);
+		}, this, this.div));
+		OpenLayers.Event.observe(this.div, 'mouseover', OpenLayers.Function.bind(function () {
+			this.handlers.drag.activate();
+		}, this, this.div));
+		OpenLayers.Event.observe(this.div, 'mouseout', OpenLayers.Function.bind(function () {
+			this.handlers.drag.deactivate();
+		}, this, this.div));
+		OpenLayers.Event.observe(this.div, 'touchstart', OpenLayers.Function.bind(function (ele, evt) {
+			// Because the event handling affects the entire legend div, I have to check to see if what the 
+			// user is touching is actually the minimize/maximize image. If so, forget dragging because
+			// the user wants to either open or close the legend
+			if (evt.target.nodeName.toLowerCase() === 'img' ) {
+				if (evt.target.id.toLowerCase().indexOf('minimize') !== -1) {
+					this.minimizeControl();
+				} else if (evt.target.id.toLowerCase().indexOf('maximize') !== -1) {
+					this.maximizeControl();
+				}
+			} else {
+				// The user is actually dragging the legend (or at least touched it) so mark the y coord where
+				// that happened because dragging (touchmove) directionality and distance will  be based on 
+				// this delta
+				this.dragStart = evt.changedTouches[0].clientY;
+			}
+			OpenLayers.Event.stop(evt);
+		}, this, this.div));
+		OpenLayers.Event.observe(this.div, 'touchmove', OpenLayers.Function.bind(function (ele, evt) {
+			// The user is actively dragging the legend. I need to figure out the scroll amount so I take the starting
+			// point (dragStart) and as the user scrolls, I calculate the distance from the starting point and 
+			// programatically scroll the container
+			var container = this.legendContainerElement,
+				currentY = evt.changedTouches[0].clientY,
+				scrollAmount = currentY - this.dragStart,
+				scrollToY = -scrollAmount + container.scrollTop;
+
+			container.scrollTop = scrollToY;
+			OpenLayers.Event.stop(evt ? evt : window.event);
+		}, this, this.div));
+		OpenLayers.Event.observe(this.div, 'touchend', OpenLayers.Function.bind(function (ele, evt) {
+			OpenLayers.Event.stop(evt);
+		}, this, this.div));
+
+
         OpenLayers.Event.observe(this.div, "dblclick", this.ignoreEvent);
 
         // layers list div        
@@ -926,16 +953,19 @@ OpenLayers.Control.CustomLayerSwitcher =
         this.layersDiv.style.position = "relative";
         this.layersDiv.style.height = "100%";        
         
-        // ignore any mousewheel events
-        OpenLayers.Event.observe(this.layersDiv, "mousewheel", this.ignoreEvent);
-
-        // had to set width/height to get transparency in IE to work.
-        // thanks -- http://jszen.blogspot.com/2005/04/ie6-opacity-filter-caveat.html
-        
         this.baseLayersDiv = document.createElement("div");
 		this._buildEmptyBaseDiv(this.baseLayersDiv);
         this.dataLayersDiv = document.createElement("div");
 		this._buildEmptyDataDiv(this.dataLayersDiv);
+		this.footer = undefined;
+		
+		if (document.getElementById('legend-footer-template')) {
+			this.footer = document.createElement("div");
+			this.footer.className = "legend-footer";
+			this.footer.innerHTML = document.getElementById('legend-footer-template').innerHTML;
+		}
+		
+		
 		
         if (this.ascending) {
             this.layersDiv.appendChild(this.baseLayersDiv);
@@ -944,9 +974,11 @@ OpenLayers.Control.CustomLayerSwitcher =
             this.layersDiv.appendChild(this.dataLayersDiv);
             this.layersDiv.appendChild(this.baseLayersDiv);
         }    
+		
+		if (this.footer) this.layersDiv.appendChild(this.footer);
         
         this.div.appendChild(this.layersDiv);
-        //OpenLayers.Rico.Corner.changeOpacity(this.layersDiv, 0.95);		
+        	
 		
         var imgLocation = this.imageDirectory;
         var sz = new OpenLayers.Size(20,60);        
