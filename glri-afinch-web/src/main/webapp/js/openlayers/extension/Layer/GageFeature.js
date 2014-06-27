@@ -22,19 +22,19 @@ OpenLayers.Layer.GageFeature = OpenLayers.Class(OpenLayers.Layer.Vector, {
     styleMap: new OpenLayers.StyleMap({
         'default': new OpenLayers.Style({
             'pointRadius': 2,
-            'fillColor': '#ee9900',
+            'fillColor': '#558027',
             'fillOpacity': 0.4,
-            'strokeColor': '#ee9900',
+            'strokeColor': '#558027',
             'strokeOpacity': 1,
             'strokeWidth': 1
         }),
         'select': new OpenLayers.Style({
             'pointRadius': 2,
-            'fillColor': '#ee9900',
+            'fillColor': '#609428',
             'fillOpacity': 0.4,
             'strokeColor': '#ffffff',
             'strokeOpacity': 1,
-            'strokeWidth': 1
+            'strokeWidth': 3
         }),
         renderers: ['DeclusterCanvas']
     }),
