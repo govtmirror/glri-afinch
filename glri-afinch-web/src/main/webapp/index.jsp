@@ -162,7 +162,7 @@
         <jsp:include page="template/USGSHeader.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
-            <jsp:param name="site-title" value="GLRI AFINCH Mapper" />
+            <jsp:param name="site-title" value="GLRI AFINCH Mapper (Beta)" />
         </jsp:include>
         <div class="application-body">
         </div>
@@ -181,5 +181,36 @@
             <input type ="submit"/>
         </form>
         <iframe name="download_iframe" id="download" style="display: none;"></iframe>
+		<div id="page-templates" style="display: none;">
+			<div id="attribution-splash-template">
+				<div class="attribution_splash">
+					<a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
+						<img src="images/EPA_logo.png"/>
+					</a>
+					<a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
+						<img src="images/NHDPlus_logo.png"/>
+					</a>
+					<a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
+						<img src="images/c_168_USGS.gif"/>
+					</a>
+					<h2 class="attribution_text">Data furnished by the EPA, NHDPlus, and USGS.</h2>
+					<div id="legend-footer-template">
+						<h3>This is unpublished data!</h3>
+						<p>
+							The data presented here is pending review and publication.
+							Therefore it is currently considered
+							<em>unsuitable</em> for any purpose.
+							<a href="http://cida.usgs.gov/glri/projects/accountability/watershed_modeling.html" target="_blank" title="Information about the dataset shown on this map">This data model</a>
+							was created as part of the
+							<a href="http://cida.usgs.gov/glri/" target="_blank" title="Information about GLRI">Great Lakes Restoration Initiative (GLRI)</a>.
+						</p>
+					</div>
+				</div>
+			</div>
+			<div id="attribution-onmap-template">
+				<a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
+                    <img id="attribution" src="images/NHDPlus_logo.png"/></a>
+			</div>
+		</div>
     </body>
 </html>

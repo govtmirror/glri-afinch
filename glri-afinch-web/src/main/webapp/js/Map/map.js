@@ -98,9 +98,9 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 		
 		// ////////////////////////////////////////////// CATCHMENTS
         var catchMean = new OpenLayers.Layer.CatchMean(
-                "Catchment Mean Yield (Constrained)",
+                "Catchment Mean Yield, Constrained (inches)",
                 CONFIG.endpoint.geoserver + 'wms'
-                );
+        );
         catchMean.id = 'nhd-catch-mean-data-layer';
 		
 		mapLayers.push(catchMean);
@@ -125,8 +125,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                     prefix: 'POS: '
                 }),
                 new OpenLayers.Control.Attribution({
-                    template: '<a target="_blank" class="no_hover_change" href="' + CONFIG.attribution.nhd.link+ '">'+
-                    '<img id="attribution" src="' + CONFIG.attribution.nhd.logo + '"/></a>'
+                    template: document.getElementById('attribution-onmap-template').innerHTML
                 }),
                 new OpenLayers.Control.ScaleLine({
                     geodesic: true
@@ -294,34 +293,23 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 //		this.map.addControl(this.legend);
 },
     showAttributionSplash: function(){
-        var slogan = 'Data furnished by the EPA, NHDPlus, and USGS.';
-        var attribPopupTimeout = 3000;
+        var attribPopupTimeout = 5000;
+		var msgWidth = 550;
         
-        var makeAttribEntry = function(orgName){
-            return '<a target="_blank" class="no_hover_change" href="' + CONFIG.attribution[orgName].link + '">' +
-                    '<img src="' + CONFIG.attribution[orgName].logo +'"/>' +
-                    '</a>';
-        };
-        
-        var html = '<div class="attribution_splash">';
-        ['epa', 'nhd', 'usgs'].each(function(orgName){
-           html+=makeAttribEntry(orgName); 
-        });
-        html += '</div>' + 
-        '<div class="attribution_text">'+ slogan +'</div>';
+		if (document.getElementById('attribution-splash-template')) {
 
-        var msgWidth = 550;
-        
-        Ext.Msg.show({
-            title: 'Loading...',
-            msg: html,
-            width: msgWidth
-        });
-        var attribPopup = Ext.Msg.getDialog();
-        var closeAttribPopup = function(){
-            attribPopup.close();
-        }
-        setTimeout(closeAttribPopup, attribPopupTimeout);
+			Ext.Msg.show({
+				title: 'Loading...',
+				msg: document.getElementById('attribution-splash-template').innerHTML,
+				width: msgWidth
+			});
+			var attribPopup = Ext.Msg.getDialog();
+			var closeAttribPopup = function(){
+				attribPopup.close();
+			}
+			setTimeout(closeAttribPopup, attribPopupTimeout);
+		}
+
     },
 
     /**

@@ -1,14 +1,13 @@
 /* put all your application wide styles here */
 
+/* on-map attribution */
 #attribution {
             width: 10em;
             height: 4.4em;
             position: relative;
             top: 3em;
             }
-.generous_left_margin{
-            margin-left: 20px;
-            }
+.generous_left_margin{ margin-left: 20px; }
 .no_hover_change:hover {
     text-decoration: none;
     background: none;
@@ -18,11 +17,12 @@
     width: 150px;
     margin: 10px;
 }
-.attribution_text{
-    font-size: 1.25em;
-    font-weight: bold;
-    text-align: right;
+.attribution_text {
+	font-size: 1.25em; margin: .4em 0 2em 0;
 }
+
+/* Make popup windows a bit more readable */
+body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !important; }
 
 .circle:before{
     content: ' \25CF';
@@ -68,10 +68,27 @@
 }
 
 .olControlCustomLayerSwitcher .base-layers,
-.olControlCustomLayerSwitcher .data-layers {
-	border: solid 1px black; margin: .1em;
+.olControlCustomLayerSwitcher .data-layers,
+.olControlCustomLayerSwitcher .legend-footer {
+	border: solid 1px black; margin: .1em; padding: .1em .4em;
+}
+
+.olControlCustomLayerSwitcher .legend-footer {
+	margin: 1em .1em 0 .1em; padding: .4em .4em;
 }
 
 .olControlCustomLayerSwitcher .base-layers h3,
-.olControlCustomLayerSwitcher .data-layers h3 { font-size: 1.5em; }
+.olControlCustomLayerSwitcher .data-layers h3,
+.olControlCustomLayerSwitcher .legend-footer h3
+{ font-size: 1.4em; }
+
+.olControlCustomLayerSwitcher .layer-switcher-layer-wrap {
+	padding: .2em 0 .2em .4em;
+}
+
+.olControlCustomLayerSwitcher .data-layers .layer-switcher-layer-wrap {
+	margin: .4em 0; /* more room for data layers, since they are the focus */
+}
+
+.olControlCustomLayerSwitcher .layer-label { font-weight: bold; }
 
