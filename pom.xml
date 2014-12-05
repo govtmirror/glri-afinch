@@ -106,12 +106,12 @@
 		<repository>
 			<id>cida-nexus-3rd-party</id>
 			<name>CIDA Nexus 3rd party</name>
-			<url>http://internal.cida.usgs.gov/maven/content/groups/public/</url>
+			<url>http://cida-wiwsc-maven.er.usgs.gov:8080/maven/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>cida-nexus-homegrown</id>
 			<name>CIDA Nexus</name>
-			<url>http://internal.cida.usgs.gov/maven/content/groups/cida-public/</url>
+			<url>http://cida-wiwsc-maven.er.usgs.gov:8080/maven/content/groups/cida-public/</url>
 		</repository>
 	</repositories>
 
