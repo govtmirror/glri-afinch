@@ -195,7 +195,7 @@
 					</a>
 					<h2 class="attribution_text">Data furnished by the EPA, NHDPlus, and USGS.</h2>
 					<div id="legend-footer-template">
-						<h3>Disclaimer</h3>
+						<h3>Disclaimer:</h3>
 						<p>
 							Water yields and flows were estimated using NHDPlus flowline and catchment attributes and explanatory variable information developed for the United States portion of the Great Lakes Basin. Estimates for those flowlines with some contributions from outside the U.S have not been reviewed by the Canadian government. For more information about the estimated yields and flows see this <a href="http://dx.doi.org/10.3133/sir20145192">publication</a>. For best results use Google Chrome. For questions or more information, please contact us at
 							<a 
