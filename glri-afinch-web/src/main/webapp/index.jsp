@@ -195,11 +195,9 @@
 					</a>
 					<h2 class="attribution_text">Data furnished by the EPA, NHDPlus, and USGS.</h2>
 					<div id="legend-footer-template">
-						<h3>This is unpublished data!</h3>
+						<h3>Disclaimer</h3>
 						<p>
-							The water yield and streamflow estimates displayed on this site have not received
-							USGS approval and as such are provisional and subject to revision.
-							For questions or more information, please contact us at
+							Water yields and flows were estimated using NHDPlus flowline and catchment attributes and explanatory variable information developed for the United States portion of the Great Lakes Basin. Estimates for those flowlines with some contributions from outside the U.S have not been reviewed by the Canadian government. For more information about the estimated yields and flows see this <a href="http://dx.doi.org/10.3133/sir20145192">publication</a>. For best results use Google Chrome. For questions or more information, please contact us at
 							<a 
 								href="&#109;&#097;&#105;&#108;&#116;&#111;:&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;">
 								&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;	
