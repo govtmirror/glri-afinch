@@ -142,7 +142,7 @@
         </script>
 
         <script type="text/javascript" src="js/Map/map.js"></script>
-		<script type="text/javascript" src="js/openlayers/Control/CustomLayerSwitcher.js"></script>
+	<script type="text/javascript" src="js/openlayers/Control/CustomLayerSwitcher.js"></script>
         <script type="text/javascript" src="js/Data/StatsStore.js"></script>
         <script type="text/javascript" src="js/Data/ParseSosResponse.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
@@ -157,6 +157,18 @@
         <script type="text/javascript" src="js/Ui/StatsLabelPanel.js"></script>
         <script type="text/javascript" src="js/Ui/DataDisplayPanel.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>
+	<!-- app-specific Google Analytics -->
+	<script>
+	    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	    ga('create', 'UA-50454186-3', 'auto');
+	    ga('send', 'pageview');
+	</script>
+	<!-- DOI foresee and GA -->
+	<script type="application/javascript" src="http://www.usgs.gov/scripts/analytics/usgs-analytics.js"></script>
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
