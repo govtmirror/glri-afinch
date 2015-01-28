@@ -92,6 +92,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 
 .olControlCustomLayerSwitcher .layer-label { font-weight: bold; }
 
+/* make failed tiles transparent rather than pink */
 .olImageLoadError {
 	display: none !important;
 }
