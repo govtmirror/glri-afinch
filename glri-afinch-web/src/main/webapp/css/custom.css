@@ -92,3 +92,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 
 .olControlCustomLayerSwitcher .layer-label { font-weight: bold; }
 
+.olImageLoadError {
+	display: none !important;
+}
+
