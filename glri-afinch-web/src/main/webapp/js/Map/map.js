@@ -1,3 +1,5 @@
+OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; // if tiles don't load correctly initially, try a few more times
+
 Ext.ns("AFINCH");
 AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
     border: false,
