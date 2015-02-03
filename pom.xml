@@ -253,6 +253,13 @@
 				<version>006</version>
 				<type>jar</type>
 			</dependency>
+			
+			<!-- Plugins -->
+			<dependency>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.2</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
