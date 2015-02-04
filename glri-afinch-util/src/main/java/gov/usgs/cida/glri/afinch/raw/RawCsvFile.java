@@ -12,12 +12,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author eeverman
  */
 public class RawCsvFile implements Closeable {
+	
+	private static Logger log = LoggerFactory.getLogger(RawCsvFile.class);
 	
 	private String[] userDefinedHeaders;
 	private String[] allHeaders;
@@ -53,7 +58,8 @@ public class RawCsvFile implements Closeable {
 			allHeaders = readNext();
 			headerNameMap = mapHeaders(allHeaders);
 		} else {
-			throw new Exception("A header row containing the expected headers could not be found in '" + sourceFile.getAbsolutePath() + "'");
+			throw new Exception("A header row containing the expected headers could not be found in '" +
+					sourceFile.getAbsolutePath() + "'.  Expected headers were: " + StringUtils.join(this.userDefinedHeaders, ","));
 		}
 	}
 	

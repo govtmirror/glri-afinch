@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * <li>-srcDir [Directory containing all AFINCH source files]</li>
  * <li>-dstDir [Any output directory (will be overwritten)]</li>
  * <li>-idCol ComID</li>
- * <li>-dataCols QAccCon</li>
- * <li>-dataColAbbrs QAC</li>
+ * <li>-dataColPrefix QAccCon</li>
+ * <li>-dataColAbbr QAC</li>
  * <li>-profile flow [or catch]</li>
  * <li>-</li>
  * <li>-</li>
@@ -58,21 +58,28 @@ public class AfinchFileProcessor {
 		options.addOption(new SoftRequiredOption("srcDir", "sourceDirectory", true, 
 				"The source directory to process from"));
 		options.addOption(new SoftRequiredOption("dstDir", "destinationDirectory", true, 
-				"The directory where all output will be written to"));
+				"The directory where all output will be written to.  It will append a subdirectory based on the profile: 'flow_out' or 'catch_out'"));
+		options.addOption(new SoftRequiredOption("profile", "profile", true, 
+				"'flow' or 'catch' to invoke the correct run profile"));
 		options.addOption(new Option("limit", "limitInputFiles", true, 
 				"Limit the number of imput files processed.  All files run if option is not specified."));
 		options.addOption(new Option("ignore", "ignoreErrors", false, 
 				"If specified, non-fatal errors will be ignored so that as much of the process runs as possible."));
-		options.addOption(new SoftRequiredOption("idCol", "idColumnName", true, 
-				"Name of the id column in the raw files"));
-		options.addOption(new SoftRequiredOption("dataCols", "dataColumnNames", true, 
-				"Name of one (currently only one) data column.  "
-						+ "The name is used to find the value in the source CSV file and to write the data into the NetCDF file."));
-		options.addOption(new SoftRequiredOption("dataColAbbrs", "dataColumnAbbreviatedNames", true, 
-				"Abbreviated name of one (currently only one) data column.  "
-						+ "The abbreviated name is used as a prefix on the aggregate stat values written into the final NetCDF file."));
-		options.addOption(new SoftRequiredOption("profile", "profile", true, 
-				"'flow' or 'catch' to invoke the correct run profile"));
+		options.addOption(new Option("subDir", "subdirectoryName", true, 
+				"Name of the source subdirectory containing the files to be processed, which must be .csv files.  Usually there are multiple of these directories in subfolders of the srcDir - the processor will find them all." +
+						"If unspecified it uses these defaults based on profile:  flow:" + RUN_PROFILE.FLOW.getDefaultSrcSubDirectoryName() + " catch:" + RUN_PROFILE.CATCH.getDefaultSrcSubDirectoryName() + ".  "));
+		options.addOption(new Option("idCol", "idColumnName", true, 
+				"Name of the id column in the raw files.  If unspecified it uses these defaults based on profile:  flow:" + RUN_PROFILE.FLOW.getDefaultIdColumn() + " catch:" + RUN_PROFILE.CATCH.getDefaultIdColumn() + ".  " +
+						"BE CAREFUL IF YOU FEEL THIS NEEDS TO CHANGE.  Processing assumes that the ID type (grid code and com id) are what is being used, regardless of name."));
+		options.addOption(new Option("dataColPrefix", "dataColumnNamePrefix", true, 
+				"Prefix of the data cols in the source CSV, which is expanded to include month suffixes.  " +
+						"The name is also used to to write the data into the NetCDF file.  " +
+						"If unspecified it uses these defaults based on profile:  flow:" + RUN_PROFILE.FLOW.getDefaultDataColumnPrefix() + " catch:" + RUN_PROFILE.CATCH.getDefaultDataColumnPrefix()));
+		options.addOption(new Option("dataColAbbr", "dataColumnAbbreviation", true, 
+				"Abbreviated name of the data column used as a prefix for aggregated values like [ABBR]AVG written into the final NetCDF file.  " +
+						"If unspecified it uses these defaults based on profile:  flow:" + RUN_PROFILE.FLOW.getDefaultAbbr() + " catch:" + RUN_PROFILE.CATCH.getDefaultAbbr() + ".  " +
+						"DO NOT MODIFY unless you know what you are doing.  Downstream app rely on the abbreviated stat names."));
+
 
 		options.parse(args);
 		
@@ -97,35 +104,41 @@ public class AfinchFileProcessor {
 			}
 			boolean ignoreErrors = cl.hasOption("ignore");
 			
-			//Source column names
-			String idCol = cl.getOptionValue("idCol");
-			String[] dataCols = cl.getOptionValues("dataCols");
-			String[] dataColsAbbr = cl.getOptionValues("dataColAbbrs");
-			
-			if (dataCols.length > 1 || dataColsAbbr.length > 1) {
-				log.error("Currently only a single column is supported.  Sorry - thought I could get it to work for multiple but ran out of time.");
-				return;
-			}
-			
-			if (dataCols.length != dataColsAbbr.length) {
-				log.error("There must be one 'dataColsAbbr' for each 'dataCols' parameter.");
-				return;
-			}
-			
 			//Profile dependant props
 			String profileStr = cl.getOptionValue("profile").toUpperCase();
 			RUN_PROFILE profile = RUN_PROFILE.valueOf(profileStr);
-			IOFileFilter rawFileFilter = createRawFileIOFileFilter(profile);
-			Map<String, String> netCdfFileProps = createNetCDFProperties(profile);
-					
+			
+			if (profile == null) {
+				log.error("The profile '" + profileStr + "' is not recognized.  Must be either '" + RUN_PROFILE.FLOW.toString().toLowerCase() + "' or '" + RUN_PROFILE.CATCH.toString().toLowerCase() + "'");
+				return;
+			}
+			
+			
+			//Source column names
+			String idCol = cl.getOptionValue("idCol");
+			String dataColPrefix = cl.getOptionValue("dataColPrefix");
+			String dataColAbbr = cl.getOptionValue("dataColAbbr");
+			
+			if (idCol == null) idCol = profile.getDefaultIdColumn();
+			if (dataColPrefix == null) dataColPrefix = profile.getDefaultDataColumnPrefix();
+			if (dataColAbbr == null) dataColAbbr = profile.getDefaultAbbr();
+			
+			
+			//File Locations
 			File srcDirFile = new File(cl.getOptionValue("srcDir"));
 			File dstDirFile = new File(cl.getOptionValue("dstDir"));
+			dstDirFile = new File(dstDirFile, profile.getDefaultOutSubDirectoryName());
 			File dstDirRaw;
 			File dstDirNetCdf;
 			File dstFileNetCdf;
 			File dstDirNetCdfAgg;
 			File dstFileNetCdfAgg;
 			
+			//File filter
+			String subDir = cl.getOptionValue("subDir");
+			if (subDir == null) subDir = profile.getDefaultSrcSubDirectoryName();
+			IOFileFilter rawFileFilter = createRawFileIOFileFilter(subDir);
+			Map<String, String> netCdfFileProps = createNetCDFProperties(profile);
 			
 			if ((! srcDirFile.exists()) || (! srcDirFile.canRead())) {
 				throw new Exception ("The source directory '" + srcDirFile.getAbsolutePath() + " does not exist or cannot be read");
@@ -150,7 +163,7 @@ public class AfinchFileProcessor {
 			dstFileNetCdf = new File(dstDirNetCdf, FILE_NETCDF_IMPORT);
 			dstFileNetCdfAgg = new File(dstDirNetCdfAgg, FILE_NETCDF_AGG);
 			
-			ProcessToPerStationFiles processToPerStationFiles = new ProcessToPerStationFiles(srcDirFile, dstDirRaw, limitCount, ignoreErrors, rawFileFilter, idCol, dataCols);
+			ProcessToPerStationFiles processToPerStationFiles = new ProcessToPerStationFiles(srcDirFile, dstDirRaw, limitCount, ignoreErrors, rawFileFilter, idCol, dataColPrefix);
 			Boolean result = processToPerStationFiles.process();
 			
 			if (result == false && (! ignoreErrors)) {
@@ -169,7 +182,7 @@ public class AfinchFileProcessor {
 			}
 			
 			ProcessToAddNCFAggValues processToAddNCFAggValues = new ProcessToAddNCFAggValues(
-					dstFileNetCdf, dstFileNetCdfAgg, dataCols[0], dataColsAbbr[0]
+					dstFileNetCdf, dstFileNetCdfAgg, dataColPrefix, dataColAbbr
 			);
 			
 			result = processToAddNCFAggValues.process();
@@ -185,20 +198,9 @@ public class AfinchFileProcessor {
 	}
 	
 	
-	public static IOFileFilter createRawFileIOFileFilter(RUN_PROFILE profile) throws Exception {
+	public static IOFileFilter createRawFileIOFileFilter(String subDirectoryName) throws Exception {
 		IOFileFilter actualFileFilter = new SuffixFileFilter(".csv");
-		IOFileFilter fileParentDirFilter = null;
-		
-		switch (profile) {
-			case FLOW:
-				fileParentDirFilter = new AncestorDirectoryNameFileFilter(new NameFileFilter("Flowlines"));
-				break;
-			case CATCH:
-				fileParentDirFilter = new AncestorDirectoryNameFileFilter(new NameFileFilter("Catchments"));
-				break;
-			default:
-				throw new Exception("Unrecognized profile: " + profile);
-		}
+		IOFileFilter fileParentDirFilter = new AncestorDirectoryNameFileFilter(new NameFileFilter(subDirectoryName));
 		
 		return FileFilterUtils.and(actualFileFilter, fileParentDirFilter);
 	}
