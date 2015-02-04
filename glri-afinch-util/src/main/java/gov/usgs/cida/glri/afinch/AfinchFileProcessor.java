@@ -25,16 +25,12 @@ import org.slf4j.LoggerFactory;
  * Complete pipeline processing for reading raw AFINCH files and generating
  * a NetCDF file with base and aggregate values.
  * 
- * Typical arguments for running flowline values:
+ * Minimum arguments for running:
  * <ul>
  * <li>-srcDir [Directory containing all AFINCH source files]</li>
- * <li>-dstDir [Any output directory (will be overwritten)]</li>
- * <li>-idCol ComID</li>
- * <li>-dataColPrefix QAccCon</li>
- * <li>-dataColAbbr QAC</li>
- * <li>-profile flow [or catch]</li>
- * <li>-</li>
- * <li>-</li>
+ * <li>-dstDir [Any output directory - 'flow' or 'catch' will be appended as a sub directory]</li>
+ * <li>-profile ['flow' or 'catch']</li>
+ * <li>-ignore (usually want to spec this - ignore errors if possible so that all errors can be found.</li>
  * </ul>
  * 
  * @author eeverman
