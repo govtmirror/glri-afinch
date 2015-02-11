@@ -122,7 +122,7 @@
 			<dependency>
 				<groupId>edu.ucar</groupId>
 				<artifactId>netcdf</artifactId>
-				<version>4.3.16</version>
+				<version>4.3.23</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>joda-time</artifactId>
