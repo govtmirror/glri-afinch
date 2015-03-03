@@ -23,7 +23,6 @@
         <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
-		<meta http-equiv="X-UA-Compatible" content="IE=11">
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="shortName" value="GLRI AFINCH Mapper" />
@@ -31,7 +30,7 @@
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl, Jessica Lucido, Eric Everman" />
             <jsp:param name="keywords" value="" />
-            <jsp:param name="publisher" value="Center for Integrated Data Analyltics" />
+            <jsp:param name="publisher" value="Center for Integrated Data Analytics" />
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
