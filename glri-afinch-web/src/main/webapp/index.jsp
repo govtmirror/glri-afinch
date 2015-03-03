@@ -23,6 +23,7 @@
         <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
+		<meta http-equiv="X-UA-Compatible" content="IE=11">
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="shortName" value="GLRI AFINCH Mapper" />
