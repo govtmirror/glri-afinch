@@ -19,7 +19,6 @@
 
 <html lang="en">
     <head>
-		<meta http-equiv="X-UA-Compatible" content="IE=11">
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="shortName" value="GLRI AFINCH Mapper" />
