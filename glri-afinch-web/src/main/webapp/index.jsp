@@ -19,10 +19,6 @@
 
 <html lang="en">
     <head>
-        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
 		<meta http-equiv="X-UA-Compatible" content="IE=11">
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
@@ -39,7 +35,7 @@
         </jsp:include>
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
 
-        <jsp:include page="js/dygraphs/dygraphs.jsp">
+        <jsp:include page="pages/index/dygraphs.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
         <jsp:include page="js/log4javascript/log4javascript.jsp">
