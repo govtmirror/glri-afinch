@@ -1,8 +1,8 @@
+<!DOCTYPE html>
 <%@page import="org.slf4j.Logger"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
 
 <%!    private static final Logger log = LoggerFactory.getLogger("index.jsp");
     protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
