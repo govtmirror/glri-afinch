@@ -27,7 +27,7 @@
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl, Jessica Lucido, Eric Everman" />
             <jsp:param name="keywords" value="" />
-            <jsp:param name="publisher" value="Center for Integrated Data Analyltics" />
+            <jsp:param name="publisher" value="Center for Integrated Data Analytics" />
             <jsp:param name="revisedDate" value="" />
             <jsp:param name="nextReview" value="" />
             <jsp:param name="expires" value="never" />
