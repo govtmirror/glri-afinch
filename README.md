@@ -6,7 +6,7 @@ GLRI-AFINCH
 
   To the extent possible under law,
   [
-    <span property="dct:title">The Center For Integrated Data Analytics</span>](http://cida.usgs.gov/)
+    <span property="dct:title">The Center for Integrated Data Analytics</span>](http://cida.usgs.gov/)
   has waived all copyright and related or neighboring rights to
   <span property="dct:title">The GLRI-AFINCH Mapper</span>.
 This work is published from:
