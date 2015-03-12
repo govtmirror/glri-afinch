@@ -1,7 +1,7 @@
 /*/target/
 /*/src/main/webapp/META-INF/
 */nbactions.xml
-!/glri-afinch-web/src/main/webapp/META-INF/
+*/glri-afinch-web/src/main/webapp/META-INF/
 glri-afinch-util/nbactions-RunCatch.xml
 glri-afinch-util/nbactions-RunFlow.xml
 glri-afinch-util/nbactions-RunFlow_limited.xml
