@@ -174,84 +174,11 @@
             <jsp:param name="site-title" value="GLRI AFINCH Mapper" />
         </jsp:include>
         <div class="application-body">
-            <div id="aboutContent">
-                
-                <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
-                    <img src="images/EPA_logo.png"/>
-		</a>
-                <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
-                    <img id="sizeChange" src="images/NHDPlus_logo.png"/>
-		</a>
-                <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
-                    <img src="images/c_168_USGS.gif"/>
-		</a>
-                
-                <p id="topParagraph">
-                    This cooperative project was made possible by the Great Lakes Restoration Initiative.
-                </p>
-                
-                <h1>The GLRI AFINCH (Analysis of Flows in Networks of CHannels) Mapper</h1>
-                
-                <p>
-                    The GLRI AFINCH Mapper provides access to estimated monthly water yields, 
-                    defined as streamflow divided by catchment area, and corresponding flows for 
-                    stream segments for 1951–2012 in the Great Lakes Basin in the United States. 
-                    Both sets of estimates were computed by using the AFINCH (Analysis of Flows in 
-                    Networks of CHannels) application within the NHDPlus geospatial data framework. 
-                    AFINCH provides a graphical user environment to develop regression models with 
-                    flow estimates constrained to match measured monthly flow at active streamgages. 
-                    Monthly water-use and climatic data also are used with basin characteristics data 
-                    available within NHDPlus or supplied by the user in regression models to estimate 
-                    water yields and flows.
-                </p>
-                <p>
-                    This regionally consistent estimate of streamflow provides unified information 
-                    across the U.S. Great Lakes Basin for restoration, assessment, management, and 
-                    conservation of stream ecosystems. Monthly flow time series for individual stream 
-                    segments can be retrieved from the mapper and used to approximate monthly flow-duration 
-                    characteristics and to identify possible trends. Mapper provided estimates for each selected 
-                    reach or catchment include:
-                </p>
-                <ul>
-                    <li>Monthly flow/yield</li>
-                    <li>Mean annual flow/yield</li>
-                    <li>Median annual flow/yield</li>
-                    <li>Mean monthly flow/yield</li>
-                    <li>Median monthly flow/yield</li>
-                    <li>Deciles of monthly or annual flow/yield</li>
+            <div id="indexTabArea">
+                <ul id="Indextabs">
+                    <li><a href="index.jsp">About</a></li>
+                    <li><a class="selected" href="mapper.jsp">Mapper</a></li>
                 </ul>
-                
-                
-                
-                <p class="bold">
-                    Please see below for a description of the various features.
-                </p>
-          
-                
-            </div>
-            
-            <div id="aboutTabArea">
-                <ul id="tabs">
-                    <li><a class="selected" href="index.jsp">About</a></li>
-                    <li><a href="mapper.jsp">Mapper</a></li>
-                </ul>
-                <p class="bold">
-                    Additional Resources
-                    <ul>
-                        <li>
-                            Report – Estimation of monthly water yields and flows for 1951–2012 for 
-                            the United States portion of the Great Lakes Basin with AFINCH 
-                            (Luukkonen and others, 2014)
-                        </li>
-                        <li>
-                            Report – Application guide for AFINCH (Analysis of Flows in Networks of CHannels) 
-                            described by NHDPlus (Holtschlag, 2009)
-                        </li>
-                        <li>
-                            ScienceBase page
-                        </li>
-                    </ul>
-                </p>
             </div>
         </div>
         <jsp:include page="custom_template/USGSFooter.jsp">
@@ -262,6 +189,42 @@
 			<jsp:param name="revisedDate" value="${timestamp}" />
 			<jsp:param name="buildVersion" value="${project.version}" />
         </jsp:include>
-        
+        <form id="download_form" style="display:none;" action="export" method="post" target="download_iframe">
+            <input id="filename_value" name="filename" type="text" value=""/>
+            <input id="type_value" name="type" type="text" value=""/>
+            <input id="data_value" name="data" type="text" value=""/>
+            <input type ="submit"/>
+        </form>
+        <iframe name="download_iframe" id="download" style="display: none;"></iframe>
+		<div id="page-templates" style="display: none;">
+			<div id="attribution-splash-template">
+				<div class="attribution_splash">
+					<a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
+						<img src="images/EPA_logo.png"/>
+					</a>
+					<a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
+						<img src="images/NHDPlus_logo.png"/>
+					</a>
+					<a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
+						<img src="images/c_168_USGS.gif"/>
+					</a>
+					<h2 class="attribution_text">Data furnished by the EPA, NHDPlus, and USGS.</h2>
+					<div id="legend-footer-template">
+						<h3>Disclaimer:</h3>
+						<p>
+							Water yields and flows were estimated using NHDPlus flowline and catchment attributes and explanatory variable information developed for the United States portion of the Great Lakes Basin. Estimates for those flowlines with some contributions from outside the U.S have not been reviewed by the Canadian government. For more information about the estimated yields and flows see this <a href="http://dx.doi.org/10.3133/sir20145192">publication</a>. For best results use Google Chrome. For questions or more information, please contact us at
+							<a 
+								href="&#109;&#097;&#105;&#108;&#116;&#111;:&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;">
+								&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;	
+							</a>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div id="attribution-onmap-template">
+				<a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
+                    <img id="attribution" src="images/NHDPlus_logo.png"/></a>
+			</div>
+		</div>
     </body>
 </html>
