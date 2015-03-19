@@ -67,6 +67,10 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 	padding: 0 .5em;
 }
 
+.olControlCustomLayerSwitcher .base-layers{
+    margin-top:29px !important;
+}
+
 .olControlCustomLayerSwitcher .base-layers,
 .olControlCustomLayerSwitcher .data-layers,
 .olControlCustomLayerSwitcher .legend-footer {
@@ -74,7 +78,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 }
 
 .olControlCustomLayerSwitcher .legend-footer {
-	margin: 1em .1em 0 .1em; padding: .4em .4em;
+	margin: .1em .1em 0 .1em; padding: .4em .4em;
 }
 
 .olControlCustomLayerSwitcher .base-layers h3,
@@ -96,4 +100,140 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 .olImageLoadError {
 	display: none !important;
 }
+
+#aboutContent{
+    width:68%;
+    min-height:400px;
+    padding:1%;
+    float:left;
+}
+
+#sizeChange{
+    width:160px;
+}
+
+#aboutContent img{
+    margin:0 15px 0 0;
+}
+
+#topParagraph{
+    margin-bottom:15px;
+}
+
+#aboutContent h1{
+    font-size:1.7em;
+}
+
+#aboutContent p{
+    margin-top:10px;
+    line-height:1.8em;
+    font-size:1.1em;
+}
+
+#aboutContent ul{
+    margin-left:15px;
+    list-style: disc;
+    font-size:1.1em;
+}
+
+#aboutContent li{
+    margin-top:10px;
+}
+
+.bold{
+    font-weight:bold;
+}
+
+#indexTabArea{
+    position:absolute;
+    right:1px;
+    top:103px;
+    z-index:90000;
+    width:258px;
+}
+
+#aboutTabArea{
+    width:23.6%;
+    min-width:200px;
+    min-height:210px;
+    float:right;
+    border: 1px solid black;
+    margin:15px 15px 0 0;
+}
+
+#aboutTabArea p{
+    clear:both;
+    margin:10px 0 0 10px;
+}
+
+#aboutTabArea ul{
+    margin-left:25px;
+    list-style: disc;
+    font-size:1.1em;
+}
+
+#aboutTabArea ul li{
+    margin-top:10px;
+}
+
+ul#Indextabs{
+    border-bottom:none;
+}
+
+ul#tabs{
+    border-bottom:1px solid black;
+}
+
+ul#tabs,
+ul#Indextabs{
+    list-style: none;
+    margin:0;
+    padding:0;
+    height:30px;
+    cursor:pointer;
+}
+
+ul#tabs li{
+    border-right:1px solid black;
+}
+
+ul#Indextabs li{
+    border-left:1px solid black;
+}
+
+ul#tabs li,
+ul#Indextabs li{
+    display:inline-block;
+    height:30px;
+    width:100px;
+    margin:0 -5px 0 0;
+    text-align:center;
+}
+
+ul#Indextabs li:nth-child(2){
+    border-right:1px solid black;
+}
+
+ul#tabs li a,
+ul#Indextabs li a{
+    display:inline-block;
+    width:100px;
+    height:24px;
+    font-weight:normal;
+    color:#000;
+    padding-top:6px;
+}
+
+ul#tabs li a:hover,
+ul#Indextabs li a:hover{
+    background:rgb(180,180,180);
+    color:#fff;
+}
+
+a.selected{
+    background:rgb(180,180,180);
+    color:#fff !important;
+}
+
+
 
