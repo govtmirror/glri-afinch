@@ -236,16 +236,22 @@
                     Additional Resources
                     <ul>
                         <li>
+                            <a href="http://dx.doi.org/10.3133/sir20145192" target="_blank">
                             Report – Estimation of monthly water yields and flows for 1951–2012 for 
                             the United States portion of the Great Lakes Basin with AFINCH 
                             (Luukkonen and others, 2014)
+                            </a>
                         </li>
                         <li>
+                            <a href="http://pubs.er.usgs.gov/publication/sir20095188" target="_blank">
                             Report – Application guide for AFINCH (Analysis of Flows in Networks of CHannels) 
                             described by NHDPlus (Holtschlag, 2009)
+                            </a>
                         </li>
                         <li>
+                            <a href=" https://www.sciencebase.gov/catalog/item/53598190e4b0031b2f4a070a" target="_blank">
                             ScienceBase page
+                            </a>
                         </li>
                     </ul>
                 </p>
