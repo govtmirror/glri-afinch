@@ -174,16 +174,26 @@
             <jsp:param name="site-title" value="GLRI AFINCH Mapper" />
         </jsp:include>
         <div class="application-body">
+            
             <div id="aboutContent">
+                
+                <ul id="tabs">
+                    <li><a class="selected" href="index.jsp">About</a></li>
+                    <li><a href="mapper.jsp">Mapper</a></li>
+                </ul>
+                
                 
                 <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
                     <img src="images/EPA_logo.png"/>
 		</a>
                 <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
-                    <img id="sizeChange" src="images/NHDPlus_logo.png"/>
+                    <img class="sizeChange" src="images/NHDPlus_logo.png"/>
 		</a>
                 <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
                     <img src="images/c_168_USGS.gif"/>
+		</a>
+                <a target="_blank" class="no_hover_change" href="http://cida.usgs.gov/glri/#/Home">
+                    <img class="glriLogo" src="images/glri_logo.svg"/>
 		</a>
                 
                 <p id="topParagraph">
@@ -222,19 +232,6 @@
                 </ul>
                 
                 
-                
-                <p class="bold">
-                    Please see below for a description of the various features.
-                </p>
-          
-                
-            </div>
-            
-            <div id="aboutTabArea">
-                <ul id="tabs">
-                    <li><a class="selected" href="index.jsp">About</a></li>
-                    <li><a href="mapper.jsp">Mapper</a></li>
-                </ul>
                 <p class="bold">
                     Additional Resources
                     <ul>
@@ -252,7 +249,19 @@
                         </li>
                     </ul>
                 </p>
+                
+                
+                <p class="bold">
+                    Please see below for a description of the various features.
+                </p>
+                
+                <a href="images/AFINCH_Mapper_Controls_Image.png" class="no_hover_change">
+                    <img id="tips" src="images/AFINCH_Mapper_Controls_Image.png"/>
+		</a>
+          
+                
             </div>
+            
         </div>
         <jsp:include page="custom_template/USGSFooter.jsp">
             <jsp:param name="relPath" value="" />
