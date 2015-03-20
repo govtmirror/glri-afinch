@@ -5,14 +5,14 @@
     <groupId>gov.usgs.cida.glri.afinch</groupId>
     <artifactId>glri-afinch</artifactId>
     <packaging>war</packaging>
-    <version>1.0.0.8-SNAPSHOT</version>
+    <version>1.0.0.8</version>
 
     <name>GLRI AFINCH Web</name>
     
     <parent>
         <groupId>gov.usgs.cida.glri.afinch</groupId>
         <artifactId>glri-afinch-parent</artifactId>
-        <version>1.0.0.8-SNAPSHOT</version>
+        <version>1.0.0.8</version>
     </parent>
 	
     <properties>
