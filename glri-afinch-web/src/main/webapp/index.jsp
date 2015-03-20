@@ -174,16 +174,26 @@
             <jsp:param name="site-title" value="GLRI AFINCH Mapper" />
         </jsp:include>
         <div class="application-body">
+            
             <div id="aboutContent">
+                
+                <ul id="tabs">
+                    <li><a class="selected" href="index.jsp">About</a></li>
+                    <li><a href="mapper.jsp">Mapper</a></li>
+                </ul>
+                
                 
                 <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
                     <img src="images/EPA_logo.png"/>
 		</a>
                 <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
-                    <img id="sizeChange" src="images/NHDPlus_logo.png"/>
+                    <img class="sizeChange" src="images/NHDPlus_logo.png"/>
 		</a>
                 <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
                     <img src="images/c_168_USGS.gif"/>
+		</a>
+                <a target="_blank" class="no_hover_change" href="http://cida.usgs.gov/glri/#/Home">
+                    <img class="glriLogo" src="images/glri_logo.svg"/>
 		</a>
                 
                 <p id="topParagraph">
@@ -222,37 +232,42 @@
                 </ul>
                 
                 
-                
-                <p class="bold">
-                    Please see below for a description of the various features.
-                </p>
-          
-                
-            </div>
-            
-            <div id="aboutTabArea">
-                <ul id="tabs">
-                    <li><a class="selected" href="index.jsp">About</a></li>
-                    <li><a href="mapper.jsp">Mapper</a></li>
-                </ul>
                 <p class="bold">
                     Additional Resources
                     <ul>
                         <li>
+                            <a href="http://dx.doi.org/10.3133/sir20145192" target="_blank">
                             Report – Estimation of monthly water yields and flows for 1951–2012 for 
                             the United States portion of the Great Lakes Basin with AFINCH 
                             (Luukkonen and others, 2014)
+                            </a>
                         </li>
                         <li>
+                            <a href="http://pubs.er.usgs.gov/publication/sir20095188" target="_blank">
                             Report – Application guide for AFINCH (Analysis of Flows in Networks of CHannels) 
                             described by NHDPlus (Holtschlag, 2009)
+                            </a>
                         </li>
                         <li>
+                            <a href=" https://www.sciencebase.gov/catalog/item/53598190e4b0031b2f4a070a" target="_blank">
                             ScienceBase page
+                            </a>
                         </li>
                     </ul>
                 </p>
+                
+                
+                <p class="bold">
+                    Please see below for a description of the various features.
+                </p>
+                
+                <a href="images/AFINCH_Mapper_Controls_Image.png" class="no_hover_change">
+                    <img id="tips" src="images/AFINCH_Mapper_Controls_Image.png"/>
+		</a>
+          
+                
             </div>
+            
         </div>
         <jsp:include page="custom_template/USGSFooter.jsp">
             <jsp:param name="relPath" value="" />
