@@ -106,10 +106,8 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
     overflow:scroll !important;
 }
 
-
-
 #ext-gen30{
-    padding:15px;
+    padding:0 15px 15px 15px;
     height:1100px !important;
 }
 

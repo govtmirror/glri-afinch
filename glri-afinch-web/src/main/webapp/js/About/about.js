@@ -4,10 +4,10 @@ AFINCH.AboutPanel = Ext.extend(Ext.Panel, {
     title : "About",
     border: false,
     region: 'center',
-    html: '<a href="" target="_blank"><img src="images/EPA_logo.png"></a> \n\
-           <a href="" target="_blank"><img id="smaller" src="images/NHDPlus_logo.png"></a>\n\
-           <a href="" target="_blank"><img src="images/c_168_USGS.gif"></a>\n\
-           <a href="" target="_blank"><img id="resize" src="images/glri_logo.svg"></a>\n\
+    html: '<a href="http://www.epa.gov/" target="_blank"><img src="images/EPA_logo.png"></a> \n\
+           <a href="http://www.horizon-systems.com/nhdplus/" target="_blank"><img id="smaller" src="images/NHDPlus_logo.png"></a>\n\
+           <a href="http://www.usgs.gov/" target="_blank"><img src="images/c_168_USGS.gif"></a>\n\
+           <a href="http://cida.usgs.gov/glri/#/Home" target="_blank"><img id="resize" src="images/glri_logo.svg"></a>\n\
 \n\
             <p>This cooperative project was made possible by the Great Lakes Restoration Initiative</p>\n\
             <h1>The GLRI AFINCH (Analysis of Flows in Networks of CHannels) Mapper</h1>\n\
