@@ -67,6 +67,10 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 	padding: 0 .5em;
 }
 
+#ext-comp-1002{
+    margin-top:28px !important;
+}
+
 .olControlCustomLayerSwitcher .base-layers,
 .olControlCustomLayerSwitcher .data-layers,
 .olControlCustomLayerSwitcher .legend-footer {
@@ -74,7 +78,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 }
 
 .olControlCustomLayerSwitcher .legend-footer {
-	margin: 1em .1em 0 .1em; padding: .4em .4em;
+	margin: .1em .1em 0 .1em; padding: .4em .4em;
 }
 
 .olControlCustomLayerSwitcher .base-layers h3,
