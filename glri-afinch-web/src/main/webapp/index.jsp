@@ -23,7 +23,7 @@
         <jsp:include page="template/USGSHead.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="shortName" value="GLRI AFINCH Mapper" />
-            <jsp:param name="title" value="GLRI AFINCH Mapper" />
+            <jsp:param name="title" value="Great Lakes Restoration Initiative (GLRI) Mapper for Monthly Streamflow and Yields of Catchments using AFINCH" />
             <jsp:param name="description" value="" />
             <jsp:param name="author" value="Ivan Suftin, Tom Kunicki, Jordan Walker, Carl Schroedl, Jessica Lucido, Eric Everman" />
             <jsp:param name="keywords" value="" />
@@ -171,7 +171,7 @@
         <jsp:include page="template/USGSHeader.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
-            <jsp:param name="site-title" value="GLRI AFINCH Mapper" />
+            <jsp:param name="site-title" value="Great Lakes Restoration Initiative (GLRI) Mapper for Monthly Streamflow and Yields of Catchments using AFINCH" />
         </jsp:include>
         <div class="application-body">
             
@@ -181,16 +181,14 @@
                     <li><a class="selected" href="index.jsp">About</a></li>
                     <li><a href="mapper.jsp">Mapper</a></li>
                 </ul>
-                
-                
+                <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
+                    <img src="images/c_168_USGS.gif"/>
+		</a>
                 <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
                     <img src="images/EPA_logo.png"/>
 		</a>
                 <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
                     <img class="sizeChange" src="images/NHDPlus_logo.png"/>
-		</a>
-                <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
-                    <img src="images/c_168_USGS.gif"/>
 		</a>
                 <a target="_blank" class="no_hover_change" href="http://cida.usgs.gov/glri/#/Home">
                     <img class="glriLogo" src="images/glri_logo.svg"/>
@@ -200,10 +198,10 @@
                     This cooperative project was made possible by the Great Lakes Restoration Initiative.
                 </p>
                 
-                <h1>The GLRI AFINCH (Analysis of Flows in Networks of CHannels) Mapper</h1>
+                <h1>Great Lakes Restoration Initiative (GLRI) Mapper for Monthly Streamflow and Yields of Catchments using Analysis of Flows in Networks of CHannels (AFINCH)</h1>
                 
                 <p>
-                    The GLRI AFINCH Mapper provides access to estimated monthly water yields, 
+                    The GLRI Mapper for Monthly Streamflow and Yields of Catchments using AFINCH provides access to estimated monthly water yields, 
                     defined as streamflow divided by catchment area, and corresponding flows for 
                     stream segments for 1951–2012 in the Great Lakes Basin in the United States. 
                     Both sets of estimates were computed by using the AFINCH (Analysis of Flows in 
@@ -231,7 +229,7 @@
                     <li>Deciles of monthly or annual flow/yield</li>
                 </ul>
                 
-                
+			</br>
                 <p class="bold">
                     Additional Resources
                     <ul>

@@ -78,14 +78,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 		
 
         var flowlineRaster = new OpenLayers.Layer.FlowlinesRaster({
-            name: "NHD Flowlines",
+            name: "NHDPlus Flowlines",
             dataLayer: flowlinesData,
             streamOrderClipValue: this.streamOrderClipValue
         });
         flowlineRaster.id = 'nhd-flowlines-raster-layer';
 
         // ////////////////////////////////////////////// GAGES
-        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
+        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('USGS Streamgages', {
             url: CONFIG.endpoint.geoserver + 'wfs',
             streamOrderClipValue: this.streamOrderClipValue,
             visibility: false
