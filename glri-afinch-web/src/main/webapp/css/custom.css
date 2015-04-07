@@ -84,7 +84,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 .olControlCustomLayerSwitcher .base-layers h3,
 .olControlCustomLayerSwitcher .data-layers h3,
 .olControlCustomLayerSwitcher .legend-footer h3
-{ font-size: 1.4em; }
+{ font-size: 1.2em; }
 
 .olControlCustomLayerSwitcher .layer-switcher-layer-wrap {
 	padding: .2em 0 .2em .4em;
@@ -128,6 +128,10 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 
 #aboutContent h1{
     font-size:1.7em;
+}
+
+#aboutContent h2{
+    font-size:1.3em;
 }
 
 #aboutContent p{

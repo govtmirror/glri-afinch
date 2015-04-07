@@ -486,7 +486,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 columnConfig[self.fieldNames.reachName] = {header: 'Reach Name'};
                 columnConfig[self.fieldNames.reachComId] = {header: 'Com ID'};
 				columnConfig[self.fieldNames.GRIDCODE] = {header: 'Grid Code'};
-                columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
+                columnConfig[self.fieldNames.hasGage]= {header: 'Streamgage Present', width: 75, align: 'center'};
                 
                 var customRenderers= {};
                 customRenderers[self.fieldNames.hasGage] = function(hasGage){
