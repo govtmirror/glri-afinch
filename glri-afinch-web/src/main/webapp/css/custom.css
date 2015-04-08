@@ -71,7 +71,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
     margin-top:28px !important;
 }
 
-.olControlCustomLayerSwitcher .layers-title,
+.olControlCustomLayerSwitcher .layer-title,
 .olControlCustomLayerSwitcher .base-layers,
 .olControlCustomLayerSwitcher .data-layers,
 .olControlCustomLayerSwitcher .legend-footer {
@@ -82,7 +82,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 	margin: .1em .1em 0 .1em; padding: .4em .4em;
 }
 
-.olControlCustomLayerSwitcher .layers-title h3,
+.olControlCustomLayerSwitcher .layer-title h3,
 .olControlCustomLayerSwitcher .base-layers h3,
 .olControlCustomLayerSwitcher .data-layers h3,
 .olControlCustomLayerSwitcher .legend-footer h3
