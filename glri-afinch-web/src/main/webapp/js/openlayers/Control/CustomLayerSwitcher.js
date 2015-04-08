@@ -953,6 +953,8 @@ OpenLayers.Control.CustomLayerSwitcher =
         this.layersDiv.style.position = "relative";
         this.layersDiv.style.height = "100%";        
         
+        this.layersTitleDiv = document.createElement("div");
+		this._buildFirstBaseDiv(this.layersTitleDiv);
         this.baseLayersDiv = document.createElement("div");
 		this._buildEmptyBaseDiv(this.baseLayersDiv);
         this.dataLayersDiv = document.createElement("div");
@@ -968,11 +970,13 @@ OpenLayers.Control.CustomLayerSwitcher =
 		
 		
         if (this.ascending) {
+            this.layersDiv.appendChild(this.layersTitleDiv);
             this.layersDiv.appendChild(this.baseLayersDiv);
             this.layersDiv.appendChild(this.dataLayersDiv);
         } else {
             this.layersDiv.appendChild(this.dataLayersDiv);
             this.layersDiv.appendChild(this.baseLayersDiv);
+            this.layersDiv.appendChild(this.layersTitleDiv);
         }    
 		
 		if (this.footer) this.layersDiv.appendChild(this.footer);
@@ -1025,7 +1029,17 @@ OpenLayers.Control.CustomLayerSwitcher =
         
         
     },
-	
+        _buildFirstBaseDiv: function(divToUse) {
+		while (divToUse.firstChild) {
+			divToUse.removeChild(divToUse.firstChild);
+		}
+		
+        divToUse.className = "layer-title";
+		var layersTitle = document.createElement("h3");
+		layersTitle.innerHTML = "Explanation";
+		divToUse.appendChild(layersTitle);
+	},
+        
 	_buildEmptyBaseDiv: function(divToUse) {
 		while (divToUse.firstChild) {
 			divToUse.removeChild(divToUse.firstChild);
