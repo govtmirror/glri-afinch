@@ -201,21 +201,21 @@
         <div id="page-templates" style="display: none;">
             <div id="attribution-splash-template">
                 <div class="attribution_splash">
-                    <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
-                        <img src="images/EPA_logo.png"/>
+                    <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
+                        <img src="images/c_168_USGS.gif"/>
                     </a>
                     <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
                         <img src="images/NHDPlus_logo.png"/>
                     </a>
-                    <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
-                        <img src="images/c_168_USGS.gif"/>
+                    <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
+                        <img src="images/EPA_logo.png"/>
                     </a>
                     <h2 class="attribution_text">Data furnished by the EPA, NHDPlus, and USGS.</h2>
                     <div id="legend-footer-template">
                         <h3>Disclaimer:</h3>
                         <p>
                             
-                        <p>Water yields and flows were estimated using NHDPlus flowline and catchment attributes and explanatory variable information developed for the United States portion of the Great Lakes Basin. Estimates for those flowlines with some contributions from outside the U.S have not been reviewed by the Canadian government. For more information about the estimated yields and flows, see references on 'About' <a href="http://dx.doi.org/10.3133/sir20145192" target="_blank">(SIR 2014-5192)</a>. For best results, use Google Chrome. Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government. For questions or more information, please contact us at
+                        <p>Water yields and flows were estimated using NHDPlus flowline and catchment attributes and explanatory variable information developed for the United States portion of the Great Lakes Basin. Estimates for those flowlines with some contributions from outside the U.S have not been reviewed by the Canadian government. For more information about the estimated yields and flows, see references on 'About' tab <a href="http://dx.doi.org/10.3133/sir20145192" target="_blank">(SIR 2014-5192)</a>. For best results, use Google Chrome. Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government. For questions or more information, please contact us at
                             <a 
                                 href="&#109;&#097;&#105;&#108;&#116;&#111;:&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;">
                                 &#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;	
