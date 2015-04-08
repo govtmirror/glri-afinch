@@ -210,7 +210,7 @@
                     <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
                         <img src="images/EPA_logo.png"/>
                     </a>
-                    <h2 class="attribution_text">Data furnished by the EPA, NHDPlus, and USGS.</h2>
+                    <h2 class="attribution_text">Data furnished by the USGS, NHDPlus, and USEPA.</h2>
                     <div id="legend-footer-template">
                         <h3>Disclaimer:</h3>
                         <p>
