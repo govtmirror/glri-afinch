@@ -108,7 +108,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 
 #ext-gen30{
     padding:0 15px 15px 15px;
-    height:1230px !important;
+    height:100% !important;
 }
 
 #ext-gen30 img{
