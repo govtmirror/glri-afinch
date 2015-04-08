@@ -101,139 +101,65 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 	display: none !important;
 }
 
-#aboutContent{
-    width:97%;
-    min-height:400px;
-    padding:1%;
-    border:1px solid black;
-    margin:.5%;
-    position:relative;
+.x-tab-panel-body{
+    overflow:scroll !important;
 }
 
-.sizeChange{
-    width:160px;
+#ext-gen30{
+    padding:0 15px 15px 15px;
+    height:1230px !important;
 }
 
-.glriLogo{
-    width:220px;
+#ext-gen30 img{
+    margin:0 10px 10px 0;
 }
 
-#aboutContent img{
-    margin:25px 15px 0 0;
+#smaller{width:162px;}
+
+#resize{width:220px;}
+
+#ext-gen30 h1{
+    font-size:1.5em;
+    margin:10px 0;
 }
 
-#topParagraph{
-    margin-bottom:15px;
-}
-
-#aboutContent h1{
-    font-size:1.7em;
-}
-
-#aboutContent h2{
+#ext-gen30 h2{
     font-size:1.3em;
 }
 
-#aboutContent p{
-    margin-top:10px;
-    line-height:1.8em;
+#ext-gen30 h3,
+#ext-gen30 p{
+    margin-bottom:10px;
+}
+
+#ext-gen30 p{
+    width:60%;
     font-size:1.1em;
+    line-height:1.8em;
+}
+
+#ext-gen30 ul{
+    list-style:disc;
+    margin-left:15px;
+    margin-top:10px;
+    width:60%;
+}
+
+#ext-gen30 ol{
+    margin-left:25px;
+    margin-top:10px;
+    list-style:decimal;
+    width:60%;
+}
+
+#ext-gen30 ul li,
+#ext-gen30 ol li{
+    font-size:1.1em;
+    margin-bottom:10px;
 }
 
 #tips{
     width:700px;
-    margin-top:5px !important;
 }
 
-#aboutContent ul{
-    margin-left:15px;
-    list-style: disc;
-    font-size:1.1em;
-}
-
-#aboutContent li{
-    margin-top:10px;
-}
-
-.bold{
-    font-weight:bold;
-    margin-bottom:5px;
-}
-
-#indexTabArea{
-    position:absolute;
-    left:0;
-    top:103px;
-    z-index:90000;
-    width:100%;
-    background:#fff;
-    border-bottom:1px solid black;
-}
-
-ul#tabs{
-    margin:0 0 15px 0;
-    list-style: disc;
-    font-size:1.1em;
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    border-bottom:1px solid black;
-}
-
-ul#tabs li{
-    margin-top:10px;
-}
-
-ul#tabs,
-ul#Indextabs{
-    list-style: none;
-    padding:0;
-    height:30px;
-    cursor:pointer;
-}
-
-ul#tabs li{
-    border-right:1px solid black;
-}
-
-ul#Indextabs li{
-    border-left:1px solid black;
-}
-
-ul#tabs li,
-ul#Indextabs li{
-    display:inline-block;
-    height:30px;
-    width:100px;
-    margin:0 -5px 0 0;
-    text-align:center;
-}
-
-ul#Indextabs li:nth-child(2){
-    border-right:1px solid black;
-}
-
-ul#tabs li a,
-ul#Indextabs li a{
-    display:inline-block;
-    width:100px;
-    height:24px;
-    font-weight:normal;
-    color:#000;
-    padding-top:6px;
-}
-
-ul#tabs li a:hover,
-ul#Indextabs li a:hover{
-    background:rgb(180,180,180);
-    color:#fff;
-}
-
-a.selected{
-    background:rgb(180,180,180);
-    color:#fff !important;
-}
-
-
-
+.bold{font-weight:bold;}

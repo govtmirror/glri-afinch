@@ -20,7 +20,7 @@ Ext.onReady(function() {
     CONFIG.mapPanel = new AFINCH.MapPanel({
         region: 'center'
     });
-
+    
     var headerPanel = new Ext.Panel({
         id: 'header-panel',
         region: 'north',
@@ -29,6 +29,7 @@ Ext.onReady(function() {
         autoShow: true,
         contentEl: 'usgs-header-panel'
     });
+    
     var footerPanel = new Ext.Panel({
         id: 'footer-panel',
         region: 'south',
@@ -37,15 +38,29 @@ Ext.onReady(function() {
         autoShow: true,
         contentEl: 'usgs-footer-panel'
     });
+    
+    
 
-    var bodyPanel = new Ext.Panel({
-        region: 'center',
-        border: false,
-        layout: 'border',
-        autoShow: true,
-        items: [
+//    var bodyPanel = new Ext.Panel({
+//        region: 'center',
+//        border: false,
+//        layout: 'border',
+//        autoShow: true,
+//        items: [
+//            CONFIG.mapPanel
+//        ]
+//    });
+
+    CONFIG.mapPanel.title = "Mapper"
+
+    var bodyPanel = new Ext.TabPanel({
+        
+        region : 'center',
+        activeTab: 0,
+        items:[
+            new AFINCH.AboutPanel(),
             CONFIG.mapPanel
-        ]
+        ],
     });
 
     VIEWPORT = new Ext.Viewport({
@@ -55,6 +70,7 @@ Ext.onReady(function() {
             headerPanel,
             bodyPanel,
             footerPanel
+            
         ]
     });
     

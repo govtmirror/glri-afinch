@@ -3,7 +3,7 @@
 <%@page import="org.slf4j.LoggerFactory"%>
 <%@page import="gov.usgs.cida.config.DynamicReadOnlyProperties"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<% response.setHeader("X-UA-Compatible", "IE=Edge"); %>
+<% response.setHeader("X-UA-Compatible", "IE=Edge");%>
 <%!
     private static final Logger log = LoggerFactory.getLogger("index.jsp");
     protected DynamicReadOnlyProperties props = new DynamicReadOnlyProperties();
@@ -44,7 +44,7 @@
         <jsp:include page="js/ext/ext.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
-		<jsp:include page="js/sugar/sugar.jsp">
+        <jsp:include page="js/sugar/sugar.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
@@ -68,54 +68,54 @@
             var CONFIG = new Object();
             var AFINCH = new Object();
             CONFIG.endpoint = new Object();
-			CONFIG.metadata = new Object();
-			CONFIG.userpref = new Object();
+            CONFIG.metadata = new Object();
+            CONFIG.userpref = new Object();
             CONFIG.mapPanel = new Object();
-			CONFIG.maplayers = new Object();
-			CONFIG.maplayers.flowline = new Object();
-			CONFIG.maplayers.catchMean = new Object();
-			CONFIG.maplayers.gage = new Object();
-	
+            CONFIG.maplayers = new Object();
+            CONFIG.maplayers.flowline = new Object();
+            CONFIG.maplayers.catchMean = new Object();
+            CONFIG.maplayers.gage = new Object();
+
             CONFIG.development = <%= development%>;
             CONFIG.LOG4JS_PATTERN_LAYOUT = '<%= props.getProperty("afinch.frontend.log4js.pattern.layout", "%rms - %-5p - %m%n")%>';
             CONFIG.LOG4JS_LOG_THRESHOLD = '<%= props.getProperty("afinch.frontend.log4js.threshold", "info")%>';
 
-			CONFIG.endpoint.geoserverProjectPrefix = "glri-afinch";	//Not needed in layer names if used in url as below
+            CONFIG.endpoint.geoserverProjectPrefix = "glri-afinch";	//Not needed in layer names if used in url as below
             CONFIG.endpoint.geoserver = '<%= props.getProperty("afinch.endpoint.geoserver", "http://localhost:8081/glri-geoserver/glri-afinch/")%>';
             CONFIG.endpoint.geoserverProxy = 'geoserver/';
-			CONFIG.endpoint.geoserverProjectNamespace = "http://cida.usgs.gov/glri-afinch";
-			
+            CONFIG.endpoint.geoserverProjectNamespace = "http://cida.usgs.gov/glri-afinch";
+
 
             //IE always taints the canvas with cross-origin images, even if their
             //cross origin keywords are set to prevent tainting.
             //Since this breaks things, we must use a GeoServer proxy instead of CORS
-            if(Ext.isIE){
+            if (Ext.isIE) {
                 CONFIG.endpoint.geoserver = CONFIG.endpoint.geoserverProxy;
             }
 
             CONFIG.endpoint.rwps = '<%= props.getProperty("afinch.endpoint.rwps", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/wps/")%>';
             CONFIG.endpoint.rwpsProxy = 'rwps/';
             CONFIG.endpoint.thredds = '<%= props.getProperty("afinch.endpoint.thredds", "http://cida-wiwsc-wsdev.er.usgs.gov:8080/")%>';
-			CONFIG.endpoint.reach_thredds_filename = '<%= props.getProperty("afinch.endpoint.reach_thredds_filename", "afinch_reach.nc")%>';
-			CONFIG.endpoint.catch_thredds_filename = '<%= props.getProperty("afinch.endpoint.catch_thredds_filename", "afinch_catch.nc")%>';
+            CONFIG.endpoint.reach_thredds_filename = '<%= props.getProperty("afinch.endpoint.reach_thredds_filename", "afinch_reach.nc")%>';
+            CONFIG.endpoint.catch_thredds_filename = '<%= props.getProperty("afinch.endpoint.catch_thredds_filename", "afinch_catch.nc")%>';
             CONFIG.endpoint.threddsProxy = 'thredds/';
             CONFIG.endpoint.exporter = 'export';
-			
-			//General Metadata
-			CONFIG.metadata.reach_observed_prop = "QAccCon";
-			CONFIG.metadata.reach_id_prop = "COMID";
-			CONFIG.metadata.catch_observed_prop = "yieldCatchCon";
-			CONFIG.metadata.catch_id_prop = "GRIDCODE";
-			
-			//User Preferences
-			CONFIG.userpref.graphTab = 0;	//open to first tab, but open new windows using the last
-			
+
+            //General Metadata
+            CONFIG.metadata.reach_observed_prop = "QAccCon";
+            CONFIG.metadata.reach_id_prop = "COMID";
+            CONFIG.metadata.catch_observed_prop = "yieldCatchCon";
+            CONFIG.metadata.catch_id_prop = "GRIDCODE";
+
+            //User Preferences
+            CONFIG.userpref.graphTab = 0;	//open to first tab, but open new windows using the last
+
             CONFIG.attribution = {
-                nhd:{
-                    logo:'images/NHDPlus_logo.png',
+                nhd: {
+                    logo: 'images/NHDPlus_logo.png',
                     link: 'http://www.horizon-systems.com/nhdplus/'
                 },
-                usgs:{
+                usgs: {
                     logo: 'images/c_168_USGS.gif',
                     link: 'http://www.usgs.gov/'
                 },
@@ -126,20 +126,21 @@
             };
             CONFIG.attributionUrl = '';
             CONFIG.defaultExportFilename = 'nhd_flowlines_stats.csv';
-			
-			//Map layer config
-			CONFIG.maplayers.flowline.layerName = 'nhd_v2_1_flowline_w_streamorder';	//old val: 'glri:NHDFlowline';
-			CONFIG.maplayers.flowline.layerStyle = 'FlowlineStreamOrder';	//old val: 'FlowlineStreamOrder'
-			CONFIG.maplayers.flowline.streamOrderAttribName = 'StrmOrder';	//old val: 'StreamOrde' - used to determine display at zoom levels
-			CONFIG.maplayers.catchMean.layerName = 'nhd_v2_1_catch_w_afinch_data';
-			CONFIG.maplayers.catchMean.layerStyle = 'afinch_catch_YCCMean';
-			CONFIG.maplayers.gage.layerName = 'GageLoc';	//old val: glri:GageLoc
-			CONFIG.maplayers.gage.layerStyle = 'GageLocStreamOrder';	//old val: 'FlowlineStreamOrder'
-			CONFIG.maplayers.gage.streamOrderAttribName = 'StreamOrde';	//varies by layer...
+
+            //Map layer config
+            CONFIG.maplayers.flowline.layerName = 'nhd_v2_1_flowline_w_streamorder';	//old val: 'glri:NHDFlowline';
+            CONFIG.maplayers.flowline.layerStyle = 'FlowlineStreamOrder';	//old val: 'FlowlineStreamOrder'
+            CONFIG.maplayers.flowline.streamOrderAttribName = 'StrmOrder';	//old val: 'StreamOrde' - used to determine display at zoom levels
+            CONFIG.maplayers.catchMean.layerName = 'nhd_v2_1_catch_w_afinch_data';
+            CONFIG.maplayers.catchMean.layerStyle = 'afinch_catch_YCCMean';
+            CONFIG.maplayers.gage.layerName = 'GageLoc';	//old val: glri:GageLoc
+            CONFIG.maplayers.gage.layerStyle = 'GageLocStreamOrder';	//old val: 'FlowlineStreamOrder'
+            CONFIG.maplayers.gage.streamOrderAttribName = 'StreamOrde';	//varies by layer...
         </script>
 
+        <script type="text/javascript" src="js/About/about.js"></script>
         <script type="text/javascript" src="js/Map/map.js"></script>
-	<script type="text/javascript" src="js/openlayers/Control/CustomLayerSwitcher.js"></script>
+        <script type="text/javascript" src="js/openlayers/Control/CustomLayerSwitcher.js"></script>
         <script type="text/javascript" src="js/Data/StatsStore.js"></script>
         <script type="text/javascript" src="js/Data/ParseSosResponse.js"></script>
         <script type="text/javascript" src="js/Util/Util.js"></script>
@@ -154,18 +155,25 @@
         <script type="text/javascript" src="js/Ui/StatsLabelPanel.js"></script>
         <script type="text/javascript" src="js/Ui/DataDisplayPanel.js"></script>
         <script type="text/javascript" src="js/pages/index/onReady.js"></script>
-	<!-- app-specific Google Analytics -->
-	<script>
-	    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        <!-- app-specific Google Analytics -->
+        <script>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-	    ga('create', 'UA-50454186-3', 'auto');
-	    ga('send', 'pageview');
-	</script>
-	<!-- DOI foresee and GA -->
-	<script type="application/javascript" src="http://www.usgs.gov/scripts/analytics/usgs-analytics.js"></script>
+            ga('create', 'UA-50454186-3', 'auto');
+            ga('send', 'pageview');
+        </script>
+        <!-- DOI foresee and GA -->
+        <script type="application/javascript" src="http://www.usgs.gov/scripts/analytics/usgs-analytics.js"></script>
     </head>
     <body>
         <jsp:include page="template/USGSHeader.jsp">
@@ -174,148 +182,52 @@
             <jsp:param name="site-title" value="Great Lakes Restoration Initiative (GLRI) Mapper for Monthly Streamflow and Yields of Catchments using AFINCH" />
         </jsp:include>
         <div class="application-body">
-            
-            <div id="aboutContent">
-                
-                <ul id="tabs">
-                    <li><a class="selected" href="index.jsp">About</a></li>
-                    <li><a href="mapper.jsp">Mapper</a></li>
-                </ul>
-                <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
-                    <img src="images/c_168_USGS.gif"/>
-		</a>
-                <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
-                    <img src="images/EPA_logo.png"/>
-		</a>
-                <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
-                    <img class="sizeChange" src="images/NHDPlus_logo.png"/>
-		</a>
-                <a target="_blank" class="no_hover_change" href="http://cida.usgs.gov/glri/#/Home">
-                    <img class="glriLogo" src="images/glri_logo.svg"/>
-		</a>
-                
-                <p id="topParagraph">
-                    This cooperative project was made possible by the Great Lakes Restoration Initiative.
-                </p>
-                
-                <h1>Great Lakes Restoration Initiative (GLRI) Mapper for Monthly Streamflow and Yields of Catchments using Analysis of Flows in Networks of CHannels (AFINCH)</h1>
-                
-                <p>
-                    The GLRI Mapper for Monthly Streamflow and Yields of Catchments using AFINCH provides 
-                    access to estimated monthly water yields and corresponding flows for 
-                    stream segments for 1951–2012 in the Great Lakes Basin in the United States. 
-                    Yield is defined as the increment of streamflow contributed to a stream segment from a 
-                    catchment divided by the catchment area and incorporates both runoff and baseflow from the catchment.
-                    Both sets of estimates were computed by using the AFINCH (Analysis of Flows in 
-                    Networks of CHannels) application within the NHDPlus geospatial data framework. 
-                    Estimates for mean (average) yield are derived from the linear regression step in AFINCH. 
-                    Estimated monthly mean streamflows are determined from the monthly mean yields by multiplying 
-                    mean yield by catchment area and accumulating these incremental flows down the stream channel. 
-                    For stream segments with active streamgages that were included in the analysis, the ratios of 
-                    measured to estimated accumulated flows are computed, and these ratios are applied to upstream 
-                    estimated yields to proportionally constrain estimated flows to match measured flows.
-                    AFINCH provides a graphical user environment to develop regression models with 
-                    flow estimates constrained to match measured monthly flow at active streamgages. 
-                    Monthly water-use and climatic data also are used with basin characteristics data 
-                    available within NHDPlus or supplied by the user in regression models to estimate 
-                    water yields and flows.
-                </p>
-                <p>
-                    This regionally consistent estimate of streamflow provides unified information 
-                    across the U.S. Great Lakes Basin for restoration, assessment, management, and 
-                    conservation of stream ecosystems. Monthly flow time series for individual stream 
-                    segments can be retrieved from the mapper and used to approximate monthly flow-duration 
-                    characteristics and to identify possible trends. Mapper provided estimates for each selected 
-                    reach or catchment include:
-                </p>
-                <ul>
-                    <li>Monthly flow/yield</li>
-                    <li>Mean annual flow/yield</li>
-                    <li>Median annual flow/yield</li>
-                    <li>Mean monthly flow/yield</li>
-                    <li>Median monthly flow/yield</li>
-                    <li>Deciles of monthly or annual flow/yield</li>
-                </ul>
-                
-				</br>
-				
-                <h2>Getting Started</h2>
-                <p class="bold">
-                    How to view modeled catchment yield from AFINCH:
-                </p>
-                <ol>
-                    <li>Zoom and center to your area of interest using the map's '+' and '-' buttons and by dragging the map to the location you are interested in.</li>
-                    <li>Make sure the 'Catchment Mean Yield, Constrained' layer is active by checking the box in the 'Data Layers' part of the legend.</li>
-                    <li>See legend for meaning of color catchment colors.</li>
-                </ol>
-                <p class="bold">
-                    How to view and download data about individual reach, catchment or streamgage:
-                </p>
-                <ol>
-                    <li>Make sure the 'NHDPlus Flowlines' and/or 'USGS Streamgages' layers are active by checking the box in the 'Data Layers' part of the legend.</li>
-                    <li>Zoom and center to your area of interest using the map's '+' and '-' buttons and by dragging the map to the location you are interested in.</li>
-                    <li>Click on the reach or streagage you are interested in on the map.</li>
-                    <li>If multiple reaches or streamgages are close by, a list will appear. If the reach has a streamgage, a blue dot will be present in the 'Streamgage Present' column. Double click the reach of interest from the list to view data.</li>
-                    <li>Click on the 'Reach Flow Data' or 'Catchment Yield Data (Constrained)' tab of the site pop-up to view a plot of the timeseries of streamflow or catchment yield respectively.</li>
-                    <li>At reaches with streamgages, the flow depicted on the plot will be the flow measured at the streamgage. Additional streamgage information may be viewed by clicking the 'View Gage Details' button in the lower-left corner of the pop-up.</li>
-                    <li>Streamflow or catchment yield data may be downloaded for a reach or its corresponding catchment by clicking on either the 'Download Reach Data' or 'Download Catchment Data' buttons.</li>
-                </ol>
-                <p class="bold">
-                    Map layers:
-                </p>
-                <ul>
-                    <li>Catchment Mean Yield, Constrained - Estimated mean yield, incremental flow divided by catchment area, adjusted to match observed monthly mean flow upstream of active streamgages</li>
-                    <li>NHDPlus Flowlines used to develop the AFINCH models</li>
-                    <li>USGS Streamgages used to develop the AFINCH models</li>
-                    <li>Map base layers - Using the layer switcher in the legend, you can change the map's base layer</li>
-                </ul>
-				</br>
-	            <!--><p class="bold">
-	                 Please see below for a description of the various features.
-	             </p>
-                
-	                <a href="images/AFINCH_Mapper_Controls_Image.png" class="no_hover_change">
-	                    <img id="tips" src="images/AFINCH_Mapper_Controls_Image.png"/>
-	                </a> -->
-
-				<h2>References</h2>
-
-                <p class="bold">
-                    <ul>
-                        <li>
-                            <a href="http://dx.doi.org/10.3133/sir20145192" target="_blank">
-                            Report – Estimation of monthly water yields and flows for 1951–2012 for 
-                            the United States portion of the Great Lakes Basin with AFINCH 
-                            (Luukkonen and others, 2014)
-                            </a>
-                        </li>
-                        <li>
-                            <a href="http://pubs.er.usgs.gov/publication/sir20095188" target="_blank">
-                            Report – Application guide for AFINCH (Analysis of Flows in Networks of CHannels) 
-                            described by NHDPlus (Holtschlag, 2009)
-                            </a>
-                        </li>
-                        <li>
-                            <a href=" https://www.sciencebase.gov/catalog/item/53598190e4b0031b2f4a070a" target="_blank">
-                            ScienceBase page
-                            </a>
-                        </li>
-                    </ul>
-                </p>
-                
-                
-                
-            </div>
-            
         </div>
         <jsp:include page="custom_template/USGSFooter.jsp">
             <jsp:param name="relPath" value="" />
             <jsp:param name="header-class" value="" />
             <jsp:param name="site-url" value= "<script type='text/javascript'>document.write(document.location.href);</script>" />
             <jsp:param name="contact-info" value= "<a href='mailto:glri-database@usgs.gov?subject=GLRI AFINCH Mapper Comments' title='Contact Email'>GLRI Help</a>" />
-			<jsp:param name="revisedDate" value="${timestamp}" />
-			<jsp:param name="buildVersion" value="${project.version}" />
+            <jsp:param name="revisedDate" value="${timestamp}" />
+            <jsp:param name="buildVersion" value="${project.version}" />
         </jsp:include>
-        
+        <form id="download_form" style="display:none;" action="export" method="post" target="download_iframe">
+            <input id="filename_value" name="filename" type="text" value=""/>
+            <input id="type_value" name="type" type="text" value=""/>
+            <input id="data_value" name="data" type="text" value=""/>
+            <input type ="submit"/>
+        </form>
+        <iframe name="download_iframe" id="download" style="display: none;"></iframe>
+        <div id="page-templates" style="display: none;">
+            <div id="attribution-splash-template">
+                <div class="attribution_splash">
+                    <a target="_blank" class="no_hover_change" href="http://www.epa.gov/">
+                        <img src="images/EPA_logo.png"/>
+                    </a>
+                    <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
+                        <img src="images/NHDPlus_logo.png"/>
+                    </a>
+                    <a target="_blank" class="no_hover_change" href="http://www.usgs.gov/">
+                        <img src="images/c_168_USGS.gif"/>
+                    </a>
+                    <h2 class="attribution_text">Data furnished by the EPA, NHDPlus, and USGS.</h2>
+                    <div id="legend-footer-template">
+                        <h3>Disclaimer:</h3>
+                        <p>
+                            
+                        <p>Water yields and flows were estimated using NHDPlus flowline and catchment attributes and explanatory variable information developed for the United States portion of the Great Lakes Basin. Estimates for those flowlines with some contributions from outside the U.S have not been reviewed by the Canadian government. For more information about the estimated yields and flows, see references on 'About' <a href="http://dx.doi.org/10.3133/sir20145192" target="_blank">(SIR 2014-5192)</a>. For best results, use Google Chrome. Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government. For questions or more information, please contact us at
+                            <a 
+                                href="&#109;&#097;&#105;&#108;&#116;&#111;:&#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;">
+                                &#103;&#108;&#114;&#105;&#045;&#100;&#097;&#116;&#097;&#098;&#097;&#115;&#101;&#064;&#117;&#115;&#103;&#115;&#046;&#103;&#111;&#118;	
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="attribution-onmap-template">
+                <a target="_blank" class="no_hover_change" href="http://www.horizon-systems.com/nhdplus/">
+                    <img id="attribution" src="images/NHDPlus_logo.png"/></a>
+            </div>
+        </div>
     </body>
 </html>
