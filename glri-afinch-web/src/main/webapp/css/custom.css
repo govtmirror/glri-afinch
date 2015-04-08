@@ -71,6 +71,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
     margin-top:28px !important;
 }
 
+.olControlCustomLayerSwitcher .layers-title,
 .olControlCustomLayerSwitcher .base-layers,
 .olControlCustomLayerSwitcher .data-layers,
 .olControlCustomLayerSwitcher .legend-footer {
