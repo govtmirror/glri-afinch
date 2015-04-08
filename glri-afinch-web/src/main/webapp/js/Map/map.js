@@ -78,14 +78,14 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
 		
 
         var flowlineRaster = new OpenLayers.Layer.FlowlinesRaster({
-            name: "NHD Flowlines",
+            name: "NHDPlus Flowlines",
             dataLayer: flowlinesData,
             streamOrderClipValue: this.streamOrderClipValue
         });
         flowlineRaster.id = 'nhd-flowlines-raster-layer';
 
         // ////////////////////////////////////////////// GAGES
-        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('Gage Locations', {
+        var gageFeatureLayer = new OpenLayers.Layer.GageFeature('USGS Streamgages', {
             url: CONFIG.endpoint.geoserver + 'wfs',
             streamOrderClipValue: this.streamOrderClipValue,
             visibility: false
@@ -486,7 +486,7 @@ AFINCH.MapPanel = Ext.extend(GeoExt.MapPanel, {
                 columnConfig[self.fieldNames.reachName] = {header: 'Reach Name'};
                 columnConfig[self.fieldNames.reachComId] = {header: 'Com ID'};
 				columnConfig[self.fieldNames.GRIDCODE] = {header: 'Grid Code'};
-                columnConfig[self.fieldNames.hasGage]= {header: 'Has Gage?', width: 75, align: 'center'};
+                columnConfig[self.fieldNames.hasGage]= {header: 'Streamgage Present', width: 75, align: 'center'};
                 
                 var customRenderers= {};
                 customRenderers[self.fieldNames.hasGage] = function(hasGage){

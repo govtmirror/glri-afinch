@@ -84,7 +84,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 .olControlCustomLayerSwitcher .base-layers h3,
 .olControlCustomLayerSwitcher .data-layers h3,
 .olControlCustomLayerSwitcher .legend-footer h3
-{ font-size: 1.4em; }
+{ font-size: 1.2em; }
 
 .olControlCustomLayerSwitcher .layer-switcher-layer-wrap {
 	padding: .2em 0 .2em .4em;
@@ -107,7 +107,7 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
 
 #ext-gen30{
     padding:0 15px 15px 15px;
-    height:1100px !important;
+    height:1235px !important;
 }
 
 #ext-gen30 img{
@@ -123,13 +123,21 @@ body.x-body-masked .x-window-plain .x-window-mc { background-color: #dfe8f6 !imp
     margin:10px 0;
 }
 
-#ext-gen30 h3{
+#ext-gen30 h3,
+#ext-gen30 p{
     margin-bottom:10px;
+}
+
+#ext-gen30 p{
+    width:60%;
+    font-size:1.1em;
+    line-height:1.8em;
 }
 
 #ext-gen30 ul{
     list-style:disc;
     margin-left:15px;
+    margin-top:10px;
 }
 
 #ext-gen30 ul li{

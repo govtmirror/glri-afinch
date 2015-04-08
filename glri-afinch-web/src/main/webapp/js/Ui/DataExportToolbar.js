@@ -82,7 +82,7 @@ AFINCH.ui.DataExportToolbar= Ext.extend(Ext.Toolbar, {
 		
         var cButton = {
             xtype: 'button', 
-            text: 'Download Catch Data', 
+            text: 'Download Catchment Data', 
             handler: exportHandler,
             cls: 'export_button',
 			associatedPanel: self.catchPanel,
