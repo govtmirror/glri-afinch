@@ -34,7 +34,7 @@
             <jsp:param name="development" value="<%= development%>" />
         </jsp:include>
         <link type="text/css" rel="stylesheet" href="pages/index/index.css" />
-
+		<jsp:include page="custom_template/About.jsp" />
         <jsp:include page="pages/index/dygraphs.jsp">
             <jsp:param name="debug-qualifier" value="<%= development%>" />
         </jsp:include>
