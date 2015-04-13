@@ -21,14 +21,14 @@
 	<h2>Getting Started</h2>
 	<p class="bold">How to view modeled catchment yield from AFINCH:</p>
 	<ol>
-		<li>Zoom and center to your area of interest using the map\'s "+" and "-" buttons and by dragging the map to the location you are interested in.</li>
+		<li>Zoom and center to your area of interest using the map's "+" and "-" buttons and by dragging the map to the location you are interested in.</li>
 		<li>Make sure the "Catchment Mean Yield, Constrained" layer is active by checking the box in the "Data Layers" part of the legend.</li>
 		<li>See legend for meaning of color catchment colors.</li>
 	</ol>
 	<p class="bold">How to view and download data about an individual reach, catchment or streamgage:</p>
 	<ol>
 		<li>Make sure the "NHDPlus Flowlines" and/or "USGS Streamgages" layers are active by checking the box in the "Data Layers" part of the legend.</li>
-		<li>Zoom and center to your area of interest using the map\'s "+" and "-" buttons and by dragging the map to the location you are interested in.</li>
+		<li>Zoom and center to your area of interest using the map's "+" and "-" buttons and by dragging the map to the location you are interested in.</li>
 		<li>Click on the reach or streamgage you are interested in on the map</li>
 		<li>If multiple reaches or streamgages are close by, a list will appear. If the reach has a streamgage, a blue dot will be present in the "Streamgage Present" column. Double click the reach of interest from the list to view data.</li>
 		<li>Click on the "Reach Flow Data" or "Catchment Yield Data (Constrained)" tab of the site pop-up to view a plot of the timeseries of streamflow or catchment yield respectively.</li>
@@ -40,7 +40,7 @@
 		<li>Catchment Mean Yield, Constrained - Estimated mean yield, incremental flow divided by catchment area, adjusted to match observed monthly mean flow upstream of active streamgages</li>
 		<li>NHDPlus Flowlines used to develop the AFINCH models</li>
 		<li>USGS Streamgages used to develop the AFINCH models</li>
-		<li>Map base layers - Using the layer switcher in the legend, you can change the map\'s base layer</li>
+		<li>Map base layers - Using the layer switcher in the legend, you can change the map's base layer</li>
 	</ul>
 	<br />
 	<h2>References</h2>
