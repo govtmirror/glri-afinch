@@ -5,7 +5,7 @@
 	<groupId>gov.usgs.cida.glri.afinch</groupId>
 	<artifactId>glri-afinch-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.0.12</version>
+	<version>1.0.0.13-SNAPSHOT</version>
 
 	<name>GLRI AFINCH Portal</name>
 
