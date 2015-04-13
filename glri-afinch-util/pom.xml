@@ -4,11 +4,11 @@
 	<artifactId>glri-afinch-util</artifactId>
 	<name>GLRI AFINCH Utilities</name>
 	<packaging>jar</packaging>
-	<version>1.0.0.12-SNAPSHOT</version>
+	<version>1.0.0.12</version>
 	<parent>
 		<groupId>gov.usgs.cida.glri.afinch</groupId>
 		<artifactId>glri-afinch-parent</artifactId>
-		<version>1.0.0.12-SNAPSHOT</version>
+		<version>1.0.0.12</version>
 	</parent>
 	<build>
 		<plugins>
