@@ -19,6 +19,7 @@
 	</ul>
 	<br />
 	<h2>Getting Started</h2>
+	<p>A map interface to display and allow for download of AFINCH estimates is available through the "Mapper" tab above.</p>
 	<p class="bold">How to view modeled catchment yield from AFINCH:</p>
 	<ol>
 		<li>Zoom and center to your area of interest using the map's "+" and "-" buttons and by dragging the map to the location you are interested in.</li>
@@ -37,7 +38,7 @@
 	</ol>
 	<p class="bold">Map Layers:</p>
 	<ul>
-		<li>Catchment Mean Yield, Constrained - Estimated mean yield, incremental flow divided by catchment area, adjusted to match observed monthly mean flow upstream of active streamgages</li>
+		<li>Catchment Mean Yield, Constrained - Shows the estimated mean yield which is the incremental flow from the catchment divided by catchment area, adjusted to match observed monthly mean flow upstream of active streamgages</li>
 		<li>NHDPlus Flowlines used to develop the AFINCH models</li>
 		<li>USGS Streamgages used to develop the AFINCH models</li>
 		<li>Map base layers - Using the layer switcher in the legend, you can change the map's base layer</li>
